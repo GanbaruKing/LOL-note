@@ -8,6 +8,8 @@ import type {
   Note,
   Overview,
   PoolEntry,
+  MyPick,
+  SearchHit,
 } from '../shared/contracts'
 import { CATEGORIES, DIFFICULTIES, ROLES } from '../shared/contracts'
 import {
@@ -28,7 +30,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 3) throw new Error('Unsupported database version')
+      if (version > 4) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -80,6 +82,22 @@ export class NotebookRepository {
             PRAGMA user_version = 3;
           `)
         }
+        if (version < 4) {
+          this.db.exec(`
+            ALTER TABLE champion_notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0 CHECK(pinned IN (0,1));
+            ALTER TABLE matchup_notes ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0 CHECK(pinned IN (0,1));
+            CREATE TABLE my_picks (
+              my_champion_id INTEGER NOT NULL REFERENCES champions(id),
+              enemy_champion_id INTEGER NOT NULL REFERENCES champions(id),
+              role TEXT NOT NULL CHECK(role IN (${sqlList(ROLES)})),
+              priority INTEGER NOT NULL CHECK(priority BETWEEN 1 AND 99),
+              confidence INTEGER NOT NULL CHECK(confidence BETWEEN 1 AND 5),
+              PRIMARY KEY(my_champion_id, enemy_champion_id, role)
+            );
+            CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            PRAGMA user_version=4;
+          `)
+        }
         const insert = this.db.prepare(
           'INSERT INTO champions (id, slug, name, name_ja) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name=excluded.name, name_ja=excluded.name_ja',
         )
@@ -92,6 +110,123 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  getLeagueFolder(): string | undefined {
+    return this.db.prepare("SELECT value FROM settings WHERE key='leagueFolder'").get()?.value as
+      string | undefined
+  }
+  setLeagueFolder(path: string) {
+    this.db
+      .prepare(
+        "INSERT INTO settings(key,value) VALUES ('leagueFolder',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+      )
+      .run(path)
+  }
+  listMyPicks(input: unknown): MyPick[] {
+    const v = object(input),
+      enemyChampionId = this.championId(v.enemyChampionId)
+    if (!ROLES.includes(v.role as never)) throw new ValidationError('Roleが正しくありません。')
+    return this.db
+      .prepare(
+        'SELECT my_champion_id AS myChampionId, enemy_champion_id AS enemyChampionId, role, priority, confidence FROM my_picks WHERE enemy_champion_id=? AND role=? ORDER BY priority ASC, confidence DESC, my_champion_id',
+      )
+      .all(enemyChampionId, v.role as string) as unknown as MyPick[]
+  }
+  saveMyPick(input: unknown): MyPick[] {
+    const v = object(input),
+      key = this.key(v)
+    if (!Number.isInteger(v.priority) || (v.priority as number) < 1 || (v.priority as number) > 99)
+      throw new ValidationError('優先順位は1〜99で指定してください。')
+    if (
+      !Number.isInteger(v.confidence) ||
+      (v.confidence as number) < 1 ||
+      (v.confidence as number) > 5
+    )
+      throw new ValidationError('自信度は1〜5で指定してください。')
+    return this.transaction(() => {
+      this.db
+        .prepare(
+          'INSERT INTO my_picks(my_champion_id,enemy_champion_id,role,priority,confidence) VALUES (?,?,?,?,?) ON CONFLICT(my_champion_id,enemy_champion_id,role) DO UPDATE SET priority=excluded.priority,confidence=excluded.confidence',
+        )
+        .run(
+          key.myChampionId,
+          key.enemyChampionId,
+          key.role,
+          v.priority as number,
+          v.confidence as number,
+        )
+      return this.listMyPicks(key)
+    })
+  }
+  removeMyPick(input: unknown): MyPick[] {
+    const key = this.key(input)
+    this.db
+      .prepare('DELETE FROM my_picks WHERE my_champion_id=? AND enemy_champion_id=? AND role=?')
+      .run(key.myChampionId, key.enemyChampionId, key.role)
+    return this.listMyPicks(key)
+  }
+  pinNote(input: unknown): void {
+    const v = object(input),
+      id = positiveId(v.id)
+    if ((v.scope !== 'champion' && v.scope !== 'matchup') || typeof v.pinned !== 'boolean')
+      throw new ValidationError('Pin設定が正しくありません。')
+    const table = v.scope === 'champion' ? 'champion_notes' : 'matchup_notes'
+    if (
+      !this.db
+        .prepare(`UPDATE ${table} SET pinned=?, updated_at=? WHERE id=?`)
+        .run(v.pinned ? 1 : 0, new Date().toISOString(), id).changes
+    )
+      throw new ValidationError('メモが見つかりません。')
+  }
+  searchNotes(input: unknown): SearchHit[] {
+    const v = object(input)
+    if (
+      typeof v.query !== 'string' ||
+      v.query.length > 200 ||
+      (v.role !== 'ALL' && !ROLES.includes(v.role as never)) ||
+      (v.category !== 'ALL' && !CATEGORIES.includes(v.category as never)) ||
+      typeof v.pinnedOnly !== 'boolean'
+    )
+      throw new ValidationError('検索条件が正しくありません。')
+    // Local personal notebooks are small. Normalize in JS for consistent Japanese/English AND search.
+    const rows = this.db
+      .prepare(
+        `SELECT n.*, 'matchup' AS scope, m.my_champion_id AS championId, m.enemy_champion_id AS enemyId, m.role, a.name, a.name_ja, b.name AS enemyName, b.name_ja AS enemyNameJa FROM matchup_notes n JOIN matchups m ON m.id=n.matchup_id JOIN champions a ON a.id=m.my_champion_id JOIN champions b ON b.id=m.enemy_champion_id
+      UNION ALL SELECT n.*, 'champion' AS scope, n.champion_id AS championId, NULL AS enemyId, NULL AS role, a.name, a.name_ja, '' AS enemyName, '' AS enemyNameJa FROM champion_notes n JOIN champions a ON a.id=n.champion_id`,
+      )
+      .all()
+    const tokens = v.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean)
+    return rows
+      .filter(
+        (r) =>
+          (v.role === 'ALL' || r.role === v.role) &&
+          (v.category === 'ALL' || r.category === v.category) &&
+          (!v.pinnedOnly || r.pinned === 1) &&
+          tokens.every((t) =>
+            `${r.name} ${r.name_ja} ${r.enemyName} ${r.enemyNameJa} ${r.role ?? ''} ${r.category} ${r.body}`
+              .toLocaleLowerCase()
+              .includes(t),
+          ),
+      )
+      .map((r) => ({
+        id: r.id as number,
+        body: r.body as string,
+        category: r.category as Note['category'],
+        pinned: r.pinned as number,
+        createdAt: r.created_at as string,
+        updatedAt: r.updated_at as string,
+        scope: r.scope as SearchHit['scope'],
+        championId: r.championId as number,
+        key:
+          r.scope === 'matchup'
+            ? {
+                myChampionId: r.championId as number,
+                enemyChampionId: r.enemyId as number,
+                role: r.role as MatchupKey['role'],
+              }
+            : null,
+      }))
+      .sort((a, b) => b.pinned - a.pinned || b.updatedAt.localeCompare(a.updatedAt) || b.id - a.id)
   }
   listPool(): PoolEntry[] {
     return this.db
@@ -148,7 +283,7 @@ export class NotebookRepository {
     const championId = this.championId(input)
     const notes = this.db
       .prepare(
-        'SELECT id, category, body, created_at AS createdAt, updated_at AS updatedAt FROM champion_notes WHERE champion_id=? ORDER BY created_at DESC, id DESC',
+        'SELECT id, category, body, pinned, created_at AS createdAt, updated_at AS updatedAt FROM champion_notes WHERE champion_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
       )
       .all(championId) as unknown as Note[]
     const matchups = this.listMatchups()
@@ -233,7 +368,7 @@ export class NotebookRepository {
     if (!row) return { ...key, id: null, difficulty: 'Unset', rating: null, notes: [] }
     const notes = this.db
       .prepare(
-        'SELECT id, category, body, created_at AS createdAt, updated_at AS updatedAt FROM matchup_notes WHERE matchup_id=? ORDER BY created_at DESC, id DESC',
+        'SELECT id, category, body, pinned, created_at AS createdAt, updated_at AS updatedAt FROM matchup_notes WHERE matchup_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
       )
       .all(row.id) as unknown as Note[]
     return {

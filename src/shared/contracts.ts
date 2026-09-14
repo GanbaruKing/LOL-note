@@ -32,6 +32,7 @@ export interface Overview {
   rating: number | null
 }
 export interface Note {
+  pinned: number
   id: number
   category: Category
   body: string
@@ -67,8 +68,43 @@ export interface PoolEntry {
   role: Role
   confidence: number
 }
+export interface MyPick extends MatchupKey {
+  priority: number
+  confidence: number
+}
+export interface SearchInput {
+  query: string
+  role: Role | 'ALL'
+  category: Category | 'ALL'
+  pinnedOnly: boolean
+}
+export interface SearchHit extends Note {
+  scope: 'champion' | 'matchup'
+  championId: number
+  key: MatchupKey | null
+}
+export interface LcuState {
+  status: 'disconnected' | 'connected' | 'champ-select' | 'error'
+  phase: string | null
+  sessionId: string | null
+  role: Role | null
+  ownChampionId: number | null
+  enemyChampionIds: number[]
+  message: string
+}
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 export interface NotebookApi {
+  listMyPicks(input: { enemyChampionId: number; role: Role }): Promise<Result<MyPick[]>>
+  saveMyPick(input: MyPick): Promise<Result<MyPick[]>>
+  removeMyPick(input: MatchupKey): Promise<Result<MyPick[]>>
+  pinNote(input: {
+    scope: 'champion' | 'matchup'
+    id: number
+    pinned: boolean
+  }): Promise<Result<void>>
+  searchNotes(input: SearchInput): Promise<Result<SearchHit[]>>
+  getLcuState(): Promise<Result<LcuState>>
+  selectLeagueFolder(): Promise<Result<boolean>>
   listPool(): Promise<Result<PoolEntry[]>>
   savePool(input: PoolEntry): Promise<Result<PoolEntry[]>>
   removePool(input: { championId: number; role: Role }): Promise<Result<PoolEntry[]>>

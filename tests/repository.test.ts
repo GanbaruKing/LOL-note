@@ -10,6 +10,86 @@ import catalog from '../resources/champions.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
 const input = { key, category: 'Laning', body: '相手のQに注意する' }
 
+test('My Picks persist per enemy/role, sort by priority, update without duplicates', () => {
+  const repo = new NotebookRepository(':memory:', catalog.champions)
+  try {
+    repo.saveMyPick({ ...key, priority: 3, confidence: 5 })
+    repo.saveMyPick({ ...key, myChampionId: 86, priority: 1, confidence: 3 })
+    assert.deepEqual(
+      repo.listMyPicks(key).map((p) => p.myChampionId),
+      [86, 266],
+    )
+    repo.saveMyPick({ ...key, priority: 1, confidence: 4 })
+    assert.equal(repo.listMyPicks(key).length, 2)
+    assert.equal(repo.listMyPicks(key)[0].myChampionId, 266)
+    assert.equal(repo.listMyPicks({ ...key, role: 'MID' }).length, 0)
+    assert.equal(repo.listMyPicks({ ...key, enemyChampionId: 86 }).length, 0)
+    assert.throws(() => repo.saveMyPick({ ...key, priority: 0, confidence: 4 }))
+    assert.throws(() => repo.saveMyPick({ ...key, priority: 1, confidence: 6 }))
+    repo.removeMyPick(key)
+    assert.deepEqual(
+      repo.listMyPicks(key).map((p) => p.myChampionId),
+      [86],
+    )
+  } finally {
+    repo.close()
+  }
+})
+
+test('cross-note search combines names, text, role and category; pins survive note edits', () => {
+  const repo = new NotebookRepository(':memory:', catalog.champions)
+  try {
+    const note = repo.addNote({ ...input, body: 'Ghostに注意' }).notes[0]
+    const standalone = repo.addChampionNote({
+      championId: 266,
+      category: 'General',
+      body: '基本コンボ',
+    }).notes[0]
+    repo.addNote({ ...input, key: { ...key, role: 'MID' }, body: '別レーン' })
+    repo.pinNote({ scope: 'matchup', id: note.id, pinned: true })
+    repo.pinNote({ scope: 'champion', id: standalone.id, pinned: true })
+    repo.updateNote({ ...input, id: note.id, body: 'Ghostの間は距離を取る' })
+    const search = { query: 'darius ghost', category: 'ALL', role: 'ALL', pinnedOnly: false }
+    assert.equal(repo.searchNotes(search).length, 1)
+    assert.equal(repo.searchNotes({ ...search, query: 'ダリウス Ghost' }).length, 1)
+    assert.equal(repo.searchNotes({ ...search, role: 'MID' }).length, 0)
+    assert.equal(repo.searchNotes({ ...search, category: 'Rune' }).length, 0)
+    assert.equal(repo.searchNotes({ ...search, query: '', pinnedOnly: true }).length, 2)
+    assert.equal(repo.searchNotes({ ...search, query: '基本コンボ' })[0].scope, 'champion')
+    assert.equal(repo.getMatchup(key).notes[0].pinned, 1)
+    assert.throws(() => repo.pinNote({ scope: 'settings', id: note.id, pinned: true }))
+    assert.throws(() => repo.searchNotes({ ...search, query: 'x'.repeat(201) }))
+  } finally {
+    repo.close()
+  }
+})
+
+test('v3 migration preserves notes and persists My Picks and pins after reopening', () => {
+  const folder = mkdtempSync(join(tmpdir(), 'notebook-v4-')),
+    file = join(folder, 'notebook.sqlite')
+  let repo = new NotebookRepository(file, catalog.champions)
+  try {
+    const id = repo.addNote(input).notes[0].id
+    repo.close()
+    const legacy = new DatabaseSync(file)
+    legacy.exec(
+      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; PRAGMA user_version=3',
+    )
+    legacy.close()
+    repo = new NotebookRepository(file, catalog.champions)
+    assert.equal(repo.getMatchup(key).notes[0].pinned, 0)
+    repo.pinNote({ scope: 'matchup', id, pinned: true })
+    repo.saveMyPick({ ...key, priority: 2, confidence: 4 })
+    repo.close()
+    repo = new NotebookRepository(file, catalog.champions)
+    assert.equal(repo.getMatchup(key).notes[0].pinned, 1)
+    assert.equal(repo.listMyPicks(key)[0].confidence, 4)
+  } finally {
+    repo.close()
+    rmSync(folder, { recursive: true })
+  }
+})
+
 test('lane pools are unique, independent, validated and preserve notes on removal', () => {
   const repo = new NotebookRepository(':memory:', catalog.champions)
   try {
@@ -42,7 +122,9 @@ test('v2 migrates to lane pools and retains all existing notes after reopen', ()
     repo.addChampionNote({ championId: 266, category: 'General', body: '残すメモ' })
     repo.close()
     const legacy = new DatabaseSync(file)
-    legacy.exec('DROP TABLE champion_pool; PRAGMA user_version=2')
+    legacy.exec(
+      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; DROP TABLE champion_pool; PRAGMA user_version=2',
+    )
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)
     repo.savePool({ championId: 266, role: 'TOP', confidence: 4 })
@@ -98,7 +180,9 @@ test('v1 migration preserves existing matchup data and champion notes persist af
     repo.close()
     const legacy = new DatabaseSync(file)
     // Recreate v1 by removing tables introduced in v2 and v3.
-    legacy.exec('DROP TABLE champion_notes; DROP TABLE champion_pool; PRAGMA user_version=1')
+    legacy.exec(
+      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; DROP TABLE champion_notes; DROP TABLE champion_pool; PRAGMA user_version=1',
+    )
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)
     assert.equal(repo.getMatchup(key).notes[0].body, input.body)
