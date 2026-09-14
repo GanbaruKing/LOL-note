@@ -1,0 +1,31 @@
+# Notebookのデータフロー
+
+1. 起動時にPreload API経由でカタログ、保存済みMatchup一覧、保存先を取得する。
+2. 自分・相手・Roleを選ぶと `getMatchup` が読み込まれる。読み込んだだけではDBにレコードを増やさない。
+3. メモ保存時にMainで入力を検証する。対象Matchupの作成とNote追加を一つのトランザクションにする。
+4. Mainが返した保存済みの内容で画面を更新する。失敗した場合は編集フォームを保持する。
+5. 古い対面の読み込みが遅れて返っても、リクエスト番号で現在の表示を上書きしない。
+
+`contracts.ts` はプロセス間の型、`validation.ts` は実行時の検証、`repository.ts` はSQL、`App.tsx` は画面の状態を担当する。
+
+未保存の入力がある状態で対面・画面を切り替えると破棄確認が表示される。ウィンドウを閉じる操作もMain側の確認で保護する。メモ削除は画面上で確認する。Ctrl + Enterで保存できる。
+
+## テスト
+
+- Repository: CRUD、SQLを含む本文の安全な保存、ファイル再接続、対面・Role分離、無効入力、未来のスキーマ拒否。
+- Electron: オフラインで実際の画面を操作し、保存・編集・削除・評価・日本語Champion検索・未保存変更の保護・再起動復元を確認。DBをロックして保存失敗時の入力保持とリトライも確認する。
+- E2Eの保存先は `.test-data` 以下の新規フォルダー。通常のuserDataとは分離する。
+
+Searchで本文を含めた横断検索を実装。Champion名・敵Champion名・本文・Role・Categoryを対象に、スペース区切りのAND検索を行う。Pinのみの表示も可能。結果から単体ページ・対面ページへ戻れる。
+
+## ChampionsとMatch up
+
+サイドバーのNotebook表記はMatch upに変更した。Championsはチャンピオン自身に焦点を当て、単体メモと保存済みの対面メモ一覧を表示する。チャンピオンを選択しただけでは対面ページに遷移しない。
+
+単体メモは専用IPCでCRUDを行う。対面メモ一覧は既存のmatchups / matchup_notesから読み出し、複製しない。明示的に「対面ページを開く」を選ぶとMatch upへ移動する。両画面は編集フォームと未保存変更の確認を共有する。
+
+Championsの入口はカード一覧にし、カードのクリックで詳細を開く。詳細から一覧へ戻る際も未保存の入力を確認する。ChampionLibrary.tsxがカード・レーン別プールの表示を担当し、App.tsxがIPCと保存状態を管理する。プールはレーンのタブから登録・解除・自信度変更が可能。Championsの対面メモ一覧はレーンで絞り込める。Match upの左側にはComfort Picksを表示し、Recently Updatedは表示しない。Comfort Picksはマッチアップの「自分の評価」を参照し、評価変更時にも星と並び順を更新する。候補登録はMatchup Overviewの評価欄右側の「Comfort Picksに追加」で行い、表示中の組み合わせを登録する。
+
+## All Championsのレーン絞り込み
+
+名前検索と独立したAll / TOP / JUNGLE / MID / BOTTOM / SUPPORTのタブで一覧を絞り込む。プール登録先のレーンは上部のプールタブで指定する。分類はresources/champion-lanes.jsonに同梱し、Meraki Analyticsのpositionsを参照（MIDDLEはMIDへ変換）。取得元と取得日をJSONに記録する。複数レーンに対応し、分類未収録のLocke・ZaahenはAllで表示する。最新パッチの出場率や推奨順位を示すものではない。

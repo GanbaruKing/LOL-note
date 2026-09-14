@@ -1,0 +1,9 @@
+node_modules
+out
+.npm-cache
+.electron-cache
+.test-data
+test-results
+playwright-report
+resources
+package-lock.json
