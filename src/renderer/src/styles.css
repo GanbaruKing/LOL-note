@@ -1471,3 +1471,9 @@ h1 {
 .matchup-picks .pick-form label:first-child {
   min-width: 0;
 }
+
+.comfort-pick-add {
+  margin-left: auto;
+  padding: 10px 14px;
+  font-size: 12px;
+}

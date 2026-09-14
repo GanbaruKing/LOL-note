@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import type { Champion, MatchupKey, MyPick, PoolEntry, Result, Role } from '../../shared/contracts'
+import type { Champion, MatchupKey, MyPick, Result, Role } from '../../shared/contracts'
 
 export default function MyPicks({
   enemyChampionId,
   role,
   champions,
-  pool,
   onSelect,
   readOnly = false,
   refreshToken,
@@ -13,7 +12,6 @@ export default function MyPicks({
   enemyChampionId: number
   role: Role
   champions: Champion[]
-  pool: PoolEntry[]
   onSelect: (key: MatchupKey) => void
   readOnly?: boolean
   refreshToken?: unknown
@@ -22,12 +20,10 @@ export default function MyPicks({
     [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
-  const [selected, setSelected] = useState('')
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError('')
-    setSelected('')
     window.notebook
       .listMyPicks({ enemyChampionId, role })
       .then((r) => {
@@ -37,7 +33,7 @@ export default function MyPicks({
         }
       })
       .catch(() => {
-        if (!cancelled) setError('My Picksを読み込めません。')
+        if (!cancelled) setError('Comfort Picksを読み込めません。')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -59,15 +55,10 @@ export default function MyPicks({
       setBusy(false)
     }
   }
-  const sorted = [...champions].sort(
-    (a, b) =>
-      Number(pool.some((p) => p.role === role && p.championId === b.id)) -
-      Number(pool.some((p) => p.role === role && p.championId === a.id)),
-  )
   return (
-    <section className="my-picks panel" aria-label="My Picks">
+    <section className="my-picks panel" aria-label="Comfort Picks">
       <div className="section-title">
-        <h2>My Picks</h2>
+        <h2>Comfort Picks</h2>
         <small>自分の評価が高い順</small>
       </div>
       {error && (
@@ -78,7 +69,7 @@ export default function MyPicks({
       {loading ? (
         <p className="empty">読み込み中…</p>
       ) : !picks.length ? (
-        <p className="pool-empty">この対面・レーンの候補はまだありません。</p>
+        <p className="pool-empty">得意な対面をOverviewから追加しましょう。</p>
       ) : (
         <div className="pick-list">
           {picks.map((p) => {
@@ -106,43 +97,6 @@ export default function MyPicks({
             )
           })}
         </div>
-      )}
-      {!readOnly && (
-        <form
-          className="pick-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (selected && !busy)
-              void save(() =>
-                window.notebook.saveMyPick({
-                  myChampionId: Number(selected),
-                  enemyChampionId,
-                  role,
-                }),
-              )
-          }}
-        >
-          <label>
-            候補
-            <select
-              aria-label="My Picksのチャンピオン"
-              value={selected}
-              disabled={busy || loading}
-              onChange={(e) => setSelected(e.target.value)}
-            >
-              <option value="">チャンピオンを選択</option>
-              {sorted.map((c) => (
-                <option value={c.id} key={c.id}>
-                  {pool.some((p) => p.championId === c.id && p.role === role) ? '★ ' : ''}
-                  {c.name} / {c.nameJa}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button className="primary" disabled={!selected || loading || busy}>
-            候補を保存
-          </button>
-        </form>
       )}
     </section>
   )

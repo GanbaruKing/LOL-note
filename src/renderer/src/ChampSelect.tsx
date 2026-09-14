@@ -6,7 +6,6 @@ import {
   type MatchupKey,
   type Matchup,
   type Note,
-  type PoolEntry,
   type Role,
 } from '../../shared/contracts'
 import MyPicks from './MyPicks'
@@ -14,12 +13,10 @@ import MyPicks from './MyPicks'
 export default function ChampSelect({
   state,
   champions,
-  pool,
   onOpen,
 }: {
   state: LcuState
   champions: Champion[]
-  pool: PoolEntry[]
   onOpen: (key: MatchupKey) => void
 }) {
   const [enemy, setEnemy] = useState<number | null>(null),
@@ -148,7 +145,6 @@ export default function ChampSelect({
           enemyChampionId={currentEnemy}
           role={role}
           champions={champions}
-          pool={pool}
           readOnly
           onSelect={(key) => setManualOwn(key.myChampionId)}
         />

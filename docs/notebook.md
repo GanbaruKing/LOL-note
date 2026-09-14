@@ -24,4 +24,4 @@ Searchで本文を含めた横断検索を実装。Champion名・敵Champion名�
 
 単体メモは専用IPCでCRUDを行う。対面メモ一覧は既存のmatchups / matchup_notesから読み出し、複製しない。明示的に「対面ページを開く」を選ぶとMatch upへ移動する。両画面は編集フォームと未保存変更の確認を共有する。
 
-Championsの入口はカード一覧にし、カードのクリックで詳細を開く。詳細から一覧へ戻る際も未保存の入力を確認する。ChampionLibrary.tsxがカード・レーン別プールの表示を担当し、App.tsxがIPCと保存状態を管理する。プールはレーンのタブから登録・解除・自信度変更が可能。Championsの対面メモ一覧はレーンで絞り込める。Match upの左側にはMy Picksを表示し、Recently Updatedは表示しない。My Picksはマッチアップの「自分の評価」を参照し、評価変更時にも星と並び順を更新する。候補登録ではチャンピオンだけを選択する。
+Championsの入口はカード一覧にし、カードのクリックで詳細を開く。詳細から一覧へ戻る際も未保存の入力を確認する。ChampionLibrary.tsxがカード・レーン別プールの表示を担当し、App.tsxがIPCと保存状態を管理する。プールはレーンのタブから登録・解除・自信度変更が可能。Championsの対面メモ一覧はレーンで絞り込める。Match upの左側にはComfort Picksを表示し、Recently Updatedは表示しない。Comfort Picksはマッチアップの「自分の評価」を参照し、評価変更時にも星と並び順を更新する。候補登録はMatchup Overviewの評価欄右側の「Comfort Picksに追加」で行い、表示中の組み合わせを登録する。

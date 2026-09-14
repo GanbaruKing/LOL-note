@@ -326,6 +326,20 @@ export default function App() {
       setBusy(false)
     }
   }
+  async function addComfortPick() {
+    if (!ready || busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await unwrap(window.notebook.saveMyPick(key))
+      setSummaries(await unwrap(window.notebook.listMatchups()))
+      setStatus('Comfort Picksに追加しました')
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
   function edit(note: Note) {
     navigate(() => {
       setEditing(note)
@@ -368,18 +382,8 @@ export default function App() {
         ) : activeNotes.length === 0 ? (
           <div className="notes-empty">
             <div>✎</div>
-            <h3>
-              {page === 'champions'
-                ? 'このチャンピオンの知識を記録しよう。'
-                : 'この対面の、最初の気づきを。'}
-            </h3>
-            <p>
-              {page === 'champions'
-                ? 'コンボ、スキルの使い方、ビルド、得意な時間帯。'
-                : 'レーン戦のコツ、トレードのタイミング、気をつけたいスキル。'}
-              <br />
-              次の試合で思い出したいことを書いてみよう。
-            </p>
+            <h3>メモを追加しよう！</h3>
+            <p>下の入力欄から、メモを追加していこう！</p>
           </div>
         ) : (
           activeNotes.map((note) => (
@@ -667,7 +671,6 @@ export default function App() {
               key={`${lcu.status}-${lcu.sessionId}`}
               state={lcu}
               champions={champions}
-              pool={pool}
               onOpen={choose}
             />
           ) : page === 'settings' ? (
@@ -858,7 +861,6 @@ export default function App() {
                     enemyChampionId={key.enemyChampionId}
                     role={key.role}
                     champions={champions}
-                    pool={pool}
                     refreshToken={summaries}
                     onSelect={choose}
                   />
@@ -946,7 +948,13 @@ export default function App() {
                             ))}
                           </div>
                         </div>
-                        <span className="personal-label">PERSONAL EXPERIENCE</span>
+                        <button
+                          className="primary comfort-pick-add"
+                          disabled={!ready || busy}
+                          onClick={() => void addComfortPick()}
+                        >
+                          Comfort Picksに追加
+                        </button>
                       </div>
                     </div>
                   )}

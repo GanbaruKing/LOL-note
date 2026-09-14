@@ -81,7 +81,7 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
     await expect(page.getByText('RECENTLY UPDATED', { exact: true })).toHaveCount(0)
     await expect(
-      page.locator('.matchup-picks').getByRole('heading', { name: 'My Picks' }),
+      page.locator('.matchup-picks').getByRole('heading', { name: 'Comfort Picks' }),
     ).toBeVisible()
     await page.getByRole('button', { name: /Champions/ }).click()
     await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
@@ -205,7 +205,10 @@ test('offline Electron notebook: CRUD, isolation, validation and restart persist
     await expect(page.locator('.note-body')).toHaveCount(0)
     await page.getByRole('button', { name: '相手のチャンピオンを選択' }).click()
     await page.getByLabel('相手のチャンピオンを検索').fill('Darius')
-    await page.locator('.picker-results').getByRole('button', { name: /Darius/ }).click()
+    await page
+      .locator('.picker-results')
+      .getByRole('button', { name: /Darius/ })
+      .click()
     await expect(page.locator('.note-body')).toHaveText('Ghost中は距離を取る。')
     expect(
       await page

@@ -19,11 +19,11 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - カード形式のChampion一覧から詳細を開く
 - レーン別Champion Poolへの登録・解除、自信度1〜5の保存
 - Championsからチャンピオンごとの対面メモをレーンで絞り込み
-- My Picks：敵チャンピオン・レーンごとの候補をマッチアップの「自分の評価」順に表示
+- Comfort Picks：敵チャンピオン・レーンごとの候補をマッチアップの「自分の評価」順に表示
 - メモ横断検索：日英Champion名・本文・Role・Category、スペース区切りAND検索
 - 単体メモ・対面メモのPinと上位表示
 - LCU自動接続・Champion Select検知、Role・確認できる敵Pickの取得
-- 手動の対面選択から、同じMy Picksと保存済みメモを参照
+- 手動の対面選択から、同じComfort Picksと保存済みメモを参照
 
 初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
 統計、試合履歴、Installerは未実装です。
@@ -63,15 +63,15 @@ Championsではカード一覧からチャンピオンを選ぶと、そのチ�
 
 星を再度クリックすると評価を解除できます。データはOSのアプリ保存フォルダーにある `notebook.sqlite` に保存します。具体的なパスはSettingsに表示します。バックアップはアプリ終了後にこのファイルをコピーしてください。クラウド同期はありません。
 
-### My Picks・Search・Pin
+### Comfort Picks・Search・Pin
 
-Match up左側のMy Picksで候補Championを選んで保存します。マッチアップの「自分の評価」を参照して星を表示し、評価の高い順（未評価は末尾）に並びます。Poolに登録したChampionは候補選択の先頭に並びます。メモのPinボタンで重要な情報を上に置けます。Searchから本文も含めて検索できます。レーンを指定すると、そのレーンの対面メモが対象になり、レーンに属さない単体メモは除外します。
+Matchup Overviewの評価欄右側にある「Comfort Picksに追加」で、表示中の自分Champion・相手・レーンを登録します。左側のComfort Picksから得意な対面を選べます。マッチアップの「自分の評価」を参照して星を表示し、評価の高い順（未評価は末尾）に並びます。メモのPinボタンで重要な情報を上に置けます。Searchから本文も含めて検索できます。レーンを指定すると、そのレーンの対面メモが対象になり、レーンに属さない単体メモは除外します。
 
 ### Champ Select
 
 League Clientが起動していれば自動接続します。接続できない場合はSettingsからLeagueClient.exeのあるフォルダーを指定してください。APIキーは不要です。
 
-Champion Select Activeの通知から画面を開き、対面だと思う敵Championを自分で選択します。自分のPickとRoleが未確定なら手動で指定できます。My Picksをクリックすると候補Championのメモをプレビューできます。ゲーム側のPickやロック操作は行いません。
+Champion Select Activeの通知から画面を開き、対面だと思う敵Championを自分で選択します。自分のPickとRoleが未確定なら手動で指定できます。Comfort Picksをクリックすると候補Championのメモをプレビューできます。ゲーム側のPickやロック操作は行いません。
 
 編集中のNotebookを自動で切り替えません。切断・Select終了・敵Pick変更時は古い対面表示をクリアします。
 
