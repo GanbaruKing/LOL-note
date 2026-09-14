@@ -40,3 +40,7 @@ Mainの限定IPCにMy Picks、Pin、検索、LCU snapshot、フォルダー選�
 - [Electron Sandboxing](https://www.electronjs.org/docs/latest/tutorial/sandbox)
 - [Node SQLite](https://nodejs.org/api/sqlite.html)
 - [Riot Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon)
+
+## Phase 4
+
+StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノートDBと分離し、userData/statistics.jsonに保存する。統計の取り込み・参照は限定IPCで行い、同じStatisticsコンポーネントをMatch upとChamp Selectで利用する。詳細はstatistics.mdを参照。

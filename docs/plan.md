@@ -46,3 +46,7 @@ docs/             # 設計・説明
 4. StatisticsProvider。出典・Patchを表示、games >= 100を勝率降順にし、My Picksとは別表示。
 5. Match Historyを起点にした振り返り。
 6. 配布方式の選定（Electron Forge候補）、Installer、署名、Logging、公開準備。GitHubへの公開は別作業。
+
+## 進捗更新：Phase 4初期版
+
+Phase 1〜3の主要機能に加えて、Phase 4のJSON StatisticsProvider、統計表示、ファイル取り込みを実装。実統計の自動収集・Riot API集計は未実装。次の段階で実データの取得元を選定する。ユーザーから実際のチャンピオン選択画面で自動検知を確認できたとの報告あり。

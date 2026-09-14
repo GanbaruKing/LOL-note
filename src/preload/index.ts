@@ -2,6 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { NotebookApi } from '../shared/contracts'
 
 const api: NotebookApi = {
+  getStatistics: (input) => ipcRenderer.invoke('notebook:getStatistics', input),
+  importStatistics: () => ipcRenderer.invoke('notebook:importStatistics'),
   listMyPicks: (input) => ipcRenderer.invoke('notebook:listMyPicks', input),
   saveMyPick: (input) => ipcRenderer.invoke('notebook:saveMyPick', input),
   removeMyPick: (input) => ipcRenderer.invoke('notebook:removeMyPick', input),

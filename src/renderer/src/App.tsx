@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
 import MyPicks from './MyPicks'
+import Statistics from './Statistics'
 import NoteSearch from './NoteSearch'
 import ChampSelect from './ChampSelect'
 import {
@@ -862,6 +863,13 @@ export default function App() {
                     role={key.role}
                     champions={champions}
                     refreshToken={summaries}
+                    onSelect={choose}
+                  />
+                  <Statistics
+                    key={key.enemyChampionId + key.role}
+                    enemyChampionId={key.enemyChampionId}
+                    role={key.role}
+                    champions={champions}
                     onSelect={choose}
                   />
                 </aside>

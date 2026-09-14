@@ -92,7 +92,26 @@ export interface LcuState {
   message: string
 }
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
+export interface StatisticsQuery {
+  enemyChampionId: number
+  role: Role
+  demo: boolean
+}
+export interface StatisticsData {
+  schemaVersion: 1
+  isDemo: boolean
+  source: string
+  patch: string
+  region: string
+  rank: string
+  queue: string
+  generatedAt: string
+  rows: (MatchupKey & { games: number; wins: number })[]
+}
 export interface NotebookApi {
+  getStatistics(input: StatisticsQuery): Promise<Result<StatisticsData | null>>
+  importStatistics(): Promise<Result<boolean>>
+
   listMyPicks(input: { enemyChampionId: number; role: Role }): Promise<Result<MyPick[]>>
   saveMyPick(input: MatchupKey): Promise<Result<MyPick[]>>
   removeMyPick(input: MatchupKey): Promise<Result<MyPick[]>>

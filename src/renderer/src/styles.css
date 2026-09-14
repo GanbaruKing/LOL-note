@@ -1477,3 +1477,51 @@ h1 {
   padding: 10px 14px;
   font-size: 12px;
 }
+
+.statistics-panel {
+  margin-top: 20px;
+  padding: 16px;
+}
+.statistics-panel > p,
+.statistics-meta {
+  color: #9ba7b9;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.statistics-panel .section-title {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.statistics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.statistics-actions button {
+  padding: 7px;
+  border: 1px solid #404354;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #c7bbff;
+}
+.statistics-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #303642;
+  text-align: left;
+  font-size: 12px;
+}
+.statistics-row > span {
+  margin-left: auto;
+  color: #bdaaff;
+}
+.statistics-row small {
+  display: block;
+  color: #9ba7b9;
+  font-size: 10px;
+}

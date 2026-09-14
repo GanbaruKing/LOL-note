@@ -9,7 +9,7 @@
     "build": "npm run typecheck && electron-vite build",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/repository.test.ts tests/lcu.test.ts",
+    "test": "tsx --test tests/repository.test.ts tests/lcu.test.ts tests/statistics.test.ts",
     "test:e2e": "npm run build && playwright test",
     "data:refresh": "node scripts/refresh-champions.mjs",
     "lint": "eslint .",

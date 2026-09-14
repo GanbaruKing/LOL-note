@@ -135,3 +135,7 @@ Champion名・画像は [Riot Games Data Dragon](https://developer.riotgames.com
 LoL Matchup Companion is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
 
 All Championsはレーンタブと名前検索を組み合わせて絞り込めます。レーン分類は同梱データを使用し、分類未収録のチャンピオンはAllに表示します。分類元：[Meraki Analytics](https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json)。
+
+## Statistics（Phase 4）
+
+Match upとChamp Selectで、100試合以上の対面統計を勝率順に表示します。Comfort Picksとは別管理です。初期版はJSON取り込み対応で、実統計の自動取得は未実装です。「サンプルを見る」では架空データと明示した表示を確認できます。JSON形式・出典・パッチの扱いは[統計の説明](docs/statistics.md)を参照してください。
