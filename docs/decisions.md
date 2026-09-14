@@ -23,3 +23,9 @@ Data Dragonの数値keyを主キーにし、173体のカタログとアイコン
 ## 006: IPCとコンテンツ保護
 
 contextIsolation=true / sandbox=true / nodeIntegration=false。トップフレームと送信元ウィンドウ・URLを確認する。新規ウィンドウ・ナビゲーション・権限要求を拒否する。CSPを設定し、メモはテキストとして描画する。開発時のみReact Refreshに必要なインラインスクリプトを許可し、productionのCSPには含めない。
+
+## 007: Phase 2 / 3を先に完成させる
+
+UIの細部は後で調整する方針に従い、My Picks・検索・Pin・LCUを追加した。LCUは参照だけに限定し、Pick・Ban・ロックの自動操作を実装しない。Select開始時はバナーを表示し、編集中のNotebookを強制的に切り替えない。
+
+LCUの更新は順次ポーリングを採用。WebSocket再接続の複雑さを避け、小さな読み取り専用機能を先に完成させる。2秒周期の遅延は許容し、必要なら将来イベント購読に置き換える。

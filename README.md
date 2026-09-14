@@ -5,7 +5,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 
 ![Notebookの画面。表示中のノートはテスト用の例です。](docs/screenshots/notebook.png)
 
-## 現在の実装 — Phase 1
+## 現在の実装 — Phase 1〜3
 
 - 173体のチャンピオンを日本語・英語で検索して選択
 - 自分 × 相手 × RoleごとのMatchupページ
@@ -19,9 +19,14 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - カード形式のChampion一覧から詳細を開く
 - レーン別Champion Poolへの登録・解除、自信度1〜5の保存
 - 対面メモ／最近更新した一覧のレーン絞り込みと両Championのアイコン表示
+- My Picks：敵チャンピオン・レーンごとの候補、優先順位、自信度
+- メモ横断検索：日英Champion名・本文・Role・Category、スペース区切りAND検索
+- 単体メモ・対面メモのPinと上位表示
+- LCU自動接続・Champion Select検知、Role・確認できる敵Pickの取得
+- 手動の対面選択から、同じMy Picksと保存済みメモを参照
 
 初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
-LCU連携、My Picks、全文検索、統計、試合履歴、Installerは未実装です。
+統計、試合履歴、Installerは未実装です。
 
 ## 起動手順
 
@@ -58,6 +63,22 @@ Championsではカード一覧からチャンピオンを選ぶと、そのチ�
 
 星を再度クリックすると評価を解除できます。データはOSのアプリ保存フォルダーにある `notebook.sqlite` に保存します。具体的なパスはSettingsに表示します。バックアップはアプリ終了後にこのファイルをコピーしてください。クラウド同期はありません。
 
+### My Picks・Search・Pin
+
+Match upのMy Picksで候補Championを選び、優先順位（1が最優先）と自信度を保存します。Poolに登録したChampionは候補選択の先頭に並びます。メモのPinボタンで重要な情報を上に置けます。Searchから本文も含めて検索できます。レーンを指定すると、そのレーンの対面メモが対象になり、レーンに属さない単体メモは除外します。
+
+### Champ Select
+
+League Clientが起動していれば自動接続します。接続できない場合はSettingsからLeagueClient.exeのあるフォルダーを指定してください。APIキーは不要です。
+
+Champion Select Activeの通知から画面を開き、対面だと思う敵Championを自分で選択します。自分のPickとRoleが未確定なら手動で指定できます。My Picksをクリックすると候補Championのメモをプレビューできます。ゲーム側のPickやロック操作は行いません。
+
+編集中のNotebookを自動で切り替えません。切断・Select終了・敵Pick変更時は古い対面表示をクリアします。
+
+![疑似LCUを使ったChamp Select画面](docs/screenshots/champ-select.png)
+
+実際のLeague Clientに接続し、Champion Select外のphase取得を確認済みです。Champion Select中の遷移はローカルHTTPS疑似LCUで検証しています。実ゲームの選択画面での最終確認は未実施です。
+
 ## 開発・検証
 
 ```powershell
@@ -69,6 +90,8 @@ git diff --check
 ```
 
 E2EはElectronウィンドウを起動します。テスト用DBは `.test-data` に作成し、通常のノートとは分離します。`docs/screenshots/notebook.png` はテストで再生成されます。
+
+LCU E2EはGit for Windows同梱のOpenSSL（他OSはPATH上のopenssl）で一時証明書を生成します。実クライアントには接続せず、テスト用HTTPSサーバーだけで検証します。証明書・lockfile・テストDBはGit対象外です。
 
 ```powershell
 npm run format
@@ -98,6 +121,7 @@ docs/             設計理由、実装計画、画面
 - [DB設計](docs/database.md)
 - [技術選定とGit運用](docs/decisions.md)
 - [Notebookの流れとテスト](docs/notebook.md)
+- [LCUの構造・接続・検証範囲](docs/lcu.md)
 
 ## Git運用
 

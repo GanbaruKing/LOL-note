@@ -24,9 +24,15 @@ SQLiteはElectron同梱Nodeの `node:sqlite` を使用。ネイティブアド�
 
 ChampionDataはData Dragonからビルド前に取り込み、同梱して起動時ネットワーク依存をなくす。手動更新スクリプトと取得バージョンを残す。
 
+## Phase 2 / 3
+
+MyPicks.tsxは敵Champion×Roleに対する自分の候補を管理する。NoteSearch.tsxは単体/対面メモを横断して検索し、元のページへ戻す。ChampSelect.tsxはLCU snapshotに応じて確認できる敵Pickを表示し、選択された組み合わせの同じRepositoryを読む。統計データや別のノートコピーは作らない。
+
+Mainの限定IPCにMy Picks、Pin、検索、LCU snapshot、フォルダー選択を追加。ハンドラーは非同期処理の失敗も安全なResultに変換する。LcuServiceはアプリのライフサイクルで起動・停止する。詳細はlcu.mdを参照。
+
 ## 拡張点
 
-LCUは独立したLcuServiceをMainに追加する。認証情報をRendererへ渡さない。LCUが得たChampion IDを既存Notebookの入力に使う。統計はStatisticsProviderに隔離し、Repositoryへ外部API依存を持ち込まない。現時点で空のServiceクラスは作らない。
+統計は将来StatisticsProviderに隔離し、Repositoryへ外部API依存を持ち込まない。現時点で空のServiceクラスは作らない。
 
 ## 参照資料
 
