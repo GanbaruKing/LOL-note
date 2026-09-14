@@ -1,0 +1,9 @@
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './tests',
+  testMatch: 'notebook.e2e.ts',
+  workers: 1,
+  timeout: 60000,
+  use: { trace: 'retain-on-failure' },
+})
