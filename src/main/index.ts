@@ -6,9 +6,11 @@ import catalog from '../../resources/champions.json'
 import { NotebookRepository } from './repository'
 import { ValidationError } from '../shared/validation'
 import type { Result } from '../shared/contracts'
+import { LcuService, createDiscovery } from './lcu'
 
 let repository: NotebookRepository | undefined
 let mainWindow: BrowserWindow | null = null
+let lcu: LcuService | undefined
 // Only explicit test launches can redirect storage; the renderer cannot choose a path.
 if (process.env.NOTEBOOK_TEST_DATA_DIR && !app.isPackaged)
   app.setPath('userData', process.env.NOTEBOOK_TEST_DATA_DIR)
@@ -18,6 +20,21 @@ const rendererUrl = devUrl ? new URL(devUrl).href : pathToFileURL(rendererFile).
 
 function registerApi(databasePath: string) {
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getLcuState: () => lcu!.snapshot(),
+    selectLeagueFolder: async () => {
+      const selection = await dialog.showOpenDialog(mainWindow!, {
+        title: 'League of Legendsのインストールフォルダーを選択',
+        properties: ['openDirectory'],
+      })
+      if (selection.canceled || !selection.filePaths[0]) return false
+      repository!.setLeagueFolder(selection.filePaths[0])
+      return true
+    },
+    listMyPicks: (input) => repository!.listMyPicks(input),
+    saveMyPick: (input) => repository!.saveMyPick(input),
+    removeMyPick: (input) => repository!.removeMyPick(input),
+    pinNote: (input) => repository!.pinNote(input),
+    searchNotes: (input) => repository!.searchNotes(input),
     listPool: () => repository!.listPool(),
     savePool: (input) => repository!.savePool(input),
     removePool: (input) => repository!.removePool(input),
@@ -35,7 +52,7 @@ function registerApi(databasePath: string) {
     getInfo: () => ({ databasePath, catalogVersion: catalog.version }),
   }
   for (const [name, handler] of Object.entries(handlers)) {
-    ipcMain.handle(`notebook:${name}`, (event, input): Result<unknown> => {
+    ipcMain.handle(`notebook:${name}`, async (event, input): Promise<Result<unknown>> => {
       const sender = event.senderFrame
       if (
         !mainWindow ||
@@ -47,7 +64,7 @@ function registerApi(databasePath: string) {
         return { ok: false, error: '許可されていないリクエストです。' }
       }
       try {
-        return { ok: true, data: handler(input) }
+        return { ok: true, data: await handler(input) }
       } catch (error) {
         console.error(
           `Notebook operation failed: ${name}`,
@@ -119,6 +136,10 @@ else {
       mkdirSync(directory, { recursive: true })
       const databasePath = join(directory, 'notebook.sqlite')
       repository = new NotebookRepository(databasePath, catalog.champions)
+      lcu = new LcuService(
+        createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
+      )
+      lcu.start()
       registerApi(databasePath)
       await createWindow()
       app.on('activate', () => {
@@ -135,5 +156,8 @@ else {
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
-  app.on('will-quit', () => repository?.close())
+  app.on('will-quit', () => {
+    lcu?.stop()
+    repository?.close()
+  })
 }

@@ -2,6 +2,13 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { NotebookApi } from '../shared/contracts'
 
 const api: NotebookApi = {
+  listMyPicks: (input) => ipcRenderer.invoke('notebook:listMyPicks', input),
+  saveMyPick: (input) => ipcRenderer.invoke('notebook:saveMyPick', input),
+  removeMyPick: (input) => ipcRenderer.invoke('notebook:removeMyPick', input),
+  pinNote: (input) => ipcRenderer.invoke('notebook:pinNote', input),
+  searchNotes: (input) => ipcRenderer.invoke('notebook:searchNotes', input),
+  getLcuState: () => ipcRenderer.invoke('notebook:getLcuState'),
+  selectLeagueFolder: () => ipcRenderer.invoke('notebook:selectLeagueFolder'),
   listPool: () => ipcRenderer.invoke('notebook:listPool'),
   savePool: (input) => ipcRenderer.invoke('notebook:savePool', input),
   removePool: (input) => ipcRenderer.invoke('notebook:removePool', input),

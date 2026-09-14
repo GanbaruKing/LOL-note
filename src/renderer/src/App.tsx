@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
+import MyPicks from './MyPicks'
+import NoteSearch from './NoteSearch'
+import ChampSelect from './ChampSelect'
 import {
   CATEGORIES,
   ROLES,
@@ -13,6 +16,7 @@ import {
   type Result,
   type PoolEntry,
   type Role,
+  type LcuState,
 } from '../../shared/contracts'
 
 async function unwrap<T>(promise: Promise<Result<T>>): Promise<T> {
@@ -138,7 +142,25 @@ export default function App() {
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
-  const [page, setPage] = useState<'notebook' | 'champions' | 'settings'>('notebook')
+  const [page, setPage] = useState<'notebook' | 'champions' | 'settings' | 'search' | 'select'>(
+    'notebook',
+  )
+  const [lcu, setLcu] = useState<LcuState>({
+    status: 'disconnected',
+    phase: null,
+    sessionId: null,
+    role: null,
+    ownChampionId: null,
+    enemyChampionIds: [],
+    message: 'League Clientを確認中…',
+  })
+  const titles = {
+    notebook: 'Match up',
+    champions: 'Champion Library',
+    settings: 'Settings',
+    search: 'Search Notes',
+    select: 'Champ Select',
+  }
   const [query, setQuery] = useState('')
   const [error, setError] = useState(''),
     [status, setStatus] = useState('')
@@ -186,6 +208,33 @@ export default function App() {
   }
   useEffect(() => {
     void initialize()
+  }, [])
+  useEffect(() => {
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout>
+    const poll = async () => {
+      try {
+        const r = await window.notebook.getLcuState()
+        if (!cancelled && r.ok) setLcu(r.data)
+      } catch {
+        if (!cancelled)
+          setLcu({
+            status: 'error',
+            phase: null,
+            sessionId: null,
+            role: null,
+            ownChampionId: null,
+            enemyChampionIds: [],
+            message: '接続状態を取得できません。',
+          })
+      }
+      if (!cancelled) timer = setTimeout(poll, 2000)
+    }
+    void poll()
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
   }, [])
   useEffect(() => {
     const id = ++generation.current
@@ -356,6 +405,29 @@ export default function App() {
                 <div className="note-actions">
                   <button
                     disabled={busy}
+                    aria-label={`メモ${note.id}をPin`}
+                    aria-pressed={!!note.pinned}
+                    onClick={() =>
+                      void mutate(
+                        async () => {
+                          const result = await window.notebook.pinNote({
+                            scope: page === 'champions' ? 'champion' : 'matchup',
+                            id: note.id,
+                            pinned: !note.pinned,
+                          })
+                          if (!result.ok) return result
+                          return page === 'champions'
+                            ? window.notebook.getChampionPage(championId)
+                            : window.notebook.getMatchup(key)
+                        },
+                        note.pinned ? 'Pinを解除しました' : '重要メモをPinしました',
+                      )
+                    }
+                  >
+                    {note.pinned ? '★ Pinned' : '☆ Pin'}
+                  </button>
+                  <button
+                    disabled={busy}
                     onClick={() => edit(note)}
                     aria-label={`メモ${note.id}を編集`}
                   >
@@ -485,6 +557,19 @@ export default function App() {
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="メインナビゲーション">
           <button
+            className={page === 'search' ? 'active' : ''}
+            onClick={() => navigate(() => setPage('search'))}
+          >
+            <span>⌕</span>Search
+          </button>
+          <button
+            className={page === 'select' ? 'active' : ''}
+            onClick={() => navigate(() => setPage('select'))}
+          >
+            <span>◇</span>Champ Select
+            {lcu.status === 'champ-select' && <span className="connection-dot" />}
+          </button>
+          <button
             className={page === 'notebook' ? 'active' : ''}
             onClick={() => navigate(() => setPage('notebook'))}
           >
@@ -522,7 +607,7 @@ export default function App() {
           <div>
             <span className="muted">Workspace</span>
             <span className="slash">/</span>
-            {page === 'notebook' ? 'Match up' : page === 'champions' ? 'Champions' : 'Settings'}
+            {titles[page]}
           </div>
           <span className="offline-badge">
             <span className="connection-dot" />
@@ -530,22 +615,28 @@ export default function App() {
           </span>
         </header>
         <main>
+          <div className={`lcu-banner ${lcu.status}`} role="status">
+            <span>{lcu.message}</span>
+            {lcu.status === 'champ-select' && page !== 'select' && (
+              <button onClick={() => navigate(() => setPage('select'))}>
+                Champ Selectを開く →
+              </button>
+            )}
+          </div>
           <div className="page-heading">
             <div>
               <span className="eyebrow accent">THE PERSONAL PLAYBOOK</span>
-              <h1>
-                {page === 'notebook'
-                  ? 'Match up'
-                  : page === 'champions'
-                    ? 'Champion Library'
-                    : 'Settings'}
-              </h1>
+              <h1>{titles[page]}</h1>
               <p>
                 {page === 'notebook'
                   ? '対面の知識を、あなただけの強みに。'
                   : page === 'champions'
                     ? 'チャンピオン自身の知識と、対面ごとのメモ。'
-                    : 'このNotebookについて。'}
+                    : page === 'search'
+                      ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
+                      : page === 'select'
+                        ? '蓄積した知識を、今の対面へ。'
+                        : 'このNotebookについて。'}
               </p>
             </div>
             <span className="heading-tag">
@@ -568,7 +659,28 @@ export default function App() {
               </button>
             </div>
           )}
-          {page === 'settings' ? (
+          {page === 'search' ? (
+            <NoteSearch
+              champions={champions}
+              onOpen={(hit) =>
+                hit.key
+                  ? choose(hit.key)
+                  : navigate(() => {
+                      setChampionId(hit.championId)
+                      setChampionDetailOpen(true)
+                      setPage('champions')
+                    })
+              }
+            />
+          ) : page === 'select' ? (
+            <ChampSelect
+              key={`${lcu.status}-${lcu.sessionId}`}
+              state={lcu}
+              champions={champions}
+              pool={pool}
+              onOpen={choose}
+            />
+          ) : page === 'settings' ? (
             <section className="settings-panel panel">
               <h2>ローカルデータ</h2>
               <p>メモはこのPCのSQLiteデータベースへ保存されます。</p>
@@ -578,10 +690,30 @@ export default function App() {
               <p>
                 Data Dragon {info?.catalogVersion} · {champions.length} champions
               </p>
-              <p>チャンピオン名とアイコンは同梱済みです。アプリの使用時に通信は行いません。</p>
+              <p>
+                チャンピオン名とアイコンは同梱済みです。Notebookはインターネットなしで利用できます。
+              </p>
+              <h2>League Client連携</h2>
+              <p>{lcu.message}</p>
+              <p>
+                自動接続できない場合はLeagueClient.exeがあるフォルダーを選択してください。クライアント起動中に生成されるlockfileを読み取ります。
+              </p>
+              <button
+                className="primary"
+                onClick={async () => {
+                  try {
+                    const r = await window.notebook.selectLeagueFolder()
+                    if (!r.ok) setError(r.error)
+                  } catch {
+                    setError('フォルダーを選択できませんでした。')
+                  }
+                }}
+              >
+                Leagueのフォルダーを選択
+              </button>
               <hr />
-              <h2>Phase 1 · Notebook</h2>
-              <p>LCU連携・統計・クラウド同期は今後の実装予定です。</p>
+              <h2>Phase 2 / 3 · Notebook & Champ Select</h2>
+              <p>統計・試合履歴・クラウド同期は今後の実装予定です。</p>
               <p className="muted">
                 LoL Matchup Companion is not endorsed by Riot Games. League of Legends and its
                 assets are trademarks of Riot Games.
@@ -910,6 +1042,14 @@ export default function App() {
                       </div>
                     </div>
                   )}
+                  <MyPicks
+                    key={`${key.enemyChampionId}-${key.role}`}
+                    enemyChampionId={key.enemyChampionId}
+                    role={key.role}
+                    champions={champions}
+                    pool={pool}
+                    onSelect={choose}
+                  />
                   {notesPanel}
                   <p className="detail-footer">
                     ノートは自分のチャンピオン・相手・Roleの組み合わせごとに保存されます。
