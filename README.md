@@ -139,3 +139,7 @@ All Championsはレーンタブと名前検索を組み合わせて絞り込め�
 ## Statistics（Phase 4）
 
 Match upとChamp Selectで、100試合以上の対面統計を勝率順に表示します。Comfort Picksとは別管理です。初期版はJSON取り込み対応で、実統計の自動取得は未実装です。「サンプルを見る」では架空データと明示した表示を確認できます。JSON形式・出典・パッチの扱いは[統計の説明](docs/statistics.md)を参照してください。
+
+## Riot APIによる履歴標本の収集
+
+APIキーを設定したPowerShellで `npm run stats:collect` を実行し、Riot IDを入力します。日本サーバー・Solo/Duoの履歴から対面統計JSONを生成します。出力の `.riot-data/statistics.json` をStatisticsから取り込んでください。全体勝率ではなく指定プレイヤー履歴の標本です。手順・取得条件・制限は[Riot収集ツール](docs/riot-collector.md)に記載しています。

@@ -12,3 +12,5 @@ playwright-report/
 !.env.example
 lockfile
 *.pem
+
+.riot-data/
