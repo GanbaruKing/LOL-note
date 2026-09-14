@@ -8,7 +8,7 @@ Renderer (React) → window.notebook → Preload → 検証付きIPC → Main �
 
 ## Preload
 
-listChampions / listMatchups / getMatchup / saveOverview / addNote / updateNote / deleteNote / getInfoだけ公開。汎用的なinvoke、SQL、ファイルアクセスを公開しない。
+listChampions / listMatchups / getMatchup / saveOverview / addNote / updateNote / deleteNote / getInfoと、チャンピオン単体用のgetChampionPage / addChampionNote / updateChampionNote / deleteChampionNoteを公開。汎用的なinvoke、SQL、ファイルアクセスを公開しない。
 
 ## Renderer
 

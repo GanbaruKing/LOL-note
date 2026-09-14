@@ -29,12 +29,15 @@ export function parseKey(value: unknown): MatchupKey {
 }
 export function parseNote(value: unknown): NoteInput {
   const v = object(value)
+  return { key: parseKey(v.key), ...parseNoteContent(v) }
+}
+export function parseNoteContent(value: unknown): Pick<NoteInput, 'category' | 'body'> {
+  const v = object(value)
   if (!CATEGORIES.includes(v.category as never))
     throw new ValidationError('カテゴリーが正しくありません。')
   if (typeof v.body !== 'string' || !v.body.trim() || v.body.length > 10000)
     throw new ValidationError('メモは1〜10,000文字で入力してください。')
   return {
-    key: parseKey(v.key),
     category: v.category as NoteInput['category'],
     body: v.body.trim(),
   }

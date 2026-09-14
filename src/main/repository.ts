@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite'
 import type {
   Champion,
+  ChampionPage,
   Matchup,
   MatchupKey,
   MatchupSummary,
@@ -12,6 +13,7 @@ import {
   object,
   parseKey,
   parseNote,
+  parseNoteContent,
   parseOverview,
   positiveId,
   ValidationError,
@@ -25,7 +27,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 1) throw new Error('Unsupported database version')
+      if (version > 2) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -52,6 +54,20 @@ export class NotebookRepository {
             PRAGMA user_version = 1;
           `)
         }
+        if (version < 2) {
+          this.db.exec(`
+            CREATE TABLE champion_notes (
+              id INTEGER PRIMARY KEY,
+              champion_id INTEGER NOT NULL REFERENCES champions(id),
+              category TEXT NOT NULL CHECK(category IN (${sqlList(CATEGORIES)})),
+              body TEXT NOT NULL CHECK(length(trim(body)) BETWEEN 1 AND 10000),
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            );
+            CREATE INDEX champion_notes_champion ON champion_notes(champion_id);
+            PRAGMA user_version = 2;
+          `)
+        }
         const insert = this.db.prepare(
           'INSERT INTO champions (id, slug, name, name_ja) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name=excluded.name, name_ja=excluded.name_ja',
         )
@@ -64,6 +80,65 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  private championId(input: unknown): number {
+    const id = positiveId(input)
+    if (!this.db.prepare('SELECT id FROM champions WHERE id=?').get(id))
+      throw new ValidationError('チャンピオンが見つかりません。')
+    return id
+  }
+  getChampionPage(input: unknown): ChampionPage {
+    const championId = this.championId(input)
+    const notes = this.db
+      .prepare(
+        'SELECT id, category, body, created_at AS createdAt, updated_at AS updatedAt FROM champion_notes WHERE champion_id=? ORDER BY created_at DESC, id DESC',
+      )
+      .all(championId) as unknown as Note[]
+    const matchups = this.listMatchups()
+      .filter((m) => m.myChampionId === championId)
+      .map((m) => this.getMatchup(m))
+    return { championId, notes, matchups }
+  }
+  addChampionNote(input: unknown): ChampionPage {
+    const v = object(input),
+      championId = this.championId(v.championId),
+      note = parseNoteContent(v)
+    return this.transaction(() => {
+      const now = new Date().toISOString()
+      this.db
+        .prepare(
+          'INSERT INTO champion_notes (champion_id, category, body, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+        )
+        .run(championId, note.category, note.body, now, now)
+      return this.getChampionPage(championId)
+    })
+  }
+  updateChampionNote(input: unknown): ChampionPage {
+    const v = object(input),
+      championId = this.championId(v.championId),
+      id = positiveId(v.id),
+      note = parseNoteContent(v)
+    return this.transaction(() => {
+      const changed = this.db
+        .prepare(
+          'UPDATE champion_notes SET category=?, body=?, updated_at=? WHERE id=? AND champion_id=?',
+        )
+        .run(note.category, note.body, new Date().toISOString(), id, championId)
+      if (!changed.changes) throw new ValidationError('編集対象のメモが見つかりません。')
+      return this.getChampionPage(championId)
+    })
+  }
+  deleteChampionNote(input: unknown): ChampionPage {
+    const v = object(input),
+      championId = this.championId(v.championId),
+      id = positiveId(v.id)
+    return this.transaction(() => {
+      const changed = this.db
+        .prepare('DELETE FROM champion_notes WHERE id=? AND champion_id=?')
+        .run(id, championId)
+      if (!changed.changes) throw new ValidationError('削除対象のメモが見つかりません。')
+      return this.getChampionPage(championId)
+    })
   }
   private transaction<T>(run: () => T): T {
     this.db.exec('BEGIN IMMEDIATE')

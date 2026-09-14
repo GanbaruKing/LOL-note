@@ -18,6 +18,10 @@ const rendererUrl = devUrl ? new URL(devUrl).href : pathToFileURL(rendererFile).
 
 function registerApi(databasePath: string) {
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getChampionPage: (input) => repository!.getChampionPage(input),
+    addChampionNote: (input) => repository!.addChampionNote(input),
+    updateChampionNote: (input) => repository!.updateChampionNote(input),
+    deleteChampionNote: (input) => repository!.deleteChampionNote(input),
     listChampions: () => catalog.champions,
     listMatchups: () => repository!.listMatchups(),
     getMatchup: (input) => repository!.getMatchup(input),

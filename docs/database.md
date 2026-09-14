@@ -12,9 +12,15 @@ RoleはTOP/JUNGLE/MID/BOTTOM/SUPPORT。Difficultyは未設定/Easy/Even/Hard。�
 
 メモ保存とMatchupの作成/更新はトランザクションで行う。Roleや対面を切り替えても同じキーなら同じページを参照する。メモ本文はHTMLとして解釈しない。
 
+## Schema v2: チャンピオン単体メモ
+
+`champion_notes` を追加する。列はid INTEGER PK、champion_id FK、category CHECK、body（1〜10000文字）、created_at、updated_at。Roleや敵Championには依存しない。
+
+v1からの起動時にトランザクションでテーブルとインデックスを追加し、user_versionを2に進める。既存のmatchupsとmatchup_notesは変更しない。移行と単体メモの再起動後の復元を統合テストで確認する。
+
 ## 将来追加するスキーマ
 
-- champion_notes: id, champion_id FK, category, body, favorite, created_at, updated_at。
+- champion_notesへfavorite INTEGER CHECK IN (0,1)を追加。
 - champion_pool: champion_id FK, role, confidence CHECK 1–5。champion_id + role UNIQUE。
 - my_picks: enemy_champion_id FK, my_champion_id FK, role, priority, confidence CHECK 1–5。3キーUNIQUE。
 - settings: key TEXT PK, value TEXT（アプリ側で設定ごとの型を検証）。

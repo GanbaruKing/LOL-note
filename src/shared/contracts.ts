@@ -52,8 +52,22 @@ export interface NoteInput {
   category: Category
   body: string
 }
+export interface ChampionNoteInput {
+  championId: number
+  category: Category
+  body: string
+}
+export interface ChampionPage {
+  championId: number
+  notes: Note[]
+  matchups: Matchup[]
+}
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 export interface NotebookApi {
+  getChampionPage(championId: number): Promise<Result<ChampionPage>>
+  addChampionNote(input: ChampionNoteInput): Promise<Result<ChampionPage>>
+  updateChampionNote(input: ChampionNoteInput & { id: number }): Promise<Result<ChampionPage>>
+  deleteChampionNote(input: { championId: number; id: number }): Promise<Result<ChampionPage>>
   listChampions(): Promise<Result<Champion[]>>
   listMatchups(): Promise<Result<MatchupSummary[]>>
   getMatchup(key: MatchupKey): Promise<Result<Matchup>>
