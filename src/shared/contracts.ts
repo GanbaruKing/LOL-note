@@ -62,8 +62,16 @@ export interface ChampionPage {
   notes: Note[]
   matchups: Matchup[]
 }
+export interface PoolEntry {
+  championId: number
+  role: Role
+  confidence: number
+}
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 export interface NotebookApi {
+  listPool(): Promise<Result<PoolEntry[]>>
+  savePool(input: PoolEntry): Promise<Result<PoolEntry[]>>
+  removePool(input: { championId: number; role: Role }): Promise<Result<PoolEntry[]>>
   getChampionPage(championId: number): Promise<Result<ChampionPage>>
   addChampionNote(input: ChampionNoteInput): Promise<Result<ChampionPage>>
   updateChampionNote(input: ChampionNoteInput & { id: number }): Promise<Result<ChampionPage>>

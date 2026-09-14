@@ -12,6 +12,8 @@ listChampions / listMatchups / getMatchup / saveOverview / addNote / updateNote 
 
 ## Renderer
 
+プール用にはlistPool / savePool / removePoolの限定IPCを追加。MainでChampion ID、Role、自信度を検証し、SQLiteのv3テーブルへ保存する。
+
 Champion選択、対面選択、Role、ノート編集フォーム、処理中・保存失敗・空状態。Node.jsやSQLiteをimportしない。
 
 ## 選定理由

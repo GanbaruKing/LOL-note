@@ -7,6 +7,7 @@ import type {
   MatchupSummary,
   Note,
   Overview,
+  PoolEntry,
 } from '../shared/contracts'
 import { CATEGORIES, DIFFICULTIES, ROLES } from '../shared/contracts'
 import {
@@ -27,7 +28,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 2) throw new Error('Unsupported database version')
+      if (version > 3) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -68,6 +69,17 @@ export class NotebookRepository {
             PRAGMA user_version = 2;
           `)
         }
+        if (version < 3) {
+          this.db.exec(`
+            CREATE TABLE champion_pool (
+              champion_id INTEGER NOT NULL REFERENCES champions(id),
+              role TEXT NOT NULL CHECK(role IN (${sqlList(ROLES)})),
+              confidence INTEGER NOT NULL CHECK(confidence BETWEEN 1 AND 5),
+              PRIMARY KEY(champion_id, role)
+            );
+            PRAGMA user_version = 3;
+          `)
+        }
         const insert = this.db.prepare(
           'INSERT INTO champions (id, slug, name, name_ja) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name=excluded.name, name_ja=excluded.name_ja',
         )
@@ -80,6 +92,51 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  listPool(): PoolEntry[] {
+    return this.db
+      .prepare(
+        'SELECT champion_id AS championId, role, confidence FROM champion_pool ORDER BY role, confidence DESC, champion_id',
+      )
+      .all()
+      .map((row) => ({
+        championId: row.championId as number,
+        role: row.role as PoolEntry['role'],
+        confidence: row.confidence as number,
+      }))
+  }
+  private poolKey(input: unknown) {
+    const v = object(input),
+      championId = this.championId(v.championId)
+    if (!ROLES.includes(v.role as never)) throw new ValidationError('レーンを選択してください。')
+    return { championId, role: v.role as PoolEntry['role'] }
+  }
+  savePool(input: unknown): PoolEntry[] {
+    const v = object(input),
+      key = this.poolKey(v)
+    if (
+      !Number.isInteger(v.confidence) ||
+      (v.confidence as number) < 1 ||
+      (v.confidence as number) > 5
+    )
+      throw new ValidationError('自信度は1〜5で指定してください。')
+    return this.transaction(() => {
+      this.db
+        .prepare(
+          'INSERT INTO champion_pool (champion_id, role, confidence) VALUES (?, ?, ?) ON CONFLICT(champion_id, role) DO UPDATE SET confidence=excluded.confidence',
+        )
+        .run(key.championId, key.role, v.confidence as number)
+      return this.listPool()
+    })
+  }
+  removePool(input: unknown): PoolEntry[] {
+    const key = this.poolKey(input)
+    return this.transaction(() => {
+      this.db
+        .prepare('DELETE FROM champion_pool WHERE champion_id=? AND role=?')
+        .run(key.championId, key.role)
+      return this.listPool()
+    })
   }
   private championId(input: unknown): number {
     const id = positiveId(input)

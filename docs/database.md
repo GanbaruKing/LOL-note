@@ -21,9 +21,14 @@ v1からの起動時にトランザクションでテーブルとインデック
 ## 将来追加するスキーマ
 
 - champion_notesへfavorite INTEGER CHECK IN (0,1)を追加。
-- champion_pool: champion_id FK, role, confidence CHECK 1–5。champion_id + role UNIQUE。
 - my_picks: enemy_champion_id FK, my_champion_id FK, role, priority, confidence CHECK 1–5。3キーUNIQUE。
 - settings: key TEXT PK, value TEXT（アプリ側で設定ごとの型を検証）。
 - matchup_notesへfavorite INTEGER CHECK IN (0,1)を追加。
 
 これらは利用機能と同じPhaseでmigrationとして追加する。ノートのChampion IDとRoleは親Matchupから取得し、重複保存しない。
+
+## Schema v3: レーン別Champion Pool
+
+champion_poolにchampion_id FK、role CHECK、confidence INTEGER CHECK 1〜5を保存する。主キーは(champion_id, role)。同一レーンでの再登録は自信度の更新となり、別レーンの登録には影響しない。削除はプールの行だけを対象とし、ノートを保持する。
+
+v1/v2から起動時に順次migrationする。v2からの移行、レーンごとの分離、重複登録、解除、既存ノートとプールの再接続後の保存をRepositoryテストで確認する。

@@ -10,6 +10,53 @@ import catalog from '../resources/champions.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
 const input = { key, category: 'Laning', body: '相手のQに注意する' }
 
+test('lane pools are unique, independent, validated and preserve notes on removal', () => {
+  const repo = new NotebookRepository(':memory:', catalog.champions)
+  try {
+    repo.addNote(input)
+    repo.addChampionNote({ championId: 266, category: 'General', body: '単体メモ' })
+    repo.savePool({ championId: 266, role: 'TOP', confidence: 3 })
+    repo.savePool({ championId: 266, role: 'TOP', confidence: 5 })
+    repo.savePool({ championId: 266, role: 'MID', confidence: 2 })
+    assert.equal(repo.listPool().length, 2)
+    assert.equal(repo.listPool().find((p) => p.role === 'TOP')?.confidence, 5)
+    for (const confidence of [0, 6, '3', 2.5])
+      assert.throws(() => repo.savePool({ championId: 266, role: 'TOP', confidence }))
+    assert.throws(() => repo.savePool({ championId: 999999, role: 'TOP', confidence: 3 }))
+    assert.throws(() => repo.removePool({ championId: 266, role: 'INVALID' }))
+    repo.removePool({ championId: 266, role: 'TOP' })
+    assert.deepEqual(repo.listPool(), [{ championId: 266, role: 'MID', confidence: 2 }])
+    assert.equal(repo.getChampionPage(266).notes.length, 1)
+    assert.equal(repo.getMatchup(key).notes.length, 1)
+  } finally {
+    repo.close()
+  }
+})
+
+test('v2 migrates to lane pools and retains all existing notes after reopen', () => {
+  const folder = mkdtempSync(join(tmpdir(), 'notebook-pool-')),
+    file = join(folder, 'notebook.sqlite')
+  let repo = new NotebookRepository(file, catalog.champions)
+  try {
+    repo.addNote(input)
+    repo.addChampionNote({ championId: 266, category: 'General', body: '残すメモ' })
+    repo.close()
+    const legacy = new DatabaseSync(file)
+    legacy.exec('DROP TABLE champion_pool; PRAGMA user_version=2')
+    legacy.close()
+    repo = new NotebookRepository(file, catalog.champions)
+    repo.savePool({ championId: 266, role: 'TOP', confidence: 4 })
+    repo.close()
+    repo = new NotebookRepository(file, catalog.champions)
+    assert.deepEqual(repo.listPool(), [{ championId: 266, role: 'TOP', confidence: 4 }])
+    assert.equal(repo.getChampionPage(266).notes[0].body, '残すメモ')
+    assert.equal(repo.getMatchup(key).notes[0].body, input.body)
+  } finally {
+    repo.close()
+    rmSync(folder, { recursive: true })
+  }
+})
+
 test('champion notes are independent, validate inputs and scope edits to their champion', () => {
   const repo = new NotebookRepository(':memory:', catalog.champions)
   try {
@@ -50,8 +97,8 @@ test('v1 migration preserves existing matchup data and champion notes persist af
     repo.saveOverview({ key, overview: { difficulty: 'Hard', rating: 4 } })
     repo.close()
     const legacy = new DatabaseSync(file)
-    // Recreate the exact previous schema by removing only the v2 addition.
-    legacy.exec('DROP TABLE champion_notes; PRAGMA user_version=1')
+    // Recreate v1 by removing tables introduced in v2 and v3.
+    legacy.exec('DROP TABLE champion_notes; DROP TABLE champion_pool; PRAGMA user_version=1')
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)
     assert.equal(repo.getMatchup(key).notes[0].body, input.body)
