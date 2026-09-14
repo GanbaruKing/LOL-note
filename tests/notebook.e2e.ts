@@ -4,6 +4,76 @@ import { resolve, join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import appConfig from '../electron.vite.config'
 
+test('Champions focuses on standalone notes and lists its existing matchup notes', async () => {
+  mkdirSync('.test-data', { recursive: true })
+  const folder = mkdtempSync(resolve('.test-data', 'champions-'))
+  const env: Record<string, string> = Object.fromEntries(
+    Object.entries(process.env).filter(
+      (entry): entry is [string, string] => entry[1] !== undefined,
+    ),
+  )
+  delete env.ELECTRON_RUN_AS_NODE
+  env.NOTEBOOK_TEST_DATA_DIR = folder
+  const launch = () => electron.launch({ args: [resolve('.')], env })
+  let app = await launch()
+  try {
+    let page = await app.firstWindow()
+    await page.context().setOffline(true)
+    await expect(page.getByRole('button', { name: /Match up/ })).toBeVisible()
+    await expect(page.getByText('前の試合の気づきを。', { exact: true })).toHaveCount(0)
+    await page.getByLabel('新しいメモ', { exact: true }).fill('ダリウス対面のメモ')
+    await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
+    await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
+    await page.getByRole('button', { name: /Champions/ }).click()
+    await expect(page.getByRole('heading', { name: 'Champion Notes', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: '相手のチャンピオンを選択' })).toHaveCount(0)
+    await expect(page.getByLabel('チャンピオンの対面メモ一覧')).toContainText('ダリウス対面のメモ')
+    await page.getByLabel('新しいメモ', { exact: true }).fill('QとEのコンボを練習する')
+    await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
+    await expect(page.locator('.note-body')).toHaveText('QとEのコンボを練習する')
+    await page.getByRole('button', { name: /メモ\d+を編集/ }).click()
+    await page.getByLabel('メモを編集', { exact: true }).fill('基本コンボとパッシブを意識する')
+    await page.getByRole('button', { name: '変更を保存', exact: true }).click()
+    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await page.getByLabel('新しいメモ', { exact: true }).fill('未保存の単体メモ')
+    await page.getByLabel('チャンピオン一覧を検索').fill('ガレン')
+    await page.locator('.champion-browser-list').getByRole('button', { name: /Garen/ }).click()
+    await expect(page.getByRole('alertdialog')).toBeVisible()
+    await page.getByRole('button', { name: '編集を続ける', exact: true }).click()
+    await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue('未保存の単体メモ')
+    await page.locator('.champion-browser-list').getByRole('button', { name: /Garen/ }).click()
+    await page.getByRole('button', { name: '変更を破棄して移動' }).click()
+    await expect(page.locator('.champion-header')).toContainText('Garen')
+    await expect(page.locator('.note-body')).toHaveCount(0)
+    await expect(page.getByLabel('チャンピオンの対面メモ一覧')).not.toContainText(
+      'ダリウス対面のメモ',
+    )
+    await page.getByLabel('チャンピオン一覧を検索').fill('Aatrox')
+    await page
+      .locator('.champion-browser-list')
+      .getByRole('button', { name: /Aatrox/ })
+      .click()
+    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await page.getByLabel('チャンピオン一覧を検索').fill('')
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await page.screenshot({ path: 'docs/screenshots/champions.png', fullPage: true })
+    await page.getByRole('button', { name: '対面ページを開く →' }).click()
+    await expect(page.getByRole('heading', { name: 'Match up', exact: true })).toBeVisible()
+    await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
+    await app.close()
+    app = await launch()
+    page = await app.firstWindow()
+    await page.getByRole('button', { name: /Champions/ }).click()
+    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await page.getByRole('button', { name: /メモ\d+を削除/ }).click()
+    await page.getByRole('button', { name: '削除する', exact: true }).click()
+    await expect(page.locator('.note-body')).toHaveCount(0)
+    await expect(page.getByLabel('チャンピオンの対面メモ一覧')).toContainText('ダリウス対面のメモ')
+  } finally {
+    await app.close()
+  }
+})
+
 test('offline Electron notebook: CRUD, isolation, validation and restart persistence', async () => {
   mkdirSync('.test-data', { recursive: true })
   const folder = mkdtempSync(resolve('.test-data', 'e2e-'))
@@ -21,7 +91,7 @@ test('offline Electron notebook: CRUD, isolation, validation and restart persist
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(e.message))
     await page.context().setOffline(true)
-    await expect(page.getByRole('heading', { name: 'Matchup Notebook' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Match up', exact: true })).toBeVisible()
     await expect(page.getByLabel('新しいメモ', { exact: true })).toBeEnabled()
     expect(
       await page.evaluate(() => typeof (window as unknown as { require?: unknown }).require),

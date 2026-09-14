@@ -4,6 +4,7 @@ import {
   ROLES,
   type Category,
   type Champion,
+  type ChampionPage,
   type Matchup,
   type MatchupKey,
   type MatchupSummary,
@@ -125,6 +126,10 @@ export default function App() {
     role: 'TOP',
   })
   const [matchup, setMatchup] = useState<Matchup | null>(null)
+  const [championId, setChampionId] = useState(266)
+  const [championData, setChampionData] = useState<ChampionPage | null>(null)
+  const [championLoading, setChampionLoading] = useState(false)
+  const [reload, setReload] = useState(0)
   const [page, setPage] = useState<'notebook' | 'champions' | 'settings'>('notebook')
   const [query, setQuery] = useState(''),
     [championQuery, setChampionQuery] = useState('')
@@ -146,7 +151,13 @@ export default function App() {
   const dirty = editing
     ? body !== editing.body || category !== editing.category
     : body.trim().length > 0
-  const ready = !loading && !!matchup && sameKey(key, matchup)
+  const selectedChampion = byId.get(championId)
+  const activeNotes = page === 'champions' ? championData?.notes : matchup?.notes
+  const activeLoading = page === 'champions' ? championLoading : loading
+  const ready =
+    page === 'champions'
+      ? !championLoading && championData?.championId === championId
+      : !loading && !!matchup && sameKey(key, matchup)
 
   async function initialize() {
     try {
@@ -184,6 +195,27 @@ export default function App() {
       })
   }, [key])
   useEffect(() => {
+    if (page !== 'champions') return
+    let cancelled = false
+    setChampionLoading(true)
+    setChampionData(null)
+    setError('')
+    setStatus('')
+    unwrap(window.notebook.getChampionPage(championId))
+      .then((data) => {
+        if (!cancelled) setChampionData(data)
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message)
+      })
+      .finally(() => {
+        if (!cancelled) setChampionLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [championId, page, reload])
+  useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => {
       if (dirty || busy) {
         event.preventDefault()
@@ -215,14 +247,19 @@ export default function App() {
       setPage('notebook')
     })
   }
-  async function mutate(operation: () => Promise<Result<Matchup>>, message: string, reset = false) {
+  async function mutate(
+    operation: () => Promise<Result<Matchup | ChampionPage>>,
+    message: string,
+    reset = false,
+  ) {
     if (busy) return
     setBusy(true)
     setError('')
     setStatus('')
     try {
       const result = await unwrap(operation())
-      setMatchup(result)
+      if ('championId' in result) setChampionData(result)
+      else setMatchup(result)
       if (reset) resetEditor()
       setStatus(message)
       setSummaries(await unwrap(window.notebook.listMatchups()))
@@ -248,6 +285,167 @@ export default function App() {
       .includes(query.trim().toLowerCase())
   })
 
+  const notesPanel = (
+    <section className="notes-panel panel">
+      <div className="section-title">
+        <div className="notes-title">
+          <h2>{page === 'champions' ? 'Champion Notes' : 'My Notes'}</h2>
+          <span className="count">{activeNotes?.length ?? 0}</span>
+        </div>
+        <span className="save-status" role="status">
+          {busy ? '保存中…' : status || 'SQLite · ローカル保存'}
+        </span>
+      </div>
+      <div className="notes-content">
+        {activeLoading ? (
+          <p className="empty">ノートを読み込み中…</p>
+        ) : !activeNotes ? (
+          <p className="empty">ノートを読み込めませんでした。再読み込みしてください。</p>
+        ) : activeNotes.length === 0 ? (
+          <div className="notes-empty">
+            <div>✎</div>
+            <h3>
+              {page === 'champions'
+                ? 'このチャンピオンの知識を記録しよう。'
+                : 'この対面の、最初の気づきを。'}
+            </h3>
+            <p>
+              {page === 'champions'
+                ? 'コンボ、スキルの使い方、ビルド、得意な時間帯。'
+                : 'レーン戦のコツ、トレードのタイミング、気をつけたいスキル。'}
+              <br />
+              次の試合で思い出したいことを書いてみよう。
+            </p>
+          </div>
+        ) : (
+          activeNotes.map((note) => (
+            <article
+              className={`note-card ${editing?.id === note.id ? 'editing' : ''}`}
+              key={note.id}
+            >
+              <div className="note-meta">
+                <span className="category-badge">{note.category}</span>
+                <time dateTime={note.updatedAt}>
+                  {new Date(note.updatedAt).toLocaleDateString('ja-JP')}
+                </time>
+                <div className="note-actions">
+                  <button
+                    disabled={busy}
+                    onClick={() => edit(note)}
+                    aria-label={`メモ${note.id}を編集`}
+                  >
+                    編集
+                  </button>
+                  <button
+                    disabled={busy}
+                    onClick={() => setDeleting(note.id)}
+                    aria-label={`メモ${note.id}を削除`}
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+              <p className="note-body">{note.body}</p>
+              {deleting === note.id && (
+                <div className="delete-confirm">
+                  <span>このメモを削除しますか？</span>
+                  <button disabled={busy} onClick={() => setDeleting(null)}>
+                    キャンセル
+                  </button>
+                  <button
+                    className="danger"
+                    disabled={busy}
+                    onClick={() =>
+                      void mutate(
+                        () =>
+                          page === 'champions'
+                            ? window.notebook.deleteChampionNote({ championId, id: note.id })
+                            : window.notebook.deleteNote({ key, id: note.id }),
+                        'メモを削除しました',
+                        editing?.id === note.id,
+                      ).then(() => setDeleting(null))
+                    }
+                  >
+                    削除する
+                  </button>
+                </div>
+              )}
+            </article>
+          ))
+        )}
+      </div>
+      <form
+        className="note-editor"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (ready && body.trim())
+            void mutate(
+              () =>
+                page === 'champions'
+                  ? editing
+                    ? window.notebook.updateChampionNote({
+                        championId,
+                        id: editing.id,
+                        body,
+                        category,
+                      })
+                    : window.notebook.addChampionNote({ championId, body, category })
+                  : editing
+                    ? window.notebook.updateNote({ key, id: editing.id, body, category })
+                    : window.notebook.addNote({ key, body, category }),
+              editing ? 'メモを更新しました' : 'メモを保存しました',
+              true,
+            )
+        }}
+      >
+        <div className="editor-heading">
+          <label htmlFor="note-body">{editing ? 'メモを編集' : '新しいメモ'}</label>
+          <span>{body.length.toLocaleString()} / 10,000</span>
+        </div>
+        <textarea
+          id="note-body"
+          ref={editor}
+          value={body}
+          disabled={!ready || busy}
+          maxLength={10000}
+          placeholder={
+            page === 'champions'
+              ? '例：基本コンボ、スキルの使い方、練習したい操作。'
+              : '例：相手が主要スキルを使った後にトレードする。'
+          }
+          onChange={(e) => setBody(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+              e.preventDefault()
+              e.currentTarget.form?.requestSubmit()
+            }
+          }}
+        />
+        <div className="editor-toolbar">
+          <select
+            aria-label="メモのカテゴリー"
+            value={category}
+            disabled={busy}
+            onChange={(e) => setCategory(e.target.value as Category)}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+          <span className="shortcut">Ctrl + Enter で保存</span>
+          {editing && (
+            <button type="button" disabled={busy} onClick={() => navigate(() => {})}>
+              キャンセル
+            </button>
+          )}
+          <button className="primary" type="submit" disabled={!ready || busy || !body.trim()}>
+            {busy ? '保存中…' : editing ? '変更を保存' : '＋ メモを保存'}
+          </button>
+        </div>
+      </form>
+    </section>
+  )
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -265,7 +463,7 @@ export default function App() {
             className={page === 'notebook' ? 'active' : ''}
             onClick={() => navigate(() => setPage('notebook'))}
           >
-            <span>▤</span>Notebook<span className="nav-count">{summaries.length}</span>
+            <span>▤</span>Match up<span className="nav-count">{summaries.length}</span>
           </button>
           <button
             className={page === 'champions' ? 'active' : ''}
@@ -280,15 +478,6 @@ export default function App() {
             <span>⚙</span>Settings
           </button>
         </nav>
-        <div className="sidebar-note">
-          <span className="tiny-diamond">◇</span>
-          <p>
-            次の対面に、
-            <br />
-            前の試合の気づきを。
-          </p>
-          <small>YOUR KNOWLEDGE. YOUR EDGE.</small>
-        </div>
         <div className="sidebar-bottom">
           <span className="connection-dot" />
           <div>
@@ -303,7 +492,7 @@ export default function App() {
           <div>
             <span className="muted">Workspace</span>
             <span className="slash">/</span>
-            {page === 'notebook' ? 'Notebook' : page === 'champions' ? 'Champions' : 'Settings'}
+            {page === 'notebook' ? 'Match up' : page === 'champions' ? 'Champions' : 'Settings'}
           </div>
           <span className="offline-badge">
             <span className="connection-dot" />
@@ -316,7 +505,7 @@ export default function App() {
               <span className="eyebrow accent">THE PERSONAL PLAYBOOK</span>
               <h1>
                 {page === 'notebook'
-                  ? 'Matchup Notebook'
+                  ? 'Match up'
                   : page === 'champions'
                     ? 'Champion Library'
                     : 'Settings'}
@@ -325,7 +514,7 @@ export default function App() {
                 {page === 'notebook'
                   ? '対面の知識を、あなただけの強みに。'
                   : page === 'champions'
-                    ? 'チャンピオンを選んで、マッチアップを記録しよう。'
+                    ? 'チャンピオン自身の知識と、対面ごとのメモ。'
                     : 'このNotebookについて。'}
               </p>
             </div>
@@ -341,6 +530,7 @@ export default function App() {
               <button
                 onClick={() => {
                   void initialize()
+                  setReload((n) => n + 1)
                   setKey({ ...key })
                 }}
               >
@@ -368,37 +558,105 @@ export default function App() {
               </p>
             </section>
           ) : page === 'champions' ? (
-            <section>
-              <div className="library-search">
-                <input
-                  aria-label="チャンピオン一覧を検索"
-                  placeholder="チャンピオン名を検索（日本語・英語）"
-                  value={championQuery}
-                  onChange={(e) => setChampionQuery(e.target.value)}
-                />
+            <section className="champion-workspace">
+              <aside className="champion-browser panel">
+                <div className="library-search">
+                  <input
+                    aria-label="チャンピオン一覧を検索"
+                    placeholder="日本語・英語で検索"
+                    value={championQuery}
+                    onChange={(e) => setChampionQuery(e.target.value)}
+                  />
+                </div>
+                <div className="champion-browser-list">
+                  {champions
+                    .filter((c) =>
+                      (c.name + ' ' + c.nameJa)
+                        .toLowerCase()
+                        .includes(championQuery.trim().toLowerCase()),
+                    )
+                    .map((c) => (
+                      <button
+                        className={c.id === championId ? 'selected' : ''}
+                        key={c.id}
+                        aria-pressed={c.id === championId}
+                        disabled={busy}
+                        onClick={() => {
+                          if (c.id !== championId) navigate(() => setChampionId(c.id))
+                        }}
+                      >
+                        <Portrait champion={c} />
+                        <span>
+                          <strong>{c.name}</strong>
+                          <small>{c.nameJa}</small>
+                        </span>
+                      </button>
+                    ))}
+                </div>
+                {!champions.some((c) =>
+                  (c.name + ' ' + c.nameJa)
+                    .toLowerCase()
+                    .includes(championQuery.trim().toLowerCase()),
+                ) && <p className="empty">該当するチャンピオンがいません。</p>}
+              </aside>
+              <div className="champion-detail">
+                {selectedChampion && (
+                  <div className="champion-header panel">
+                    <Portrait champion={selectedChampion} large />
+                    <div>
+                      <span className="eyebrow accent">CHAMPION KNOWLEDGE</span>
+                      <h2>{selectedChampion.name}</h2>
+                      <p>
+                        {selectedChampion.nameJa} · {selectedChampion.title}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {notesPanel}
+                <section
+                  className="champion-matchups panel"
+                  aria-label="チャンピオンの対面メモ一覧"
+                >
+                  <div className="section-title">
+                    <h2>Matchup Notes</h2>
+                    <span className="count">{championData?.matchups.length ?? 0}</span>
+                  </div>
+                  <p className="muted">{selectedChampion?.name}で記録した対面ごとのメモ</p>
+                  {championLoading ? (
+                    <p className="empty">読み込み中…</p>
+                  ) : championData?.matchups.length ? (
+                    championData.matchups.map((m) => {
+                      const opponent = byId.get(m.enemyChampionId)
+                      return (
+                        <article className="champion-matchup-card" key={m.id}>
+                          <div className="section-title">
+                            <div className="matchup-card-title">
+                              {opponent && <Portrait champion={opponent} />}
+                              <h3>vs {opponent?.name}</h3>
+                              <span className="role-badge">{m.role}</span>
+                            </div>
+                            <button disabled={busy} onClick={() => choose(m)}>
+                              対面ページを開く →
+                            </button>
+                          </div>
+                          {m.notes.length ? (
+                            m.notes.map((note) => (
+                              <div className="matchup-note-preview" key={note.id}>
+                                <span className="category-badge">{note.category}</span>
+                                <p>{note.body}</p>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="muted">まだ対面メモはありません。</p>
+                          )}
+                        </article>
+                      )
+                    })
+                  ) : (
+                    <p className="empty">このチャンピオンの対面メモはまだありません。</p>
+                  )}
+                </section>
               </div>
-              <div className="champion-grid">
-                {champions
-                  .filter((c) =>
-                    `${c.name} ${c.nameJa}`
-                      .toLowerCase()
-                      .includes(championQuery.toLowerCase().trim()),
-                  )
-                  .map((c) => (
-                    <button
-                      className="champion-card"
-                      key={c.id}
-                      onClick={() => choose({ ...key, myChampionId: c.id })}
-                    >
-                      <Portrait champion={c} large />
-                      <strong>{c.name}</strong>
-                      <small>{c.nameJa}</small>
-                    </button>
-                  ))}
-              </div>
-              {!champions.some((c) =>
-                `${c.name} ${c.nameJa}`.toLowerCase().includes(championQuery.toLowerCase().trim()),
-              ) && <p className="empty">該当するチャンピオンがいません。</p>}
             </section>
           ) : (
             <>
@@ -602,153 +860,7 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                  <section className="notes-panel panel">
-                    <div className="section-title">
-                      <div className="notes-title">
-                        <h2>My Notes</h2>
-                        <span className="count">{matchup?.notes.length ?? 0}</span>
-                      </div>
-                      <span className="save-status" role="status">
-                        {busy ? '保存中…' : status || 'SQLite · ローカル保存'}
-                      </span>
-                    </div>
-                    <div className="notes-content">
-                      {loading ? (
-                        <p className="empty">ノートを読み込み中…</p>
-                      ) : !matchup ? (
-                        <p className="empty">
-                          ノートを読み込めませんでした。再読み込みしてください。
-                        </p>
-                      ) : matchup.notes.length === 0 ? (
-                        <div className="notes-empty">
-                          <div>✎</div>
-                          <h3>この対面の、最初の気づきを。</h3>
-                          <p>
-                            レーン戦のコツ、トレードのタイミング、気をつけたいスキル。
-                            <br />
-                            次の試合で思い出したいことを書いてみよう。
-                          </p>
-                        </div>
-                      ) : (
-                        matchup.notes.map((note) => (
-                          <article
-                            className={`note-card ${editing?.id === note.id ? 'editing' : ''}`}
-                            key={note.id}
-                          >
-                            <div className="note-meta">
-                              <span className="category-badge">{note.category}</span>
-                              <time dateTime={note.updatedAt}>
-                                {new Date(note.updatedAt).toLocaleDateString('ja-JP')}
-                              </time>
-                              <div className="note-actions">
-                                <button
-                                  disabled={busy}
-                                  onClick={() => edit(note)}
-                                  aria-label={`メモ${note.id}を編集`}
-                                >
-                                  編集
-                                </button>
-                                <button
-                                  disabled={busy}
-                                  onClick={() => setDeleting(note.id)}
-                                  aria-label={`メモ${note.id}を削除`}
-                                >
-                                  削除
-                                </button>
-                              </div>
-                            </div>
-                            <p className="note-body">{note.body}</p>
-                            {deleting === note.id && (
-                              <div className="delete-confirm">
-                                <span>このメモを削除しますか？</span>
-                                <button disabled={busy} onClick={() => setDeleting(null)}>
-                                  キャンセル
-                                </button>
-                                <button
-                                  className="danger"
-                                  disabled={busy}
-                                  onClick={() =>
-                                    void mutate(
-                                      () => window.notebook.deleteNote({ key, id: note.id }),
-                                      'メモを削除しました',
-                                      editing?.id === note.id,
-                                    ).then(() => setDeleting(null))
-                                  }
-                                >
-                                  削除する
-                                </button>
-                              </div>
-                            )}
-                          </article>
-                        ))
-                      )}
-                    </div>
-                    <form
-                      className="note-editor"
-                      onSubmit={(e) => {
-                        e.preventDefault()
-                        if (ready && body.trim())
-                          void mutate(
-                            () =>
-                              editing
-                                ? window.notebook.updateNote({
-                                    key,
-                                    id: editing.id,
-                                    body,
-                                    category,
-                                  })
-                                : window.notebook.addNote({ key, body, category }),
-                            editing ? 'メモを更新しました' : 'メモを保存しました',
-                            true,
-                          )
-                      }}
-                    >
-                      <div className="editor-heading">
-                        <label htmlFor="note-body">{editing ? 'メモを編集' : '新しいメモ'}</label>
-                        <span>{body.length.toLocaleString()} / 10,000</span>
-                      </div>
-                      <textarea
-                        id="note-body"
-                        ref={editor}
-                        value={body}
-                        disabled={!ready || busy}
-                        maxLength={10000}
-                        placeholder="例：相手が主要スキルを使った後にトレードする。"
-                        onChange={(e) => setBody(e.target.value)}
-                        onKeyDown={(e) => {
-                          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                            e.preventDefault()
-                            e.currentTarget.form?.requestSubmit()
-                          }
-                        }}
-                      />
-                      <div className="editor-toolbar">
-                        <select
-                          aria-label="メモのカテゴリー"
-                          value={category}
-                          disabled={busy}
-                          onChange={(e) => setCategory(e.target.value as Category)}
-                        >
-                          {CATEGORIES.map((c) => (
-                            <option key={c}>{c}</option>
-                          ))}
-                        </select>
-                        <span className="shortcut">Ctrl + Enter で保存</span>
-                        {editing && (
-                          <button type="button" disabled={busy} onClick={() => navigate(() => {})}>
-                            キャンセル
-                          </button>
-                        )}
-                        <button
-                          className="primary"
-                          type="submit"
-                          disabled={!ready || busy || !body.trim()}
-                        >
-                          {busy ? '保存中…' : editing ? '変更を保存' : '＋ メモを保存'}
-                        </button>
-                      </div>
-                    </form>
-                  </section>
+                  {notesPanel}
                   <p className="detail-footer">
                     ノートは自分のチャンピオン・相手・Roleの組み合わせごとに保存されます。
                   </p>
