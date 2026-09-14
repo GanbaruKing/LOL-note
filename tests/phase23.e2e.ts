@@ -73,6 +73,16 @@ test('Phase 2 knowledge flows into a read-only live Champ Select session', async
     await expect(page.locator('.select-notes')).toContainText('Ghost中は距離を取る')
     await page.evaluate(() => window.scrollTo(0, 0))
     await page.screenshot({ path: 'docs/screenshots/champ-select.png', fullPage: true })
+    mock.scenario.own = 0
+    mock.scenario.intent = 86
+    await expect(page.getByLabel('Champ Selectの自分Pick')).toHaveValue('86', { timeout: 10000 })
+    await expect(page.locator('.select-notes')).not.toContainText('Ghost中は距離を取る')
+    mock.scenario.intent = 266
+    await expect(page.getByLabel('Champ Selectの自分Pick')).toHaveValue('266', { timeout: 10000 })
+    await expect(page.locator('.select-notes')).toContainText('Ghost中は距離を取る')
+    mock.scenario.intent = 0
+    await expect(page.getByLabel('Champ Selectの自分Pick')).toHaveValue('', { timeout: 10000 })
+    await expect(page.locator('.select-notes')).toHaveCount(0)
     mock.scenario.enemies = [86]
     await expect(
       page.locator('.enemy-picks').getByRole('button', { name: 'Darius', exact: true }),

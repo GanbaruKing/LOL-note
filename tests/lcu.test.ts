@@ -53,6 +53,49 @@ test('lockfile validation confines protocol and port', () => {
   ])
     assert.throws(() => parseLockfile(value))
 })
+
+test('own hover follows intent and active pick, preferring selected champion after lock or swap', () => {
+  const hover = {
+    ...session,
+    myTeam: [{ cellId: 2, assignedPosition: 'top', championId: 0, championPickIntent: 266 }],
+  }
+  assert.equal(parseSession(hover).ownChampionId, 266)
+  assert.equal(
+    parseSession({ ...hover, myTeam: [{ ...hover.myTeam[0], championPickIntent: 86 }] })
+      .ownChampionId,
+    86,
+  )
+  assert.equal(
+    parseSession({ ...hover, myTeam: [{ ...hover.myTeam[0], championPickIntent: 0 }] })
+      .ownChampionId,
+    null,
+  )
+  const action = {
+    actorCellId: 2,
+    type: 'pick',
+    isInProgress: true,
+    completed: false,
+    championId: 122,
+  }
+  assert.equal(parseSession({ ...hover, actions: [[action]] }).ownChampionId, 122)
+  assert.equal(
+    parseSession({ ...hover, actions: [[{ ...action, type: 'ban' }]] }).ownChampionId,
+    266,
+  )
+  assert.equal(
+    parseSession({ ...hover, actions: [[{ ...action, actorCellId: 0 }]] }).ownChampionId,
+    266,
+  )
+  assert.equal(
+    parseSession({
+      ...hover,
+      myTeam: [{ ...hover.myTeam[0], championId: 86 }],
+      actions: [[action]],
+    }).ownChampionId,
+    86,
+  )
+  assert.deepEqual(parseSession(hover).enemyChampionIds, [122])
+})
 test('polling clears stale data on disconnect/errors and renews selection session on reconnect', async () => {
   let connected = true,
     broken = false,

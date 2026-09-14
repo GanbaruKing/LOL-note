@@ -28,7 +28,14 @@ export async function createMockLcu(folder: string) {
     ],
     { windowsHide: true, stdio: 'ignore' },
   )
-  const scenario = { phase: 'None', own: 266, role: 'top', enemies: [122, 86], broken: false }
+  const scenario = {
+    phase: 'None',
+    own: 266,
+    intent: 0,
+    role: 'top',
+    enemies: [122, 86],
+    broken: false,
+  }
   const paths: string[] = []
   const server = createServer({ key: readFileSync(key), cert: readFileSync(cert) }, (req, res) => {
     paths.push(`${req.method} ${req.url}`)
@@ -47,7 +54,14 @@ export async function createMockLcu(folder: string) {
         JSON.stringify({
           gameId: 1,
           localPlayerCellId: 0,
-          myTeam: [{ cellId: 0, assignedPosition: scenario.role, championId: scenario.own }],
+          myTeam: [
+            {
+              cellId: 0,
+              assignedPosition: scenario.role,
+              championId: scenario.own,
+              championPickIntent: scenario.intent,
+            },
+          ],
           theirTeam: scenario.enemies.map((championId) => ({ championId })),
         }),
       )

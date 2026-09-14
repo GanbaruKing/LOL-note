@@ -9,6 +9,8 @@
 5. theirTeamのchampionIdが正のものだけを表示する。敵のchampionPickIntentやプレイヤー名・アカウント情報は利用しない。敵Roleは推定しない。
 6. Rendererは型付きsnapshotだけを取得する。選択されたChampion IDで既存RepositoryのMy Picks / Matchup / Champion Notesを読む。
 
+自分のChampionはchampionIdを優先し、未確定なら自分の進行中pickアクション、championPickIntentの順で取得する。ロックイン前の選択変更・取り消しも次の取得時に反映する。Ban・他プレイヤーのアクション・敵のIntentは対象外。画面で候補を手動プレビューしている場合は「LCUの選択へ戻す」で自動追従に戻る。
+
 LCU APIは公式の長期互換性が保証された一般公開APIではないため、変換処理を独立させる。実クライアントのレスポンスに差異が出た場合はparseSessionとテストを更新する。
 
 ## ポーリングと復旧

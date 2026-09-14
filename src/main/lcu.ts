@@ -40,6 +40,18 @@ export function parseSession(
   )
     throw new Error('Invalid champion select response')
   const own = v.myTeam.map(record).find((p) => p.cellId === v.localPlayerCellId)
+  const activePick = Array.isArray(v.actions)
+    ? v.actions
+        .flatMap((group) => (Array.isArray(group) ? group : []))
+        .map(record)
+        .find(
+          (action) =>
+            action.actorCellId === v.localPlayerCellId &&
+            action.type === 'pick' &&
+            action.isInProgress === true &&
+            action.completed !== true,
+        )
+    : undefined
   const roles: Record<string, Role> = {
     top: 'TOP',
     jungle: 'JUNGLE',
@@ -55,7 +67,10 @@ export function parseSession(
       Object.hasOwn(roles, own.assignedPosition.toLowerCase())
         ? (roles[own.assignedPosition.toLowerCase()] ?? null)
         : null,
-    ownChampionId: champion(own?.championId),
+    ownChampionId:
+      champion(own?.championId) ??
+      champion(activePick?.championId) ??
+      champion(own?.championPickIntent),
     enemyChampionIds: [
       ...new Set(
         v.theirTeam
