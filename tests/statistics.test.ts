@@ -5,6 +5,45 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { JsonStatisticsProvider, parseStatistics } from '../src/main/statistics'
 import sample from '../resources/statistics-sample.json'
+import catalog from '../resources/champions.json'
+
+test('statistics return top ten after exact cohort and minimum-games filters', () => {
+  const folder = mkdtempSync(join(tmpdir(), 'statistics-top-'))
+  try {
+    const file = join(folder, 'statistics.json')
+    const rows = catalog.champions
+      .slice(0, 12)
+      .map((c, i) => ({
+        myChampionId: c.id,
+        enemyChampionId: 122,
+        role: 'TOP',
+        games: 100,
+        wins: i + 40,
+      }))
+    writeFileSync(file, JSON.stringify({ ...sample, rows }))
+    const provider = new JsonStatisticsProvider(file)
+    const query = {
+      enemyChampionId: 122,
+      role: 'TOP',
+      demo: false,
+      region: 'JP1',
+      rank: 'ALL',
+      patch: '16.18',
+      minGames: 100,
+    }
+    const result = provider.get(query)!
+    assert.equal(result.rows.length, 10)
+    assert.equal(result.rows[0].wins, 51)
+    assert.equal(result.rows[9].wins, 42)
+    assert.equal(provider.get({ ...query, minGames: 101 })!.rows.length, 0)
+    for (const change of [{ region: 'KR' }, { rank: 'EMERALD_PLUS' }, { patch: '16.17' }])
+      assert.equal(provider.get({ ...query, ...change }), null)
+    for (const minGames of [0, -1, 1.5, 1000001])
+      assert.throws(() => provider.get({ ...query, minGames }))
+  } finally {
+    rmSync(folder, { recursive: true, force: true })
+  }
+})
 
 test('statistics filter exact enemy and role, include 100 games and sort wins/games', () => {
   const provider = new JsonStatisticsProvider('unused')

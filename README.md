@@ -143,3 +143,5 @@ Match upとChamp Selectで、100試合以上の対面統計を勝率順に表示
 ## Riot APIによる履歴標本の収集
 
 APIキーを設定したPowerShellで `npm run stats:collect` を実行し、Riot IDを入力します。日本サーバー・Solo/Duoの履歴から対面統計JSONを生成します。出力の `.riot-data/statistics.json` をStatisticsから取り込んでください。全体勝率ではなく指定プレイヤー履歴の標本です。手順・取得条件・制限は[Riot収集ツール](docs/riot-collector.md)に記載しています。
+
+StatisticsのTop Matchup Picksは、地域・ランク帯・パッチ・最低試合数を指定して勝率上位10体を表示します。一般統計の自動収集サーバーはまだ未接続です。指定条件と一致するデータのみ表示し、個人履歴を全体統計として流用しません。

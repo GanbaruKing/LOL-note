@@ -77,6 +77,15 @@ export class JsonStatisticsProvider implements StatisticsProvider {
       typeof q.demo !== 'boolean'
     )
       throw new ValidationError('統計の検索条件が正しくありません。')
+    for (const field of ['region', 'rank', 'patch'] as const) {
+      if (
+        q[field] !== undefined &&
+        (typeof q[field] !== 'string' || !q[field].trim() || q[field].length > 200)
+      )
+        throw new ValidationError('地域・ランク・パッチを指定してください。')
+    }
+    const minGames = q.minGames === undefined ? 100 : positiveId(q.minGames)
+    if (minGames > 1000000) throw new ValidationError('最低試合数は1〜1,000,000にしてください。')
     let data: StatisticsData
     try {
       data = q.demo ? parseStatistics(sample) : this.read(this.file)
@@ -85,19 +94,29 @@ export class JsonStatisticsProvider implements StatisticsProvider {
       throw e
     }
     const query = q as unknown as StatisticsQuery
+    if (
+      ['region', 'rank', 'patch'].some((field) => {
+        const f = field as 'region' | 'rank' | 'patch'
+        return query[f] !== undefined && query[f] !== data[f]
+      })
+    )
+      return null
     return {
       ...data,
       rows: data.rows
         .filter(
           (r) =>
-            r.enemyChampionId === query.enemyChampionId && r.role === query.role && r.games >= 100,
+            r.enemyChampionId === query.enemyChampionId &&
+            r.role === query.role &&
+            r.games >= minGames,
         )
         .sort(
           (a, b) =>
             b.wins / b.games - a.wins / a.games ||
             b.games - a.games ||
             a.myChampionId - b.myChampionId,
-        ),
+        )
+        .slice(0, 10),
     }
   }
 }

@@ -93,6 +93,10 @@ export interface LcuState {
 }
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 export interface StatisticsQuery {
+  region?: string
+  rank?: string
+  patch?: string
+  minGames?: number
   enemyChampionId: number
   role: Role
   demo: boolean

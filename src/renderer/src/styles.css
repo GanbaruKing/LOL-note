@@ -1525,3 +1525,37 @@ h1 {
   color: #9ba7b9;
   font-size: 10px;
 }
+
+.statistics-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.statistics-filters label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  font-size: 11px;
+  color: #9ba7b9;
+}
+.statistics-filters input,
+.statistics-filters select {
+  width: 100%;
+  min-width: 0;
+  font-size: 11px;
+}
+.statistics-filters button {
+  grid-column: 1 / -1;
+  padding: 9px;
+}
+.statistics-tools summary {
+  cursor: pointer;
+  font-size: 11px;
+  color: #9ba7b9;
+}
+.statistics-row > .statistics-place {
+  margin-left: 0;
+  color: #9ba7b9;
+  font-size: 11px;
+}
