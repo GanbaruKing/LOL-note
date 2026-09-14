@@ -128,33 +128,18 @@ export class NotebookRepository {
     if (!ROLES.includes(v.role as never)) throw new ValidationError('Roleが正しくありません。')
     return this.db
       .prepare(
-        'SELECT my_champion_id AS myChampionId, enemy_champion_id AS enemyChampionId, role, priority, confidence FROM my_picks WHERE enemy_champion_id=? AND role=? ORDER BY priority ASC, confidence DESC, my_champion_id',
+        'SELECT p.my_champion_id AS myChampionId, p.enemy_champion_id AS enemyChampionId, p.role, m.rating FROM my_picks p LEFT JOIN matchups m ON m.my_champion_id=p.my_champion_id AND m.enemy_champion_id=p.enemy_champion_id AND m.role=p.role WHERE p.enemy_champion_id=? AND p.role=? ORDER BY m.rating DESC, p.my_champion_id',
       )
       .all(enemyChampionId, v.role as string) as unknown as MyPick[]
   }
   saveMyPick(input: unknown): MyPick[] {
-    const v = object(input),
-      key = this.key(v)
-    if (!Number.isInteger(v.priority) || (v.priority as number) < 1 || (v.priority as number) > 99)
-      throw new ValidationError('優先順位は1〜99で指定してください。')
-    if (
-      !Number.isInteger(v.confidence) ||
-      (v.confidence as number) < 1 ||
-      (v.confidence as number) > 5
-    )
-      throw new ValidationError('自信度は1〜5で指定してください。')
+    const key = this.key(input)
     return this.transaction(() => {
       this.db
         .prepare(
-          'INSERT INTO my_picks(my_champion_id,enemy_champion_id,role,priority,confidence) VALUES (?,?,?,?,?) ON CONFLICT(my_champion_id,enemy_champion_id,role) DO UPDATE SET priority=excluded.priority,confidence=excluded.confidence',
+          'INSERT INTO my_picks(my_champion_id,enemy_champion_id,role,priority,confidence) VALUES (?,?,?,1,3) ON CONFLICT(my_champion_id,enemy_champion_id,role) DO NOTHING',
         )
-        .run(
-          key.myChampionId,
-          key.enemyChampionId,
-          key.role,
-          v.priority as number,
-          v.confidence as number,
-        )
+        .run(key.myChampionId, key.enemyChampionId, key.role)
       return this.listMyPicks(key)
     })
   }

@@ -10,7 +10,7 @@ import catalog from '../resources/champions.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
 const input = { key, category: 'Laning', body: '相手のQに注意する' }
 
-test('My Picks persist per enemy/role, sort by priority, update without duplicates', () => {
+test('My Picks persist per enemy/role, sort by matchup rating, update without duplicates', () => {
   const repo = new NotebookRepository(':memory:', catalog.champions)
   try {
     repo.saveMyPick({ ...key, priority: 3, confidence: 5 })
@@ -19,13 +19,22 @@ test('My Picks persist per enemy/role, sort by priority, update without duplicat
       repo.listMyPicks(key).map((p) => p.myChampionId),
       [86, 266],
     )
-    repo.saveMyPick({ ...key, priority: 1, confidence: 4 })
+    repo.saveMyPick(key)
+    repo.saveOverview({ key, overview: { difficulty: 'Even', rating: 4 } })
     assert.equal(repo.listMyPicks(key).length, 2)
     assert.equal(repo.listMyPicks(key)[0].myChampionId, 266)
     assert.equal(repo.listMyPicks({ ...key, role: 'MID' }).length, 0)
     assert.equal(repo.listMyPicks({ ...key, enemyChampionId: 86 }).length, 0)
-    assert.throws(() => repo.saveMyPick({ ...key, priority: 0, confidence: 4 }))
-    assert.throws(() => repo.saveMyPick({ ...key, priority: 1, confidence: 6 }))
+    assert.equal(repo.listMyPicks(key)[0].rating, 4)
+    assert.equal(repo.listMyPicks(key)[1].rating, null)
+    repo.saveOverview({ key: { ...key, role: 'MID' }, overview: { difficulty: 'Even', rating: 5 } })
+    assert.equal(repo.listMyPicks(key)[0].rating, 4)
+    repo.saveOverview({ key, overview: { difficulty: 'Even', rating: null } })
+    assert.deepEqual(
+      repo.listMyPicks(key).map((p) => p.myChampionId),
+      [86, 266],
+    )
+    assert.throws(() => repo.saveMyPick({ ...key, role: 'INVALID' }))
     repo.removeMyPick(key)
     assert.deepEqual(
       repo.listMyPicks(key).map((p) => p.myChampionId),
@@ -83,7 +92,7 @@ test('v3 migration preserves notes and persists My Picks and pins after reopenin
     repo.close()
     repo = new NotebookRepository(file, catalog.champions)
     assert.equal(repo.getMatchup(key).notes[0].pinned, 1)
-    assert.equal(repo.listMyPicks(key)[0].confidence, 4)
+    assert.equal(repo.listMyPicks(key)[0].rating, null)
   } finally {
     repo.close()
     rmSync(folder, { recursive: true })

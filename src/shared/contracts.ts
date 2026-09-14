@@ -69,8 +69,7 @@ export interface PoolEntry {
   confidence: number
 }
 export interface MyPick extends MatchupKey {
-  priority: number
-  confidence: number
+  rating: number | null
 }
 export interface SearchInput {
   query: string
@@ -95,7 +94,7 @@ export interface LcuState {
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
 export interface NotebookApi {
   listMyPicks(input: { enemyChampionId: number; role: Role }): Promise<Result<MyPick[]>>
-  saveMyPick(input: MyPick): Promise<Result<MyPick[]>>
+  saveMyPick(input: MatchupKey): Promise<Result<MyPick[]>>
   removeMyPick(input: MatchupKey): Promise<Result<MyPick[]>>
   pinNote(input: {
     scope: 'champion' | 'matchup'

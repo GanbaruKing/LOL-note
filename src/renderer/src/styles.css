@@ -1445,3 +1445,29 @@ h1 {
   color: #b5a1eb;
   padding: 8px;
 }
+
+.matchup-picks .my-picks {
+  margin-top: 0;
+  padding: 16px;
+}
+.matchup-picks .section-title {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.matchup-picks .pick-row > button:first-child {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.matchup-picks .pick-confidence {
+  width: 100%;
+  margin-left: 0;
+  text-align: left;
+}
+.matchup-picks .pick-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+.matchup-picks .pick-form label:first-child {
+  min-width: 0;
+}

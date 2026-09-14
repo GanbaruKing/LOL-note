@@ -138,7 +138,6 @@ export default function App() {
   const [pool, setPool] = useState<PoolEntry[]>([])
   const [poolReady, setPoolReady] = useState(false)
   const [detailRole, setDetailRole] = useState<Role | 'ALL'>('ALL')
-  const [recentRole, setRecentRole] = useState<Role | 'ALL'>('ALL')
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
@@ -161,7 +160,6 @@ export default function App() {
     search: 'Search Notes',
     select: 'Champ Select',
   }
-  const [query, setQuery] = useState('')
   const [error, setError] = useState(''),
     [status, setStatus] = useState('')
   const [loading, setLoading] = useState(true),
@@ -350,14 +348,6 @@ export default function App() {
   }
   const detailMatchups =
     championData?.matchups.filter((m) => detailRole === 'ALL' || m.role === detailRole) ?? []
-  const filtered = summaries.filter((s) => {
-    if (recentRole !== 'ALL' && s.role !== recentRole) return false
-    const a = byId.get(s.myChampionId),
-      b = byId.get(s.enemyChampionId)
-    return `${a?.name} ${a?.nameJa} ${b?.name} ${b?.nameJa} ${s.role}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase())
-  })
 
   const notesPanel = (
     <section className="notes-panel panel">
@@ -862,98 +852,16 @@ export default function App() {
                 </div>
               </section>
               <div className="notebook-layout">
-                <aside className="matchup-list panel">
-                  <div className="section-title">
-                    <h2>My Matchups</h2>
-                    <span className="count">{summaries.length}</span>
-                  </div>
-                  <div className="list-search">
-                    <span>⌕</span>
-                    <input
-                      aria-label="保存済みマッチアップを検索"
-                      placeholder="Champion / Role"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                    />
-                  </div>
-                  <p className="list-label">RECENTLY UPDATED</p>
-                  <select
-                    className="recent-role-filter"
-                    aria-label="最近更新した対面のレーン"
-                    value={recentRole}
-                    onChange={(e) => setRecentRole(e.target.value as Role | 'ALL')}
-                  >
-                    <option value="ALL">すべてのレーン</option>
-                    {ROLES.map((r) => (
-                      <option key={r}>{r}</option>
-                    ))}
-                  </select>
-                  <div className="saved-list">
-                    {filtered.map((s) => {
-                      const a = byId.get(s.myChampionId),
-                        b = byId.get(s.enemyChampionId)
-                      return (
-                        a &&
-                        b && (
-                          <button
-                            key={s.id}
-                            className={`saved-matchup ${sameKey(s, key) ? 'selected' : ''}`}
-                            disabled={busy}
-                            onClick={() =>
-                              choose({
-                                myChampionId: s.myChampionId,
-                                enemyChampionId: s.enemyChampionId,
-                                role: s.role,
-                              })
-                            }
-                          >
-                            <div
-                              className="matchup-icon-pair"
-                              aria-label={`${a.name} vs ${b.name}`}
-                            >
-                              <img
-                                className="portrait"
-                                src={`./champions/${a.slug}.png`}
-                                alt={`自分: ${a.name}`}
-                              />
-                              <span>vs</span>
-                              <img
-                                className="portrait"
-                                src={`./champions/${b.slug}.png`}
-                                alt={`相手: ${b.name}`}
-                              />
-                            </div>
-                            <div className="saved-matchup-text">
-                              <strong>
-                                {a.name}
-                                <span> vs </span>
-                                {b.name}
-                              </strong>
-                              <small>
-                                {s.role}
-                                <span>·</span>
-                                {s.noteCount} notes
-                              </small>
-                            </div>
-                          </button>
-                        )
-                      )
-                    })}
-                  </div>
-                  {!filtered.length && (
-                    <div className="list-empty">
-                      <span>▤</span>
-                      <p>
-                        {summaries.length ? '該当する対面がありません。' : 'まだ記録がありません'}
-                      </p>
-                      <small>
-                        {summaries.length
-                          ? '別の名前で検索してください。'
-                          : '最初のメモを保存すると、ここに対面が並びます。'}
-                      </small>
-                    </div>
-                  )}
-                  <div className="list-footer">あなたの経験が、ここに蓄積されます。</div>
+                <aside className="matchup-picks">
+                  <MyPicks
+                    key={`${key.enemyChampionId}-${key.role}`}
+                    enemyChampionId={key.enemyChampionId}
+                    role={key.role}
+                    champions={champions}
+                    pool={pool}
+                    refreshToken={summaries}
+                    onSelect={choose}
+                  />
                 </aside>
                 <section className="matchup-detail">
                   {mine && enemy && (
@@ -1042,14 +950,6 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                  <MyPicks
-                    key={`${key.enemyChampionId}-${key.role}`}
-                    enemyChampionId={key.enemyChampionId}
-                    role={key.role}
-                    champions={champions}
-                    pool={pool}
-                    onSelect={choose}
-                  />
                   {notesPanel}
                   <p className="detail-footer">
                     ノートは自分のチャンピオン・相手・Roleの組み合わせごとに保存されます。

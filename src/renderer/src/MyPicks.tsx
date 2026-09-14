@@ -8,6 +8,7 @@ export default function MyPicks({
   pool,
   onSelect,
   readOnly = false,
+  refreshToken,
 }: {
   enemyChampionId: number
   role: Role
@@ -15,14 +16,13 @@ export default function MyPicks({
   pool: PoolEntry[]
   onSelect: (key: MatchupKey) => void
   readOnly?: boolean
+  refreshToken?: unknown
 }) {
   const [picks, setPicks] = useState<MyPick[]>([]),
     [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
-  const [selected, setSelected] = useState(''),
-    [priority, setPriority] = useState(1),
-    [confidence, setConfidence] = useState(3)
+  const [selected, setSelected] = useState('')
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -45,7 +45,7 @@ export default function MyPicks({
     return () => {
       cancelled = true
     }
-  }, [enemyChampionId, role])
+  }, [enemyChampionId, role, refreshToken])
   async function save(operation: () => Promise<Result<MyPick[]>>) {
     setBusy(true)
     setError('')
@@ -68,7 +68,7 @@ export default function MyPicks({
     <section className="my-picks panel" aria-label="My Picks">
       <div className="section-title">
         <h2>My Picks</h2>
-        <small>自分が使う候補 · 優先順位順</small>
+        <small>自分の評価が高い順</small>
       </div>
       {error && (
         <p className="error-banner" role="alert">
@@ -86,23 +86,14 @@ export default function MyPicks({
             return (
               <div className="pick-row" key={p.myChampionId}>
                 <button disabled={busy} onClick={() => onSelect(p)}>
-                  <span className="count">{p.priority}</span>
                   {c && <img className="portrait" src={`./champions/${c.slug}.png`} alt="" />}
                   <strong>{c?.name ?? p.myChampionId}</strong>
-                  <span className="pick-confidence">{'★'.repeat(p.confidence)}</span>
+                  <span className="pick-confidence">
+                    {p.rating === null ? '未評価' : '★'.repeat(p.rating)}
+                  </span>
                 </button>
                 {!readOnly && (
                   <>
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        setSelected(String(p.myChampionId))
-                        setPriority(p.priority)
-                        setConfidence(p.confidence)
-                      }}
-                    >
-                      編集
-                    </button>
                     <button
                       disabled={busy}
                       onClick={() => void save(() => window.notebook.removeMyPick(p))}
@@ -127,8 +118,6 @@ export default function MyPicks({
                   myChampionId: Number(selected),
                   enemyChampionId,
                   role,
-                  priority,
-                  confidence,
                 }),
               )
           }}
@@ -147,32 +136,6 @@ export default function MyPicks({
                   {pool.some((p) => p.championId === c.id && p.role === role) ? '★ ' : ''}
                   {c.name} / {c.nameJa}
                 </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            優先順位
-            <input
-              aria-label="My Picksの優先順位"
-              type="number"
-              min={1}
-              max={99}
-              required
-              value={priority}
-              disabled={busy}
-              onChange={(e) => setPriority(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            自信度
-            <select
-              aria-label="My Picksの自信度"
-              value={confidence}
-              disabled={busy}
-              onChange={(e) => setConfidence(Number(e.target.value))}
-            >
-              {[1, 2, 3, 4, 5].map((n) => (
-                <option key={n}>{n}</option>
               ))}
             </select>
           </label>

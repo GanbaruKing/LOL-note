@@ -34,7 +34,7 @@ v1/v2から起動時に順次migrationする。v2からの移行、レーンご�
 
 ## Schema v4: My Picks / Pin / 設定
 
-my_picksは(my_champion_id, enemy_champion_id, role)を主キーとし、priority 1〜99、confidence 1〜5を保存する。候補はpriority昇順・confidence降順。Poolとは独立して管理する。
+my_picksは(my_champion_id, enemy_champion_id, role)を主キーとし、priority 1〜99、confidence 1〜5を保存する。priorityとconfidenceは既存DB互換のため保持する旧カラムで、表示・並び順には使用しない。候補は同じ自分Champion・敵Champion・Roleのmatchups.ratingをLEFT JOINして評価降順（未評価は末尾）、同点はChampion ID順に取得する。Poolとは独立して管理する。
 
 champion_notesとmatchup_notesにpinned INTEGER NOT NULL DEFAULT 0 CHECK IN (0,1)を追加。既存メモはPinなしとして移行する。Pinを先頭に並べ、本文編集でもPinは保持する。
 
