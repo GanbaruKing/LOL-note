@@ -28,6 +28,7 @@ export default function ChampSelect({
     [loading, setLoading] = useState(false)
   const own = manualOwn ?? state.ownChampionId,
     role = manualRole ?? state.role
+  const ownChampion = champions.find((c) => c.id === own)
   const currentEnemy = enemy && state.enemyChampionIds.includes(enemy) ? enemy : null
   const current = state.status === 'champ-select'
   useEffect(() => {
@@ -97,6 +98,13 @@ export default function ChampSelect({
         </label>
         <label>
           自分のPick
+          {ownChampion && (
+            <img
+              className="portrait"
+              src={`./champions/${ownChampion.slug}.png`}
+              alt={`自分のPick: ${ownChampion.name}`}
+            />
+          )}
           <select
             aria-label="Champ Selectの自分Pick"
             value={own ?? ''}
