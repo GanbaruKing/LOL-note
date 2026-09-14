@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import laneData from '../../../resources/champion-lanes.json'
 import { ROLES, type Champion, type PoolEntry, type Role } from '../../shared/contracts'
 
 export default function ChampionLibrary({
@@ -20,9 +21,13 @@ export default function ChampionLibrary({
 }) {
   const [role, setRole] = useState<Role>('TOP')
   const [query, setQuery] = useState('')
+  const [laneFilter, setLaneFilter] = useState<Role | 'ALL'>('ALL')
+  const lanesById: Record<string, string[]> = laneData.lanes
   const lanePool = pool.filter((p) => p.role === role)
-  const filtered = champions.filter((c) =>
-    `${c.name} ${c.nameJa}`.toLowerCase().includes(query.trim().toLowerCase()),
+  const filtered = champions.filter(
+    (c) =>
+      (laneFilter === 'ALL' || lanesById[c.id]?.includes(laneFilter)) &&
+      `${c.name} ${c.nameJa}`.toLowerCase().includes(query.trim().toLowerCase()),
   )
   return (
     <div className="champion-library">
@@ -107,6 +112,13 @@ export default function ChampionLibrary({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+      </div>
+      <div className="lane-tabs" role="group" aria-label="一覧のレーン">
+        {(['ALL', ...ROLES] as const).map((lane) => (
+          <button key={lane} aria-pressed={laneFilter === lane} onClick={() => setLaneFilter(lane)}>
+            {lane === 'ALL' ? 'All' : lane}
+          </button>
+        ))}
       </div>
       <div className="champion-grid">
         {filtered.map((c) => {

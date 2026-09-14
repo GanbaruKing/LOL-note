@@ -621,17 +621,17 @@ export default function App() {
             <div>
               <span className="eyebrow accent">THE PERSONAL PLAYBOOK</span>
               <h1>{titles[page]}</h1>
-              <p>
-                {page === 'notebook'
-                  ? '対面の知識を、あなただけの強みに。'
-                  : page === 'champions'
-                    ? 'チャンピオン自身の知識と、対面ごとのメモ。'
-                    : page === 'search'
-                      ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
-                      : page === 'select'
-                        ? '蓄積した知識を、今の対面へ。'
+              {page !== 'select' && (
+                <p>
+                  {page === 'notebook'
+                    ? 'チャンピオン・対面・レーンごとのメモと評価を管理します。'
+                    : page === 'champions'
+                      ? 'チャンピオン自身の知識と、対面ごとのメモ。'
+                      : page === 'search'
+                        ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
                         : 'このNotebookについて。'}
-              </p>
+                </p>
+              )}
             </div>
             <span className="heading-tag">
               {page === 'notebook'

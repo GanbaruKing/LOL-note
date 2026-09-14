@@ -1,0 +1,590 @@
+{
+  "source": "https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json",
+  "retrievedAt": "2026-09-14",
+  "lanes": {
+    "1": [
+      "MID"
+    ],
+    "2": [
+      "TOP"
+    ],
+    "3": [
+      "MID",
+      "SUPPORT"
+    ],
+    "4": [
+      "BOTTOM",
+      "MID",
+      "TOP"
+    ],
+    "5": [
+      "JUNGLE"
+    ],
+    "6": [
+      "TOP"
+    ],
+    "7": [
+      "MID"
+    ],
+    "8": [
+      "MID",
+      "TOP"
+    ],
+    "9": [
+      "JUNGLE"
+    ],
+    "10": [
+      "TOP"
+    ],
+    "11": [
+      "JUNGLE"
+    ],
+    "12": [
+      "SUPPORT"
+    ],
+    "13": [
+      "MID"
+    ],
+    "14": [
+      "TOP"
+    ],
+    "15": [
+      "BOTTOM"
+    ],
+    "16": [
+      "SUPPORT"
+    ],
+    "17": [
+      "JUNGLE",
+      "SUPPORT",
+      "TOP"
+    ],
+    "18": [
+      "BOTTOM",
+      "MID"
+    ],
+    "19": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "20": [
+      "JUNGLE"
+    ],
+    "21": [
+      "BOTTOM"
+    ],
+    "22": [
+      "BOTTOM",
+      "SUPPORT"
+    ],
+    "23": [
+      "TOP"
+    ],
+    "24": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "25": [
+      "SUPPORT"
+    ],
+    "26": [
+      "SUPPORT"
+    ],
+    "27": [
+      "TOP"
+    ],
+    "28": [
+      "JUNGLE"
+    ],
+    "29": [
+      "BOTTOM",
+      "SUPPORT"
+    ],
+    "30": [
+      "JUNGLE"
+    ],
+    "31": [
+      "TOP"
+    ],
+    "32": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "33": [
+      "JUNGLE"
+    ],
+    "34": [
+      "MID"
+    ],
+    "35": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "36": [
+      "TOP"
+    ],
+    "37": [
+      "SUPPORT"
+    ],
+    "38": [
+      "MID"
+    ],
+    "39": [
+      "MID",
+      "TOP"
+    ],
+    "40": [
+      "SUPPORT"
+    ],
+    "41": [
+      "TOP"
+    ],
+    "42": [
+      "MID"
+    ],
+    "43": [
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "44": [
+      "MID",
+      "SUPPORT"
+    ],
+    "45": [
+      "MID",
+      "SUPPORT"
+    ],
+    "48": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "50": [
+      "BOTTOM",
+      "MID",
+      "SUPPORT"
+    ],
+    "51": [
+      "BOTTOM"
+    ],
+    "53": [
+      "SUPPORT"
+    ],
+    "54": [
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "55": [
+      "MID"
+    ],
+    "56": [
+      "JUNGLE"
+    ],
+    "57": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "58": [
+      "TOP"
+    ],
+    "59": [
+      "JUNGLE"
+    ],
+    "60": [
+      "JUNGLE"
+    ],
+    "61": [
+      "MID"
+    ],
+    "62": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "63": [
+      "JUNGLE",
+      "MID",
+      "SUPPORT"
+    ],
+    "64": [
+      "JUNGLE"
+    ],
+    "67": [
+      "BOTTOM",
+      "TOP"
+    ],
+    "68": [
+      "MID",
+      "TOP"
+    ],
+    "69": [
+      "MID"
+    ],
+    "72": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "74": [
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "75": [
+      "TOP"
+    ],
+    "76": [
+      "JUNGLE"
+    ],
+    "77": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "78": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "79": [
+      "JUNGLE",
+      "MID",
+      "TOP"
+    ],
+    "80": [
+      "JUNGLE",
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "81": [
+      "BOTTOM"
+    ],
+    "82": [
+      "TOP"
+    ],
+    "83": [
+      "TOP"
+    ],
+    "84": [
+      "MID",
+      "TOP"
+    ],
+    "85": [
+      "TOP"
+    ],
+    "86": [
+      "TOP"
+    ],
+    "89": [
+      "SUPPORT"
+    ],
+    "90": [
+      "MID"
+    ],
+    "91": [
+      "JUNGLE"
+    ],
+    "92": [
+      "TOP"
+    ],
+    "96": [
+      "BOTTOM"
+    ],
+    "98": [
+      "SUPPORT",
+      "TOP"
+    ],
+    "99": [
+      "MID",
+      "SUPPORT"
+    ],
+    "101": [
+      "MID",
+      "SUPPORT"
+    ],
+    "102": [
+      "JUNGLE"
+    ],
+    "103": [
+      "MID"
+    ],
+    "104": [
+      "JUNGLE"
+    ],
+    "105": [
+      "MID"
+    ],
+    "106": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "107": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "110": [
+      "BOTTOM"
+    ],
+    "111": [
+      "SUPPORT"
+    ],
+    "112": [
+      "MID"
+    ],
+    "113": [
+      "JUNGLE"
+    ],
+    "114": [
+      "TOP"
+    ],
+    "115": [
+      "BOTTOM",
+      "MID"
+    ],
+    "117": [
+      "SUPPORT"
+    ],
+    "119": [
+      "BOTTOM"
+    ],
+    "120": [
+      "JUNGLE"
+    ],
+    "121": [
+      "JUNGLE"
+    ],
+    "122": [
+      "TOP"
+    ],
+    "126": [
+      "MID",
+      "TOP"
+    ],
+    "127": [
+      "MID"
+    ],
+    "131": [
+      "JUNGLE",
+      "MID"
+    ],
+    "133": [
+      "TOP"
+    ],
+    "134": [
+      "MID"
+    ],
+    "136": [
+      "MID"
+    ],
+    "141": [
+      "JUNGLE"
+    ],
+    "142": [
+      "MID"
+    ],
+    "143": [
+      "SUPPORT"
+    ],
+    "145": [
+      "BOTTOM"
+    ],
+    "147": [
+      "BOTTOM",
+      "SUPPORT"
+    ],
+    "150": [
+      "TOP"
+    ],
+    "154": [
+      "JUNGLE",
+      "SUPPORT",
+      "TOP"
+    ],
+    "157": [
+      "BOTTOM",
+      "MID",
+      "TOP"
+    ],
+    "161": [
+      "MID",
+      "SUPPORT"
+    ],
+    "163": [
+      "JUNGLE",
+      "MID"
+    ],
+    "164": [
+      "SUPPORT",
+      "TOP"
+    ],
+    "166": [
+      "MID"
+    ],
+    "200": [
+      "JUNGLE"
+    ],
+    "201": [
+      "SUPPORT"
+    ],
+    "202": [
+      "BOTTOM"
+    ],
+    "203": [
+      "JUNGLE"
+    ],
+    "221": [
+      "BOTTOM"
+    ],
+    "222": [
+      "BOTTOM"
+    ],
+    "223": [
+      "SUPPORT",
+      "TOP"
+    ],
+    "233": [
+      "JUNGLE"
+    ],
+    "234": [
+      "JUNGLE"
+    ],
+    "235": [
+      "BOTTOM",
+      "SUPPORT"
+    ],
+    "236": [
+      "BOTTOM"
+    ],
+    "238": [
+      "JUNGLE",
+      "MID"
+    ],
+    "240": [
+      "TOP"
+    ],
+    "245": [
+      "JUNGLE",
+      "MID"
+    ],
+    "246": [
+      "MID"
+    ],
+    "254": [
+      "JUNGLE"
+    ],
+    "266": [
+      "TOP"
+    ],
+    "267": [
+      "SUPPORT"
+    ],
+    "268": [
+      "MID"
+    ],
+    "350": [
+      "SUPPORT"
+    ],
+    "360": [
+      "BOTTOM"
+    ],
+    "412": [
+      "SUPPORT"
+    ],
+    "420": [
+      "TOP"
+    ],
+    "421": [
+      "JUNGLE"
+    ],
+    "427": [
+      "JUNGLE"
+    ],
+    "429": [
+      "BOTTOM"
+    ],
+    "432": [
+      "SUPPORT"
+    ],
+    "497": [
+      "SUPPORT"
+    ],
+    "498": [
+      "BOTTOM"
+    ],
+    "516": [
+      "TOP"
+    ],
+    "517": [
+      "MID",
+      "TOP"
+    ],
+    "518": [
+      "MID",
+      "SUPPORT"
+    ],
+    "523": [
+      "BOTTOM"
+    ],
+    "526": [
+      "SUPPORT"
+    ],
+    "555": [
+      "SUPPORT"
+    ],
+    "711": [
+      "MID"
+    ],
+    "777": [
+      "MID",
+      "TOP"
+    ],
+    "799": [
+      "TOP"
+    ],
+    "800": [
+      "MID",
+      "SUPPORT"
+    ],
+    "804": [
+      "BOTTOM"
+    ],
+    "805": [],
+    "875": [
+      "TOP"
+    ],
+    "876": [
+      "JUNGLE"
+    ],
+    "887": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "888": [
+      "SUPPORT"
+    ],
+    "893": [
+      "MID",
+      "TOP"
+    ],
+    "895": [
+      "BOTTOM"
+    ],
+    "897": [
+      "TOP"
+    ],
+    "901": [
+      "BOTTOM",
+      "MID",
+      "TOP"
+    ],
+    "902": [
+      "SUPPORT"
+    ],
+    "904": [],
+    "910": [
+      "MID",
+      "SUPPORT"
+    ],
+    "950": [
+      "MID"
+    ]
+  }
+}
