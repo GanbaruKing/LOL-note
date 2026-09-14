@@ -4,6 +4,61 @@ import { resolve, join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import appConfig from '../electron.vite.config'
 
+test('gallery opens details and lane pools persist with independent confidence', async () => {
+  mkdirSync('.test-data', { recursive: true })
+  const folder = mkdtempSync(resolve('.test-data', 'pool-'))
+  const env: Record<string, string> = Object.fromEntries(
+    Object.entries(process.env).filter(
+      (entry): entry is [string, string] => entry[1] !== undefined,
+    ),
+  )
+  delete env.ELECTRON_RUN_AS_NODE
+  env.NOTEBOOK_TEST_DATA_DIR = folder
+  const launch = () => electron.launch({ args: [resolve('.')], env })
+  let app = await launch()
+  try {
+    let page = await app.firstWindow()
+    await page.context().setOffline(true)
+    await page.getByRole('button', { name: /Champions/ }).click()
+    await expect(page.locator('.library-card')).toHaveCount(173)
+    await expect(page.getByRole('heading', { name: 'Champion Notes' })).toHaveCount(0)
+    await page.getByRole('button', { name: 'AatroxをTOPに登録', exact: true }).click()
+    await page.getByLabel('AatroxのTOP自信度').selectOption('5')
+    await page
+      .getByRole('group', { name: 'プールのレーン' })
+      .getByRole('button', { name: /MID/ })
+      .click()
+    await expect(page.locator('.pool-card')).toHaveCount(0)
+    await page.getByRole('button', { name: 'AatroxをMIDに登録', exact: true }).click()
+    await page.getByLabel('AatroxのMID自信度').selectOption('2')
+    await page
+      .getByRole('group', { name: 'プールのレーン' })
+      .getByRole('button', { name: /TOP/ })
+      .click()
+    await expect(page.getByLabel('AatroxのTOP自信度')).toHaveValue('5')
+    await page.getByRole('button', { name: 'GarenをTOPに登録', exact: true }).click()
+    await expect(page.locator('.pool-card')).toHaveCount(2)
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await page.screenshot({ path: 'docs/screenshots/champion-library.png' })
+    await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Champion Notes' })).toBeVisible()
+    await app.close()
+    app = await launch()
+    page = await app.firstWindow()
+    await page.getByRole('button', { name: /Champions/ }).click()
+    await expect(page.getByLabel('AatroxのTOP自信度')).toHaveValue('5')
+    await page.getByRole('button', { name: 'AatroxをTOPから解除', exact: true }).click()
+    await expect(page.getByLabel('AatroxのTOP自信度')).toHaveCount(0)
+    await page
+      .getByRole('group', { name: 'プールのレーン' })
+      .getByRole('button', { name: /MID/ })
+      .click()
+    await expect(page.getByLabel('AatroxのMID自信度')).toHaveValue('2')
+  } finally {
+    await app.close()
+  }
+})
+
 test('Champions focuses on standalone notes and lists its existing matchup notes', async () => {
   mkdirSync('.test-data', { recursive: true })
   const folder = mkdtempSync(resolve('.test-data', 'champions-'))
@@ -24,10 +79,31 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await page.getByLabel('新しいメモ', { exact: true }).fill('ダリウス対面のメモ')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
+    await expect(
+      page.locator('.saved-list').getByAltText('自分: Aatrox', { exact: true }),
+    ).toBeVisible()
+    await expect(
+      page.locator('.saved-list').getByAltText('相手: Darius', { exact: true }),
+    ).toBeVisible()
+    await page.getByLabel('最近更新した対面のレーン').selectOption('MID')
+    await expect(page.locator('.saved-matchup')).toHaveCount(0)
+    await page.getByLabel('最近更新した対面のレーン').selectOption('TOP')
+    await expect(page.locator('.saved-matchup')).toHaveCount(1)
     await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Champion Notes', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: '相手のチャンピオンを選択' })).toHaveCount(0)
     await expect(page.getByLabel('チャンピオンの対面メモ一覧')).toContainText('ダリウス対面のメモ')
+    await page
+      .getByRole('group', { name: '対面メモのレーン' })
+      .getByRole('button', { name: 'MID', exact: true })
+      .click()
+    await expect(page.locator('.champion-matchup-card')).toHaveCount(0)
+    await page
+      .getByRole('group', { name: '対面メモのレーン' })
+      .getByRole('button', { name: 'TOP', exact: true })
+      .click()
+    await expect(page.locator('.champion-matchup-card')).toHaveCount(1)
     await page.getByLabel('新しいメモ', { exact: true }).fill('QとEのコンボを練習する')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('QとEのコンボを練習する')
@@ -36,25 +112,22 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await page.getByRole('button', { name: '変更を保存', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
     await page.getByLabel('新しいメモ', { exact: true }).fill('未保存の単体メモ')
-    await page.getByLabel('チャンピオン一覧を検索').fill('ガレン')
-    await page.locator('.champion-browser-list').getByRole('button', { name: /Garen/ }).click()
+    await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
     await page.getByRole('button', { name: '編集を続ける', exact: true }).click()
     await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue('未保存の単体メモ')
-    await page.locator('.champion-browser-list').getByRole('button', { name: /Garen/ }).click()
+    await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
     await page.getByRole('button', { name: '変更を破棄して移動' }).click()
+    await page.getByLabel('チャンピオン一覧を検索').fill('ガレン')
+    await page.getByRole('button', { name: 'Garenの詳細を開く', exact: true }).click()
     await expect(page.locator('.champion-header')).toContainText('Garen')
     await expect(page.locator('.note-body')).toHaveCount(0)
     await expect(page.getByLabel('チャンピオンの対面メモ一覧')).not.toContainText(
       'ダリウス対面のメモ',
     )
-    await page.getByLabel('チャンピオン一覧を検索').fill('Aatrox')
-    await page
-      .locator('.champion-browser-list')
-      .getByRole('button', { name: /Aatrox/ })
-      .click()
+    await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
+    await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
-    await page.getByLabel('チャンピオン一覧を検索').fill('')
     await page.evaluate(() => window.scrollTo(0, 0))
     await page.screenshot({ path: 'docs/screenshots/champions.png', fullPage: true })
     await page.getByRole('button', { name: '対面ページを開く →' }).click()
@@ -64,6 +137,7 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     app = await launch()
     page = await app.firstWindow()
     await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
     await page.getByRole('button', { name: /メモ\d+を削除/ }).click()
     await page.getByRole('button', { name: '削除する', exact: true }).click()

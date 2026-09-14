@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ChampionLibrary from './ChampionLibrary'
 import {
   CATEGORIES,
   ROLES,
@@ -10,6 +11,8 @@ import {
   type MatchupSummary,
   type Note,
   type Result,
+  type PoolEntry,
+  type Role,
 } from '../../shared/contracts'
 
 async function unwrap<T>(promise: Promise<Result<T>>): Promise<T> {
@@ -127,12 +130,16 @@ export default function App() {
   })
   const [matchup, setMatchup] = useState<Matchup | null>(null)
   const [championId, setChampionId] = useState(266)
+  const [championDetailOpen, setChampionDetailOpen] = useState(false)
+  const [pool, setPool] = useState<PoolEntry[]>([])
+  const [poolReady, setPoolReady] = useState(false)
+  const [detailRole, setDetailRole] = useState<Role | 'ALL'>('ALL')
+  const [recentRole, setRecentRole] = useState<Role | 'ALL'>('ALL')
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
   const [page, setPage] = useState<'notebook' | 'champions' | 'settings'>('notebook')
-  const [query, setQuery] = useState(''),
-    [championQuery, setChampionQuery] = useState('')
+  const [query, setQuery] = useState('')
   const [error, setError] = useState(''),
     [status, setStatus] = useState('')
   const [loading, setLoading] = useState(true),
@@ -162,14 +169,17 @@ export default function App() {
   async function initialize() {
     try {
       setError('')
-      const [all, saved, appInfo] = await Promise.all([
+      const [all, saved, appInfo, savedPool] = await Promise.all([
         unwrap(window.notebook.listChampions()),
         unwrap(window.notebook.listMatchups()),
         unwrap(window.notebook.getInfo()),
+        unwrap(window.notebook.listPool()),
       ])
       setChampions(all)
       setSummaries(saved)
       setInfo(appInfo)
+      setPool(savedPool)
+      setPoolReady(true)
     } catch (e) {
       setError((e as Error).message)
     }
@@ -195,7 +205,7 @@ export default function App() {
       })
   }, [key])
   useEffect(() => {
-    if (page !== 'champions') return
+    if (page !== 'champions' || !championDetailOpen) return
     let cancelled = false
     setChampionLoading(true)
     setChampionData(null)
@@ -214,7 +224,7 @@ export default function App() {
     return () => {
       cancelled = true
     }
-  }, [championId, page, reload])
+  }, [championId, page, reload, championDetailOpen])
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => {
       if (dirty || busy) {
@@ -277,7 +287,22 @@ export default function App() {
       setTimeout(() => editor.current?.focus(), 0)
     })
   }
+  async function changePool(operation: () => Promise<Result<PoolEntry[]>>) {
+    if (busy) return
+    setBusy(true)
+    setError('')
+    try {
+      setPool(await unwrap(operation()))
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+  const detailMatchups =
+    championData?.matchups.filter((m) => detailRole === 'ALL' || m.role === detailRole) ?? []
   const filtered = summaries.filter((s) => {
+    if (recentRole !== 'ALL' && s.role !== recentRole) return false
     const a = byId.get(s.myChampionId),
       b = byId.get(s.enemyChampionId)
     return `${a?.name} ${a?.nameJa} ${b?.name} ${b?.nameJa} ${s.role}`
@@ -467,7 +492,12 @@ export default function App() {
           </button>
           <button
             className={page === 'champions' ? 'active' : ''}
-            onClick={() => navigate(() => setPage('champions'))}
+            onClick={() =>
+              navigate(() => {
+                setPage('champions')
+                setChampionDetailOpen(false)
+              })
+            }
           >
             <span>◈</span>Champions
           </button>
@@ -551,54 +581,37 @@ export default function App() {
               <p>チャンピオン名とアイコンは同梱済みです。アプリの使用時に通信は行いません。</p>
               <hr />
               <h2>Phase 1 · Notebook</h2>
-              <p>LCU連携・統計・Champion Pool・クラウド同期は今後の実装予定です。</p>
+              <p>LCU連携・統計・クラウド同期は今後の実装予定です。</p>
               <p className="muted">
                 LoL Matchup Companion is not endorsed by Riot Games. League of Legends and its
                 assets are trademarks of Riot Games.
               </p>
             </section>
+          ) : page === 'champions' && !championDetailOpen ? (
+            <ChampionLibrary
+              champions={champions}
+              pool={pool}
+              ready={poolReady}
+              busy={busy}
+              onOpen={(id) =>
+                navigate(() => {
+                  setChampionId(id)
+                  setChampionDetailOpen(true)
+                  setDetailRole('ALL')
+                })
+              }
+              onSave={(entry) => void changePool(() => window.notebook.savePool(entry))}
+              onRemove={(entry) => void changePool(() => window.notebook.removePool(entry))}
+            />
           ) : page === 'champions' ? (
-            <section className="champion-workspace">
-              <aside className="champion-browser panel">
-                <div className="library-search">
-                  <input
-                    aria-label="チャンピオン一覧を検索"
-                    placeholder="日本語・英語で検索"
-                    value={championQuery}
-                    onChange={(e) => setChampionQuery(e.target.value)}
-                  />
-                </div>
-                <div className="champion-browser-list">
-                  {champions
-                    .filter((c) =>
-                      (c.name + ' ' + c.nameJa)
-                        .toLowerCase()
-                        .includes(championQuery.trim().toLowerCase()),
-                    )
-                    .map((c) => (
-                      <button
-                        className={c.id === championId ? 'selected' : ''}
-                        key={c.id}
-                        aria-pressed={c.id === championId}
-                        disabled={busy}
-                        onClick={() => {
-                          if (c.id !== championId) navigate(() => setChampionId(c.id))
-                        }}
-                      >
-                        <Portrait champion={c} />
-                        <span>
-                          <strong>{c.name}</strong>
-                          <small>{c.nameJa}</small>
-                        </span>
-                      </button>
-                    ))}
-                </div>
-                {!champions.some((c) =>
-                  (c.name + ' ' + c.nameJa)
-                    .toLowerCase()
-                    .includes(championQuery.trim().toLowerCase()),
-                ) && <p className="empty">該当するチャンピオンがいません。</p>}
-              </aside>
+            <section className="champion-detail-page">
+              <button
+                className="back-to-library"
+                disabled={busy}
+                onClick={() => navigate(() => setChampionDetailOpen(false))}
+              >
+                ← チャンピオン一覧に戻る
+              </button>
               <div className="champion-detail">
                 {selectedChampion && (
                   <div className="champion-header panel">
@@ -619,13 +632,24 @@ export default function App() {
                 >
                   <div className="section-title">
                     <h2>Matchup Notes</h2>
-                    <span className="count">{championData?.matchups.length ?? 0}</span>
+                    <span className="count">{detailMatchups.length}</span>
                   </div>
                   <p className="muted">{selectedChampion?.name}で記録した対面ごとのメモ</p>
+                  <div className="lane-tabs" role="group" aria-label="対面メモのレーン">
+                    {(['ALL', ...ROLES] as const).map((lane) => (
+                      <button
+                        key={lane}
+                        aria-pressed={detailRole === lane}
+                        onClick={() => setDetailRole(lane)}
+                      >
+                        {lane === 'ALL' ? 'すべて' : lane}
+                      </button>
+                    ))}
+                  </div>
                   {championLoading ? (
                     <p className="empty">読み込み中…</p>
-                  ) : championData?.matchups.length ? (
-                    championData.matchups.map((m) => {
+                  ) : detailMatchups.length ? (
+                    detailMatchups.map((m) => {
                       const opponent = byId.get(m.enemyChampionId)
                       return (
                         <article className="champion-matchup-card" key={m.id}>
@@ -653,7 +677,7 @@ export default function App() {
                       )
                     })
                   ) : (
-                    <p className="empty">このチャンピオンの対面メモはまだありません。</p>
+                    <p className="empty">選択したレーンの対面メモはまだありません。</p>
                   )}
                 </section>
               </div>
@@ -721,6 +745,17 @@ export default function App() {
                     />
                   </div>
                   <p className="list-label">RECENTLY UPDATED</p>
+                  <select
+                    className="recent-role-filter"
+                    aria-label="最近更新した対面のレーン"
+                    value={recentRole}
+                    onChange={(e) => setRecentRole(e.target.value as Role | 'ALL')}
+                  >
+                    <option value="ALL">すべてのレーン</option>
+                    {ROLES.map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                  </select>
                   <div className="saved-list">
                     {filtered.map((s) => {
                       const a = byId.get(s.myChampionId),
@@ -740,8 +775,23 @@ export default function App() {
                               })
                             }
                           >
-                            <Portrait champion={b} />
-                            <div>
+                            <div
+                              className="matchup-icon-pair"
+                              aria-label={`${a.name} vs ${b.name}`}
+                            >
+                              <img
+                                className="portrait"
+                                src={`./champions/${a.slug}.png`}
+                                alt={`自分: ${a.name}`}
+                              />
+                              <span>vs</span>
+                              <img
+                                className="portrait"
+                                src={`./champions/${b.slug}.png`}
+                                alt={`相手: ${b.name}`}
+                              />
+                            </div>
+                            <div className="saved-matchup-text">
                               <strong>
                                 {a.name}
                                 <span> vs </span>
