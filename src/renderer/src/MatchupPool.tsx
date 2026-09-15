@@ -24,9 +24,9 @@ export default function MatchupPool({
     .filter((p) => p.role === role && byId.has(p.championId))
     .sort((a, b) => b.confidence - a.confidence || a.championId - b.championId)
   return (
-    <section className="matchup-pool panel" aria-label="Match upのChampion Pool">
+    <section className="matchup-pool panel" aria-label="Match upのFavorite Champions">
       <div className="section-title">
-        <h2>Champion Pool</h2>
+        <h2>Favorite Champions</h2>
         <span className="role-badge">{role}</span>
       </div>
       <p className="muted">選ぶと自分のチャンピオンを切り替えます。</p>
