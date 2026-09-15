@@ -17,6 +17,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - SQLite永続化。League Clientもネット接続も不要
 - 未保存変更の確認、保存失敗時の入力保持
 - Championsでチャンピオン単体のメモを追加・編集・削除
+- Championsの「共通対策」に敵としての対策を記入し、Match upでその敵を選ぶと自動表示
 - チャンピオン詳細に、保存済みの対面メモを本文付きで一覧表示
 - カード形式のChampion一覧から詳細を開く
 - レーン別Champion Poolへの登録・解除、自信度1〜5の保存
@@ -65,6 +66,14 @@ Championsではカード一覧からチャンピオンを選ぶと、そのチ�
 ![チャンピオン単体のメモと対面メモ一覧](docs/screenshots/champions.png)
 
 星を再度クリックすると評価を解除できます。データはOSのアプリ保存フォルダーにある `notebook.sqlite` に保存します。具体的なパスはSettingsに表示します。バックアップはアプリ終了後にこのファイルをコピーしてください。クラウド同期はありません。
+
+### チャンピオンへの共通対策
+
+Championsでチャンピオンを選び、Champion Notesの下にある「共通対策」に対策を記入して保存します。たとえばDariusへの対策は、自分がAatroxでもGarenでも、Dariusが敵に選ばれるとMatch upのMy Notesの上に表示されます。Roleにも依存しません。
+
+最大10,000文字で、Ctrl + Enterでも保存できます。空欄で保存すると共通対策を削除します。Champion Notesとは別に保存され、両方を編集中でも片方の保存で他方の入力は消えません。
+
+![敵チャンピオンへの共通対策（テストデータ）](docs/screenshots/matchup-counters.png)
 
 ### Comfort Picks・Search・Pin
 

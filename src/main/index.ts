@@ -26,6 +26,8 @@ function registerApi(databasePath: string) {
   )
   const statistics = new JsonStatisticsProvider(join(app.getPath('userData'), 'statistics.json'))
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getChampionCounter: (input) => repository!.getChampionCounter(input),
+    saveChampionCounter: (input) => repository!.saveChampionCounter(input),
     getMatchHistory: () => history.list(),
     getHistoryMatch: (input) => history.detail(input),
     getStatistics: (input) => statistics.get(input),

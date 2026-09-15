@@ -60,6 +60,7 @@ export interface ChampionNoteInput {
 }
 export interface ChampionPage {
   championId: number
+  counterStrategy: string
   notes: Note[]
   matchups: Matchup[]
 }
@@ -137,6 +138,8 @@ export interface StatisticsData {
   rows: (MatchupKey & { games: number; wins: number })[]
 }
 export interface NotebookApi {
+  getChampionCounter(championId: number): Promise<Result<string>>
+  saveChampionCounter(input: { championId: number; body: string }): Promise<Result<ChampionPage>>
   getMatchHistory(): Promise<Result<HistoryList>>
   getHistoryMatch(gameId: number): Promise<Result<HistoryMatch>>
   getStatistics(input: StatisticsQuery): Promise<Result<StatisticsData | null>>

@@ -10,6 +10,53 @@ import catalog from '../resources/champions.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
 const input = { key, category: 'Laning', body: '相手のQに注意する' }
 
+test('v4 migration preserves notes and counters stay independent, validated and persistent', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'notebook-counters-'))
+  const path = join(directory, 'notebook.sqlite')
+  let repo = new NotebookRepository(path, catalog.champions)
+  try {
+    repo.addNote(input)
+    repo.addChampionNote({ championId: 122, category: 'General', body: '自分で使うときの知識' })
+    repo.close()
+    const old = new DatabaseSync(path)
+    old.exec('DROP TABLE champion_counters; PRAGMA user_version=4')
+    old.close()
+    repo = new NotebookRepository(path, catalog.champions)
+    assert.equal(repo.getChampionCounter(122), '')
+    assert.equal(repo.getMatchup(key).notes[0].body, input.body)
+    assert.equal(repo.getChampionPage(122).notes[0].body, '自分で使うときの知識')
+    repo.saveChampionCounter({
+      championId: 122,
+      body: '  パッシブが溜まったら離れる\nQの外側に当たらない  ',
+    })
+    assert.equal(
+      repo.getChampionPage(122).counterStrategy,
+      'パッシブが溜まったら離れる\nQの外側に当たらない',
+    )
+    assert.equal(repo.getChampionCounter(266), '')
+    const rows = repo.listMatchups().length
+    repo.getMatchup({ ...key, myChampionId: 86, role: 'MID' })
+    assert.equal(repo.listMatchups().length, rows)
+    for (const value of [null, 42, 'x'.repeat(10001)])
+      assert.throws(() => repo.saveChampionCounter({ championId: 122, body: value }))
+    assert.throws(() => repo.saveChampionCounter({ championId: 999999, body: '対策' }))
+    assert.throws(() => repo.getChampionCounter('122'))
+    assert.ok(repo.getChampionCounter(122).includes('パッシブ'))
+    repo.close()
+    repo = new NotebookRepository(path, catalog.champions)
+    assert.ok(repo.getChampionCounter(122).includes('パッシブ'))
+    repo.saveChampionCounter({ championId: 122, body: '更新した対策' })
+    assert.equal(repo.getChampionCounter(122), '更新した対策')
+    repo.saveChampionCounter({ championId: 122, body: ' \n ' })
+    assert.equal(repo.getChampionCounter(122), '')
+    assert.equal(repo.getChampionPage(122).notes.length, 1)
+    assert.equal(repo.getMatchup(key).notes.length, 1)
+  } finally {
+    repo.close()
+    rmSync(directory, { recursive: true, force: true })
+  }
+})
+
 test('My Picks persist per enemy/role, sort by matchup rating, update without duplicates', () => {
   const repo = new NotebookRepository(':memory:', catalog.champions)
   try {
@@ -82,7 +129,7 @@ test('v3 migration preserves notes and persists My Picks and pins after reopenin
     repo.close()
     const legacy = new DatabaseSync(file)
     legacy.exec(
-      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; PRAGMA user_version=3',
+      'DROP TABLE champion_counters; DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; PRAGMA user_version=3',
     )
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)
@@ -132,7 +179,7 @@ test('v2 migrates to lane pools and retains all existing notes after reopen', ()
     repo.close()
     const legacy = new DatabaseSync(file)
     legacy.exec(
-      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; DROP TABLE champion_pool; PRAGMA user_version=2',
+      'DROP TABLE champion_counters; DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; ALTER TABLE champion_notes DROP COLUMN pinned; DROP TABLE champion_pool; PRAGMA user_version=2',
     )
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)
@@ -190,7 +237,7 @@ test('v1 migration preserves existing matchup data and champion notes persist af
     const legacy = new DatabaseSync(file)
     // Recreate v1 by removing tables introduced in v2 and v3.
     legacy.exec(
-      'DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; DROP TABLE champion_notes; DROP TABLE champion_pool; PRAGMA user_version=1',
+      'DROP TABLE champion_counters; DROP TABLE my_picks; DROP TABLE settings; ALTER TABLE matchup_notes DROP COLUMN pinned; DROP TABLE champion_notes; DROP TABLE champion_pool; PRAGMA user_version=1',
     )
     legacy.close()
     repo = new NotebookRepository(file, catalog.champions)

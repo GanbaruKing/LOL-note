@@ -30,7 +30,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 4) throw new Error('Unsupported database version')
+      if (version > 5) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -96,6 +96,16 @@ export class NotebookRepository {
             );
             CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
             PRAGMA user_version=4;
+          `)
+        }
+        if (version < 5) {
+          this.db.exec(`
+            CREATE TABLE champion_counters (
+              champion_id INTEGER PRIMARY KEY REFERENCES champions(id),
+              body TEXT NOT NULL CHECK(length(body) BETWEEN 1 AND 10000),
+              updated_at TEXT NOT NULL
+            );
+            PRAGMA user_version=5;
           `)
         }
         const insert = this.db.prepare(
@@ -274,7 +284,32 @@ export class NotebookRepository {
     const matchups = this.listMatchups()
       .filter((m) => m.myChampionId === championId)
       .map((m) => this.getMatchup(m))
-    return { championId, notes, matchups }
+    return { championId, notes, matchups, counterStrategy: this.getChampionCounter(championId) }
+  }
+  getChampionCounter(input: unknown): string {
+    const championId = this.championId(input)
+    return (
+      (this.db.prepare('SELECT body FROM champion_counters WHERE champion_id=?').get(championId)
+        ?.body as string | undefined) ?? ''
+    )
+  }
+  saveChampionCounter(input: unknown): ChampionPage {
+    const v = object(input),
+      championId = this.championId(v.championId)
+    if (typeof v.body !== 'string' || v.body.length > 10000)
+      throw new ValidationError('共通対策は10,000文字以内で入力してください。')
+    const body = v.body.trim()
+    return this.transaction(() => {
+      if (!body)
+        this.db.prepare('DELETE FROM champion_counters WHERE champion_id=?').run(championId)
+      else
+        this.db
+          .prepare(
+            'INSERT INTO champion_counters(champion_id,body,updated_at) VALUES (?,?,?) ON CONFLICT(champion_id) DO UPDATE SET body=excluded.body, updated_at=excluded.updated_at',
+          )
+          .run(championId, body, new Date().toISOString())
+      return this.getChampionPage(championId)
+    })
   }
   addChampionNote(input: unknown): ChampionPage {
     const v = object(input),

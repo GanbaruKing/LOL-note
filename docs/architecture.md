@@ -52,3 +52,9 @@ StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノ
 ## Phase 5初期版
 
 MatchHistory.tsx → getMatchHistory / getHistoryMatchの限定IPC → HistoryService → LCUの履歴GET。history-roles.tsが履歴のlane/roleと序盤の位置・CS・SmiteからRoleを判定する。履歴・生タイムラインは永続化せず、選択した対面と試合情報を既存のMatch up入力欄へ渡す。保存は従来のNotebookRepositoryを使用する。認証情報やPUUIDはMain内に留める。[使い方・判定方法・検証範囲](match-history.md)。
+
+## 敵チャンピオンへの共通対策
+
+Champion Libraryの詳細でChampion Notesと独立した共通対策を編集する。入力状態は別管理し、一方の保存で他方の未保存入力を消さない。ページ移動・ウィンドウ終了時には両方の未保存変更を確認する。
+
+Match upのEnemyCounter.tsxは敵Champion IDを使ってgetChampionCounterを読み、自分Champion・Roleと無関係に同じ対策を表示する。敵変更時はコンポーネントを作り直し、旧取得結果を無視する。保存はsaveChampionCounter → NotebookRepository → champion_counters（schema v5）。

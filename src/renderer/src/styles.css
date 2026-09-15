@@ -1560,6 +1560,42 @@ h1 {
   font-size: 11px;
 }
 
+.counter-editor,
+.enemy-counter {
+  padding: 24px;
+}
+.counter-editor h2,
+.enemy-counter h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.counter-editor > p,
+.enemy-counter > p {
+  line-height: 1.8;
+}
+.counter-editor form {
+  margin-top: 18px;
+}
+.counter-editor {
+  margin-top: 20px;
+}
+.counter-editor .section-title {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.counter-editor textarea {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+}
+.enemy-counter {
+  margin: 20px 0;
+}
+.counter-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .history-page {
   display: grid;
   gap: 18px;

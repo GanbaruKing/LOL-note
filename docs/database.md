@@ -1,6 +1,6 @@
 # データベース設計
 
-現在のuser_versionは4。過去のバージョンから順にトランザクションで移行する。
+現在のuser_versionは5。過去のバージョンから順にトランザクションで移行する。
 
 Phase 1ではchampions / matchups / matchup_notesを作る。PRAGMA user_versionでmigrationを管理し、未知の新しいバージョンは拒否する。外部キーを有効にする。SQLへの値の挿入はバインドパラメータで行う。
 
@@ -41,3 +41,9 @@ champion_notesとmatchup_notesにpinned INTEGER NOT NULL DEFAULT 0 CHECK IN (0,1
 settingsはkey TEXT PRIMARY KEYとvalue TEXT。現在はleagueFolderだけをMainが書き込む。LCUのパスワード・ポートは保存しない。
 
 横断検索は個人Notebookの規模を前提にJOIN/UNIONした行をJSで日英名・本文・Role・CategoryのAND条件で絞り込む。大規模化したらFTSとページングを検討する。検索入力は200文字まで。
+
+## Schema v5: 敵チャンピオンへの共通対策
+
+`champion_counters`にchampion_id INTEGER PRIMARY KEY / FK、body TEXT（1〜10000文字）、updated_at TEXTを保存する。チャンピオンごとに1つの文章を持ち、自分のチャンピオンやRoleには依存しない。Champion Notesとは別テーブルで、読み取りだけでは行を作らない。空欄で保存すると対策の行だけを削除する。
+
+getChampionPageはcounterStrategyを含む。getChampionCounter / saveChampionCounterの限定IPCで参照・保存し、Match upはenemyChampionIdの共通対策を表示する。MainでChampion ID・本文型・文字数を検証する。v4からの移行は既存ノートを保持し、テーブル追加とuser_version更新を同一トランザクションで実行する。

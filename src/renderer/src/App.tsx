@@ -5,6 +5,7 @@ import Statistics from './Statistics'
 import NoteSearch from './NoteSearch'
 import ChampSelect from './ChampSelect'
 import MatchHistory from './MatchHistory'
+import EnemyCounter from './EnemyCounter'
 import {
   CATEGORIES,
   ROLES,
@@ -141,6 +142,8 @@ export default function App() {
   const [poolReady, setPoolReady] = useState(false)
   const [detailRole, setDetailRole] = useState<Role | 'ALL'>('ALL')
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
+  const [counterBody, setCounterBody] = useState('')
+  const [counterStatus, setCounterStatus] = useState('')
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
   const [page, setPage] = useState<
@@ -178,9 +181,15 @@ export default function App() {
   const byId = new Map(champions.map((c) => [c.id, c]))
   const mine = byId.get(key.myChampionId),
     enemy = byId.get(key.enemyChampionId)
-  const dirty = editing
+  const noteDirty = editing
     ? body !== editing.body || category !== editing.category
     : body.trim().length > 0
+  const counterDirty =
+    page === 'champions' &&
+    championDetailOpen &&
+    championData?.championId === championId &&
+    counterBody !== championData.counterStrategy
+  const dirty = noteDirty || counterDirty
   const selectedChampion = byId.get(championId)
   const activeNotes = page === 'champions' ? championData?.notes : matchup?.notes
   const activeLoading = page === 'champions' ? championLoading : loading
@@ -259,11 +268,15 @@ export default function App() {
     let cancelled = false
     setChampionLoading(true)
     setChampionData(null)
+    setCounterStatus('')
     setError('')
     setStatus('')
     unwrap(window.notebook.getChampionPage(championId))
       .then((data) => {
-        if (!cancelled) setChampionData(data)
+        if (!cancelled) {
+          setChampionData(data)
+          setCounterBody(data.counterStrategy)
+        }
       })
       .catch((e) => {
         if (!cancelled) setError(e.message)
@@ -297,6 +310,7 @@ export default function App() {
     if (dirty) setPendingNavigation(() => action)
     else {
       resetEditor()
+      setCounterBody(championData?.counterStrategy ?? '')
       action()
     }
   }
@@ -339,6 +353,24 @@ export default function App() {
       setStatus('Comfort Picksに追加しました')
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+  async function saveCounter() {
+    if (!ready || busy || !counterDirty) return
+    setBusy(true)
+    setError('')
+    setCounterStatus('')
+    try {
+      const data = await unwrap(
+        window.notebook.saveChampionCounter({ championId, body: counterBody }),
+      )
+      setChampionData(data)
+      setCounterBody(data.counterStrategy)
+      setCounterStatus('共通対策を保存しました')
+    } catch (e) {
+      setCounterStatus(e instanceof Error ? e.message : '共通対策を保存できませんでした。')
     } finally {
       setBusy(false)
     }
@@ -780,6 +812,58 @@ export default function App() {
                   </div>
                 )}
                 {notesPanel}
+                <section className="counter-editor panel" aria-label="共通対策の編集">
+                  <div className="section-title">
+                    <h2>共通対策</h2>
+                    <span className="save-status" role="status">
+                      {counterStatus}
+                    </span>
+                  </div>
+                  <p className="muted">
+                    {selectedChampion?.name}を敵にしたときの対策。Match
+                    upでこのチャンピオンが相手になると表示します。
+                  </p>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      void saveCounter()
+                    }}
+                  >
+                    <div className="editor-heading">
+                      <label htmlFor="counter-body">このチャンピオンへの対策</label>
+                      <span>{counterBody.length.toLocaleString()} / 10,000</span>
+                    </div>
+                    <textarea
+                      id="counter-body"
+                      value={championLoading ? '' : counterBody}
+                      disabled={!ready || busy}
+                      maxLength={10000}
+                      placeholder="例：主要スキルを使った後に近づく。パッシブが溜まっている間は戦わない。"
+                      onChange={(e) => {
+                        setCounterBody(e.target.value)
+                        setCounterStatus('')
+                      }}
+                      onKeyDown={(e) => {
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                          e.preventDefault()
+                          e.currentTarget.form?.requestSubmit()
+                        }
+                      }}
+                    />
+                    <div className="editor-toolbar">
+                      <span className="shortcut">
+                        Ctrl + Enter で保存 · 空欄で保存すると対策を削除
+                      </span>
+                      <button
+                        className="primary"
+                        type="submit"
+                        disabled={!ready || busy || !counterDirty}
+                      >
+                        共通対策を保存
+                      </button>
+                    </div>
+                  </form>
+                </section>
                 <section
                   className="champion-matchups panel"
                   aria-label="チャンピオンの対面メモ一覧"
@@ -994,6 +1078,7 @@ export default function App() {
                       </div>
                     </div>
                   )}
+                  {enemy && <EnemyCounter key={enemy.id} enemy={enemy} />}
                   {notesPanel}
                   <p className="detail-footer">
                     ノートは自分のチャンピオン・相手・Roleの組み合わせごとに保存されます。
@@ -1024,6 +1109,7 @@ export default function App() {
                   const action = pendingNavigation
                   setPendingNavigation(null)
                   resetEditor()
+                  setCounterBody(championData?.counterStrategy ?? '')
                   action()
                 }}
               >
