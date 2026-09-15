@@ -7,7 +7,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 
 ![Notebookの画面。表示中のノートはテスト用の例です。](docs/screenshots/notebook.png)
 
-## 現在の実装 — Phase 1〜3
+## 主な機能
 
 - 173体のチャンピオンを日本語・英語で検索して選択
 - 自分 × 相手 × RoleごとのMatchupページ
@@ -30,9 +30,17 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - Match Historyから最近の試合を表示し、Role・対戦相手の自動判定から対面メモを作成
 
 初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
-統計はJSON v1取り込みに対応しています。[独立統計CLI](tools/stats/README.md)の収集・最適化・JSON v2接続は保留中です。Installerは後続の工程です。
+統計はJSON v1取り込みに対応しています。[独立統計CLI](tools/stats/README.md)の収集・最適化・JSON v2接続は保留中です。
 
-## 起動手順
+## Windows版のインストール
+
+`LOL-Note-Setup-0.1.0-x64.exe` を実行し、画面に従ってインストールします。Windows x64向けです。Node.jsやnpmは不要で、スタートメニューまたはデスクトップの「LOL Note」から起動できます。
+
+現在のビルドは署名なしです。Windowsの警告が表示される場合があります。インストーラーの作成方法と検証範囲は[配布手順](docs/release.md)を参照してください。GitHub Releaseへの公開はまだ行っていません。
+
+既存データは `%APPDATA%/lol-matchup-companion/notebook.sqlite` を引き継ぎます。更新やアンインストールで個人データを削除しません。
+
+## 開発用の起動手順
 
 Windows、Node.js 24以降、npmが必要です。初回の依存取得にはネット接続を使用します。
 
@@ -48,7 +56,7 @@ npm run build
 npm start
 ```
 
-現段階は開発用の起動方式です。配布用exe / Installerはまだ生成しません。
+`npm run dist` で `dist/` にWindows x64インストーラーを生成します。
 
 ## 使用方法
 
@@ -67,7 +75,15 @@ Match up左側のFavorite Championsには、選択中のRoleに登録したチ�
 
 ![チャンピオン単体のメモと対面メモ一覧](docs/screenshots/champions.png)
 
-星を再度クリックすると評価を解除できます。データはOSのアプリ保存フォルダーにある `notebook.sqlite` に保存します。具体的なパスはSettingsに表示します。バックアップはアプリ終了後にこのファイルをコピーしてください。クラウド同期はありません。
+星を再度クリックすると評価を解除できます。データはOSのアプリ保存フォルダーにある `notebook.sqlite` に保存します。具体的なパスはSettingsに表示します。クラウド同期はありません。
+
+### バックアップ・復元
+
+Settingsの「バックアップを保存」で、対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Champions・Comfort PicksをJSONへ保存できます。
+
+「バックアップから復元」は現在の内容を置き換えます。確認後、復元前のデータを保存先フォルダー内の `backups/` に自動退避します。不正なファイルや書き込み失敗時は既存データを保持します。Leagueのフォルダー設定、統計JSON、履歴、認証情報は対象外です。[形式と復元の詳細](docs/backup.md)。
+
+![バックアップ設定。表示パスは説明用の例です。](docs/screenshots/backup.png)
 
 ### チャンピオン対策
 

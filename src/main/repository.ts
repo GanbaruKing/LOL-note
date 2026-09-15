@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite'
+import { backupTables, parseBackup, type NotebookBackup } from './backup'
 import type {
   Champion,
   ChampionPage,
@@ -120,6 +121,39 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  exportBackup(): NotebookBackup {
+    return this.transaction(() => ({
+      format: 'lol-note',
+      version: 1,
+      createdAt: new Date().toISOString(),
+      tables: Object.fromEntries(
+        Object.entries(backupTables).map(([table, columns]) => [
+          table,
+          this.db.prepare(`SELECT ${columns.join(',')} FROM ${table} ORDER BY rowid`).all(),
+        ]),
+      ) as NotebookBackup['tables'],
+    }))
+  }
+  restoreBackup(input: unknown) {
+    const backup = parseBackup(input)
+    try {
+      this.transaction(() => {
+        for (const table of Object.keys(backupTables).reverse())
+          this.db.exec(`DELETE FROM ${table}`)
+        for (const [table, columns] of Object.entries(backupTables)) {
+          const insert = this.db.prepare(
+            `INSERT INTO ${table} (${columns.join(',')}) VALUES (${columns.map(() => '?').join(',')})`,
+          )
+          for (const row of backup.tables[table as keyof typeof backupTables])
+            insert.run(...columns.map((column) => row[column]))
+        }
+      })
+    } catch {
+      throw new ValidationError(
+        '復元できませんでした。重複や未対応のチャンピオンを確認してください。現在のデータは保持されています。',
+      )
+    }
   }
   getLeagueFolder(): string | undefined {
     return this.db.prepare("SELECT value FROM settings WHERE key='leagueFolder'").get()?.value as

@@ -10,7 +10,7 @@ Node組み込みSQLiteを採用し、ネイティブアドオン再ビルドを�
 
 ## 003: 開発ビルドはelectron-vite
 
-Electron Forgeは配布フェーズで評価する。Vite / TypeScriptは周辺ツールが対応するメジャーを選び、package-lock.jsonで固定する。最新メジャーを無条件に組み合わせない。
+開発ビルドにelectron-vite、Windows配布にelectron-builder 26.15.3とNSISを採用。既存のout出力を梱包し、ユーザー単位のインストールとショートカットを作成する。Vite / TypeScriptは周辺ツールが対応するメジャーを選び、package-lock.jsonで固定する。最新メジャーを無条件に組み合わせない。
 
 ## 004: 同梱カタログ
 

@@ -138,6 +138,8 @@ export interface StatisticsData {
   rows: (MatchupKey & { games: number; wins: number })[]
 }
 export interface NotebookApi {
+  exportBackup(): Promise<Result<string | null>>
+  restoreBackup(): Promise<Result<string | null>>
   getChampionCounter(championId: number): Promise<Result<string>>
   saveChampionCounter(input: { championId: number; body: string }): Promise<Result<ChampionPage>>
   getMatchHistory(): Promise<Result<HistoryList>>

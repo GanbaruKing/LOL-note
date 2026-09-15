@@ -49,3 +49,7 @@ settingsはkey TEXT PRIMARY KEYとvalue TEXT。現在はleagueFolderだけをMai
 `champion_counters`にchampion_id INTEGER PRIMARY KEY / FK、body TEXT（1〜10000文字）、updated_at TEXTを保存する。チャンピオンごとに1つの文章を持ち、自分のチャンピオンやRoleには依存しない。Champion Notesとは別テーブルで、読み取りだけでは行を作らない。空欄で保存すると対策の行だけを削除する。
 
 getChampionPageはcounterStrategyを含む。getChampionCounter / saveChampionCounterの限定IPCで参照・保存し、Match upはenemyChampionIdの共通対策を表示する。MainでChampion ID・本文型・文字数を検証する。v4からの移行は既存ノートを保持し、テーブル追加とuser_version更新を同一トランザクションで実行する。
+
+## バックアップ形式v1
+
+DBスキーマv5を維持する。設定・カタログ以外の6テーブルを論理JSONとして保存し、復元時は既存カタログへの外部キーと値を検証する。ID・日時・Pinを維持し、全置換を1トランザクションで行う。[バックアップ仕様](backup.md)。

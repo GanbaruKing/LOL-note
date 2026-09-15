@@ -146,6 +146,7 @@ export default function App() {
   const [counterStatus, setCounterStatus] = useState('')
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
+  const [backupStatus, setBackupStatus] = useState('')
   const [page, setPage] = useState<
     'notebook' | 'champions' | 'settings' | 'search' | 'select' | 'history'
   >('notebook')
@@ -732,6 +733,53 @@ export default function App() {
           ) : page === 'settings' ? (
             <section className="settings-panel panel">
               <h2>ローカルデータ</h2>
+              <h3>バックアップ・復元</h3>
+              <p>
+                メモ・対策・評価・Favorite Champions・Comfort
+                PicksをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
+              </p>
+              {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
+                <button
+                  key={operation}
+                  className="primary"
+                  style={{ marginRight: 12, marginBottom: 8 }}
+                  disabled={busy}
+                  onClick={async () => {
+                    setBusy(true)
+                    setError('')
+                    setBackupStatus('')
+                    try {
+                      const path = await unwrap(window.notebook[operation]())
+                      if (path) {
+                        if (operation === 'restoreBackup') {
+                          await initialize()
+                          setKey({ ...key })
+                          setReload((value) => value + 1)
+                        }
+                        setBackupStatus(
+                          operation === 'exportBackup'
+                            ? `保存しました：${path}`
+                            : `復元しました。復元前のバックアップ：${path}`,
+                        )
+                      }
+                    } catch (e) {
+                      setError((e as Error).message)
+                    } finally {
+                      setBusy(false)
+                    }
+                  }}
+                >
+                  {operation === 'exportBackup' ? 'バックアップを保存' : 'バックアップから復元'}
+                </button>
+              ))}
+              <p
+                role="status"
+                aria-label="バックアップ処理結果"
+                style={{ overflowWrap: 'anywhere' }}
+              >
+                {busy ? '処理中…' : backupStatus}
+              </p>
+              <hr />
               <p>メモはこのPCのSQLiteデータベースへ保存されます。</p>
               <label>保存先</label>
               <code>{info?.databasePath ?? '読み込み中…'}</code>

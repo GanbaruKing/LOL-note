@@ -62,3 +62,9 @@ MatchupPool.tsxはAppが取得した既存のpoolを現在のRoleで絞り、自
 Champion Libraryの詳細でChampion Notesと独立した共通対策を編集する。入力状態は別管理し、一方の保存で他方の未保存入力を消さない。ページ移動・ウィンドウ終了時には両方の未保存変更を確認する。
 
 Match upのEnemyCounter.tsxは敵Champion IDを使ってgetChampionCounterを読み、自分Champion・Roleと無関係に同じ対策を表示する。敵変更時はコンポーネントを作り直し、旧取得結果を無視する。保存はsaveChampionCounter → NotebookRepository → champion_counters（schema v5）。
+
+## バックアップとWindows配布
+
+Settings → 限定IPC → Mainのファイルダイアログ → NotebookRepository。backup.tsで形式・列・値を検証し、6テーブルを一括置換する。復元前の自動JSON退避とSQLiteトランザクションで既存データを保護する。設定・認証・統計とは分離する。詳細は[backup.md](backup.md)。
+
+electron-viteのoutをelectron-builderでNSISに梱包する。アプリ名はLOL Note、保存先は互換性のためlol-matchup-companionのまま。詳細は[release.md](release.md)。

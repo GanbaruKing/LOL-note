@@ -8,6 +8,7 @@ export default tseslint.config(
       '**/node_modules/**',
       'tools/stats/**',
       'out/**',
+      'dist/**',
       '.npm-cache/**',
       '.electron-cache/**',
       'test-results/**',

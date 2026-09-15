@@ -1,8 +1,10 @@
 import { JsonStatisticsProvider } from './statistics'
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
-import { join } from 'node:path'
+import { join, extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, readFileSync, statSync, writeFileSync, renameSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import { parseBackup } from './backup'
 import catalog from '../../resources/champions.json'
 import { NotebookRepository } from './repository'
 import { ValidationError } from '../shared/validation'
@@ -33,11 +35,66 @@ const devUrl = !app.isPackaged ? process.env.ELECTRON_RENDERER_URL : undefined
 const rendererUrl = devUrl ? new URL(devUrl).href : pathToFileURL(rendererFile).href
 
 function registerApi(databasePath: string) {
+  let maintenance = false
+  const writeBackup = (path: string) => {
+    const data = JSON.stringify(parseBackup(repository!.exportBackup()), null, 2)
+    if (Buffer.byteLength(data) > 50 * 1024 * 1024)
+      throw new ValidationError('バックアップの上限50MBを超えています。')
+    const temporary = `${path}.${randomUUID()}.tmp`
+    writeFileSync(temporary, data, { flag: 'wx' })
+    renameSync(temporary, path)
+  }
   const history = new HistoryService(
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
   const statistics = new JsonStatisticsProvider(join(app.getPath('userData'), 'statistics.json'))
   const handlers: Record<string, (input: unknown) => unknown> = {
+    exportBackup: async () => {
+      const choice = await dialog.showSaveDialog(mainWindow!, {
+        title: 'バックアップを保存',
+        defaultPath: `LOL-Note-${new Date().toISOString().slice(0, 10)}.json`,
+        filters: [{ name: 'LOL Note Backup', extensions: ['json'] }],
+      })
+      if (choice.canceled || !choice.filePath) return null
+      if (extname(choice.filePath).toLowerCase() !== '.json')
+        throw new ValidationError('保存先には.jsonファイルを指定してください。')
+      writeBackup(choice.filePath)
+      return choice.filePath
+    },
+    restoreBackup: async () => {
+      const choice = await dialog.showOpenDialog(mainWindow!, {
+        title: 'バックアップから復元',
+        properties: ['openFile'],
+        filters: [{ name: 'LOL Note Backup', extensions: ['json'] }],
+      })
+      if (choice.canceled || !choice.filePaths[0]) return null
+      const path = choice.filePaths[0]
+      if (statSync(path).size > 50 * 1024 * 1024)
+        throw new ValidationError('バックアップは50MB以下にしてください。')
+      let backup
+      try {
+        backup = parseBackup(JSON.parse(readFileSync(path, 'utf8')))
+      } catch {
+        throw new ValidationError('有効なLOL Noteバックアップを選択してください。')
+      }
+      const confirmation = await dialog.showMessageBox(mainWindow!, {
+        type: 'warning',
+        title: 'バックアップから復元',
+        message: '保存済みのメモ・対策・評価・登録ピックを置き換えます。',
+        detail:
+          '現在のデータは復元前に自動バックアップします。Leagueのフォルダー設定と統計JSONは変更しません。',
+        buttons: ['キャンセル', '復元する'],
+        defaultId: 0,
+        cancelId: 0,
+      })
+      if (confirmation.response !== 1) return null
+      const directory = join(app.getPath('userData'), 'backups')
+      mkdirSync(directory, { recursive: true })
+      const safetyPath = join(directory, `before-restore-${Date.now()}-${randomUUID()}.json`)
+      writeBackup(safetyPath)
+      repository!.restoreBackup(backup)
+      return safetyPath
+    },
     getChampionCounter: (input) => repository!.getChampionCounter(input),
     saveChampionCounter: (input) => repository!.saveChampionCounter(input),
     getMatchHistory: () => history.list(),
@@ -97,7 +154,15 @@ function registerApi(databasePath: string) {
         return { ok: false, error: '許可されていないリクエストです。' }
       }
       try {
-        return { ok: true, data: await handler(input) }
+        if (maintenance && !/^(get|list|search)/.test(name))
+          throw new ValidationError('バックアップ処理の完了をお待ちください。')
+        const isMaintenance = name === 'exportBackup' || name === 'restoreBackup'
+        if (isMaintenance) maintenance = true
+        try {
+          return { ok: true, data: await handler(input) }
+        } finally {
+          if (isMaintenance) maintenance = false
+        }
       } catch (error) {
         console.error(
           `Notebook operation failed: ${name}`,

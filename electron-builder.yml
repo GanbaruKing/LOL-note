@@ -1,0 +1,25 @@
+appId: io.github.ganbaruking.lolnote
+productName: LOL Note
+directories:
+  output: dist
+files:
+  - out/**/*
+  - package.json
+  - LICENSE
+asar: true
+npmRebuild: false
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  signExecutable: false
+  icon: build/icon.png
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: LOL Note
+  deleteAppDataOnUninstall: false
+artifactName: LOL-Note-Setup-${version}-${arch}.${ext}

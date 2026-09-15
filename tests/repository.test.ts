@@ -10,6 +10,64 @@ import catalog from '../resources/champions.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
 const input = { key, category: 'Laning', body: '相手のQに注意する' }
 
+test('backup round trip preserves all notebook data and failed restores roll back', () => {
+  const repo = new NotebookRepository(':memory:', catalog.champions)
+  try {
+    const note = repo.addNote(input).notes[0]
+    repo.pinNote({ scope: 'matchup', id: note.id, pinned: true })
+    repo.addChampionNote({ championId: 122, category: 'General', body: '単体メモ' })
+    repo.saveChampionCounter({ championId: 122, body: '対策' })
+    repo.saveOverview({ key, overview: { difficulty: 'Hard', rating: 4 } })
+    repo.savePool({ championId: 266, role: 'TOP', confidence: 5 })
+    repo.saveMyPick(key)
+    repo.setLeagueFolder('local-only')
+    const backup = repo.exportBackup()
+    assert.ok(!JSON.stringify(backup).includes('local-only'))
+    repo.saveChampionCounter({ championId: 122, body: '変更後' })
+    repo.restoreBackup(JSON.parse(JSON.stringify(backup)))
+    assert.deepEqual(repo.exportBackup().tables, backup.tables)
+    assert.equal(repo.getLeagueFolder(), 'local-only')
+    for (const breakBackup of [
+      (v: typeof backup) => {
+        v.version = 2 as 1
+      },
+      (v: typeof backup) => {
+        v.tables.champion_notes[0].body = ''
+      },
+      (v: typeof backup) => {
+        v.tables.champion_pool[0].champion_id = 999999
+      },
+      (v: typeof backup) => {
+        v.tables.matchup_notes[0].matchup_id = 999999
+      },
+      (v: typeof backup) => {
+        v.tables.my_picks.push(v.tables.my_picks[0])
+      },
+      (v: typeof backup) => {
+        v.tables.champion_counters[0].updated_at = 'bad-date'
+      },
+    ]) {
+      const invalid = structuredClone(backup)
+      breakBackup(invalid)
+      assert.throws(() => repo.restoreBackup(invalid))
+      assert.deepEqual(repo.exportBackup().tables, backup.tables)
+    }
+    const empty = new NotebookRepository(':memory:', catalog.champions)
+    try {
+      repo.restoreBackup(empty.exportBackup())
+    } finally {
+      empty.close()
+    }
+    assert.equal(repo.getMatchup(key).notes.length, 0)
+    assert.equal(repo.getChampionCounter(122), '')
+    assert.equal(repo.listPool().length, 0)
+    repo.restoreBackup(backup)
+    assert.deepEqual(repo.exportBackup().tables, backup.tables)
+  } finally {
+    repo.close()
+  }
+})
+
 test('v4 migration preserves notes and counters stay independent, validated and persistent', () => {
   const directory = mkdtempSync(join(tmpdir(), 'notebook-counters-'))
   const path = join(directory, 'notebook.sqlite')
