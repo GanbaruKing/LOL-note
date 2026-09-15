@@ -59,7 +59,6 @@ export default function MyPicks({
     <section className="my-picks panel" aria-label="Comfort Picks">
       <div className="section-title">
         <h2>Comfort Picks</h2>
-        <small>自分の評価が高い順</small>
       </div>
       {error && (
         <p className="error-banner" role="alert">
@@ -69,7 +68,10 @@ export default function MyPicks({
       {loading ? (
         <p className="empty">読み込み中…</p>
       ) : !picks.length ? (
-        <p className="pool-empty">得意な対面をOverviewから追加しましょう。</p>
+        <p className="pool-empty">
+          {champions.find((c) => c.id === enemyChampionId)?.name ?? 'このチャンピオン'}
+          に対して得意なピックを追加しましょう。
+        </p>
       ) : (
         <div className="pick-list">
           {picks.map((p) => {

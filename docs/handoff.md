@@ -13,6 +13,7 @@
 - 現ブランチは`feature/matchup-champion-pool`。`42fb0b9`から分岐。
 - ユーザー依頼によりMatch up左側のTop Matchup PicksをChampion Poolへ置換。
 - 追加指定でMatch up側の表示名を「Favorite Champions」へ変更。Champion Library側のMy Champion Poolはそのまま。
+- Comfort Picksの「自分の評価が高い順」を削除。空状態は「敵チャンピオン名に対して得意なピックを追加しましょう。」と表示する。
 - 現在のRoleのプールを自信度順に表示し、選択すると自分Championだけを切り替える。未保存メモの確認は既存動作を使用。
 - 「プールを編集」から同じRoleのChampion Libraryへ移動できる。既存プールを共有し、DB変更なし。
 - Champ Selectの統計表示は引き続き存在。統計収集の保留方針は継続。
