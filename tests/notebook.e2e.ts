@@ -13,11 +13,17 @@ test('gallery opens details and lane pools persist with independent confidence',
     ),
   )
   delete env.ELECTRON_RUN_AS_NODE
-  env.NOTEBOOK_TEST_DATA_DIR = folder
+  env.NOTEBOOK_TEST_DATA_DIR = join(folder, 'fresh-profile')
   const launch = () => electron.launch({ args: [resolve('.')], env })
   let app = await launch()
   try {
     let page = await app.firstWindow()
+    expect(
+      await app.evaluate(({ app }) => ({
+        data: app.getPath('userData'),
+        session: app.getPath('sessionData'),
+      })),
+    ).toEqual({ data: env.NOTEBOOK_TEST_DATA_DIR, session: env.NOTEBOOK_TEST_DATA_DIR })
     await page.context().setOffline(true)
     await page.getByRole('button', { name: /Champions/ }).click()
     await expect(page.locator('.library-card')).toHaveCount(173)

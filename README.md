@@ -1,4 +1,4 @@
-# LoL Matchup Companion
+# LOL Note
 
 試合履歴から対面を自動判定し、振り返りをメモに残せます。[使い方と判定方法](docs/match-history.md)を参照してください。
 
@@ -60,6 +60,8 @@ npm start
 Championsではカード一覧からチャンピオンを選ぶと、そのチャンピオン自身のメモを直接編集できます。対面やRoleを選ぶ必要はありません。下のMatchup Notesには、そのチャンピオンを自分のPickとして記録した対面メモが並びます。「チャンピオン一覧に戻る」でカード一覧へ戻れます。
 
 一覧上部のMy Champion Poolでレーンを選び、カードの「レーンに登録」からプールへ追加します。同じチャンピオンを複数レーンへ登録でき、自信度はレーンごとに1〜5で保存します。初期値は3です。「解除」は該当レーンのプールから外す操作で、メモは削除しません。レーンは自分の登録を表し、ゲーム全体での推奨レーンを自動分類するものではありません。
+
+Match up左側のChampion Poolには、選択中のRoleに登録したチャンピオンを自信度順に表示します。クリックすると相手とRoleを保ったまま自分のチャンピオンを切り替えます。「プールを編集」から同じRoleの登録画面へ移動できます。
 
 ![カード一覧とレーン別プール](docs/screenshots/champion-library.png)
 
@@ -152,13 +154,13 @@ APIキー、LCU認証情報、`.env`、個人DBはコミットしません。こ
 ## Assets
 
 Champion名・画像は [Riot Games Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon) を利用しています。
-LoL Matchup Companion is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
+LOL Note is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
 
 All Championsはレーンタブと名前検索を組み合わせて絞り込めます。レーン分類は同梱データを使用し、分類未収録のチャンピオンはAllに表示します。分類元：[Meraki Analytics](https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json)。
 
 ## Statistics（Phase 4）
 
-Match upとChamp Selectで、100試合以上の対面統計を勝率順に表示します。Comfort Picksとは別管理です。初期版はJSON取り込み対応で、実統計の自動取得は未実装です。「サンプルを見る」では架空データと明示した表示を確認できます。JSON形式・出典・パッチの扱いは[統計の説明](docs/statistics.md)を参照してください。
+Champ Selectで、100試合以上の対面統計を勝率順に表示します。Match upのTop Matchup PicksはChampion Poolに置き換えました。Comfort Picksとは別管理です。初期版はJSON取り込み対応で、実統計の自動取得は未実装です。「サンプルを見る」では架空データと明示した表示を確認できます。JSON形式・出典・パッチの扱いは[統計の説明](docs/statistics.md)を参照してください。
 
 ## Riot APIによる履歴標本の収集
 

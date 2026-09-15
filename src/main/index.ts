@@ -13,9 +13,21 @@ import { HistoryService } from './history'
 let repository: NotebookRepository | undefined
 let mainWindow: BrowserWindow | null = null
 let lcu: LcuService | undefined
+app.setName('LOL Note')
+// Keep the existing storage identity when renaming the product, including Chromium data.
 // Only explicit test launches can redirect storage; the renderer cannot choose a path.
-if (process.env.NOTEBOOK_TEST_DATA_DIR && !app.isPackaged)
-  app.setPath('userData', process.env.NOTEBOOK_TEST_DATA_DIR)
+const storageDirectory =
+  process.env.NOTEBOOK_TEST_DATA_DIR && !app.isPackaged
+    ? process.env.NOTEBOOK_TEST_DATA_DIR
+    : join(app.getPath('appData'), 'lol-matchup-companion')
+let storageSetupFailed = false
+try {
+  mkdirSync(storageDirectory, { recursive: true })
+  app.setPath('userData', storageDirectory)
+  app.setPath('sessionData', storageDirectory)
+} catch {
+  storageSetupFailed = true
+}
 const rendererFile = join(__dirname, '../renderer/index.html')
 const devUrl = !app.isPackaged ? process.env.ELECTRON_RENDERER_URL : undefined
 const rendererUrl = devUrl ? new URL(devUrl).href : pathToFileURL(rendererFile).href
@@ -109,7 +121,7 @@ async function createWindow() {
     height: 940,
     minWidth: 1000,
     minHeight: 720,
-    title: 'LoL Matchup Companion',
+    title: 'LOL Note',
     backgroundColor: '#101217',
     autoHideMenuBar: true,
     show: false,
@@ -153,6 +165,7 @@ else {
   app
     .whenReady()
     .then(async () => {
+      if (storageSetupFailed) throw new Error('Storage directory unavailable')
       const directory = app.getPath('userData')
       mkdirSync(directory, { recursive: true })
       const databasePath = join(directory, 'notebook.sqlite')

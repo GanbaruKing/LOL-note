@@ -1,5 +1,6 @@
 {
-  "name": "lol-matchup-companion",
+  "name": "lol-note",
+  "productName": "LOL Note",
   "version": "0.1.0",
   "private": true,
   "description": "An offline-first personal League of Legends matchup notebook",

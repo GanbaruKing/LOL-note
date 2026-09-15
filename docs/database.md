@@ -2,6 +2,8 @@
 
 現在のuser_versionは5。過去のバージョンから順にトランザクションで移行する。
 
+製品名はLOL Note。名称変更前のデータを継続利用するため、userDataとsessionDataはappData配下の`lol-matchup-companion`に固定する。テスト起動時のみ従来どおり専用フォルダーへ切り替える。
+
 Phase 1ではchampions / matchups / matchup_notesを作る。PRAGMA user_versionでmigrationを管理し、未知の新しいバージョンは拒否する。外部キーを有効にする。SQLへの値の挿入はバインドパラメータで行う。
 
 | テーブル      | 主な列・制約                                                                                                                                    |

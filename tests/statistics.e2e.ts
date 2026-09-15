@@ -1,10 +1,18 @@
 import { test, expect, _electron as electron } from '@playwright/test'
 import { mkdtempSync, mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { resolve, join } from 'node:path'
+import { createMockLcu } from './mock-lcu'
+import { NotebookRepository } from '../src/main/repository'
+import catalog from '../resources/champions.json'
 
-test('statistics stay separate from personal picks, import and persist offline', async () => {
+test('Champ Select statistics stay separate from personal picks, import and persist', async () => {
   mkdirSync('.test-data', { recursive: true })
   const folder = mkdtempSync(resolve('.test-data', 'statistics-'))
+  const mock = await createMockLcu(join(folder, 'league'))
+  mock.scenario.phase = 'ChampSelect'
+  const repo = new NotebookRepository(join(folder, 'notebook.sqlite'), catalog.champions)
+  repo.setLeagueFolder(join(folder, 'league'))
+  repo.close()
   const env: Record<string, string> = Object.fromEntries(
     Object.entries(process.env).filter(
       (entry): entry is [string, string] => entry[1] !== undefined,
@@ -16,6 +24,8 @@ test('statistics stay separate from personal picks, import and persist offline',
   try {
     let page = await app.firstWindow()
     await page.context().setOffline(true)
+    await page.getByRole('button', { name: 'Champ Selectを開く →' }).click()
+    await page.locator('.enemy-picks').getByRole('button', { name: 'Darius', exact: true }).click()
     const panel = page.getByRole('region', { name: 'Statistics', exact: true })
     await expect(panel).toContainText('未接続')
     await panel.getByText('データ設定・サンプル', { exact: true }).click()
@@ -36,12 +46,8 @@ test('statistics stay separate from personal picks, import and persist offline',
     await page.getByLabel('統計の最低試合数').fill('100')
     await panel.getByRole('button', { name: '条件を適用' }).click()
     await expect(panel.locator('.statistics-row')).toHaveCount(3)
-    await page.getByLabel('新しいメモ', { exact: true }).fill('未保存メモ')
     await panel.locator('.statistics-row').first().click()
-    await expect(page.getByRole('alertdialog')).toBeVisible()
-    await page.getByRole('button', { name: '編集を続ける', exact: true }).click()
-    await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue('未保存メモ')
-    await page.getByLabel('新しいメモ', { exact: true }).fill('')
+    await expect(page.getByLabel('Champ Selectの自分Pick')).toHaveValue('164')
     await app.evaluate(({ dialog }, path) => {
       dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] })
     }, resolve('resources/statistics-sample.json'))
@@ -53,13 +59,16 @@ test('statistics stay separate from personal picks, import and persist offline',
     await app.close()
     app = await electron.launch({ args: [resolve('.')], env })
     page = await app.firstWindow()
+    await page.getByRole('button', { name: 'Champ Selectを開く →' }).click()
+    await page.locator('.enemy-picks').getByRole('button', { name: 'Darius', exact: true }).click()
     await expect(page.locator('.statistics-row')).toHaveCount(3)
-    await page.getByLabel('ROLE', { exact: true }).selectOption('MID')
+    await page.getByLabel('Champ Selectのレーン', { exact: true }).selectOption('MID')
     await expect(page.locator('.statistics-row')).toHaveCount(0)
     await expect(page.getByRole('region', { name: 'Statistics' })).toContainText(
       '条件を満たすデータはありません',
     )
   } finally {
     await app.close()
+    await mock.close()
   }
 })

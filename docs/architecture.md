@@ -43,7 +43,7 @@ Mainの限定IPCにMy Picks、Pin、検索、LCU snapshot、フォルダー選�
 
 ## Phase 4
 
-StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノートDBと分離し、userData/statistics.jsonに保存する。統計の取り込み・参照は限定IPCで行い、同じStatisticsコンポーネントをMatch upとChamp Selectで利用する。詳細はstatistics.mdを参照。
+StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノートDBと分離し、userData/statistics.jsonに保存する。統計の取り込み・参照は限定IPCで行い、StatisticsコンポーネントをChamp Selectで利用する。Match up側は後続のUI変更でChampion Poolへ置換した。詳細はstatistics.mdを参照。
 
 ## 独立したGlobal統計生成
 
@@ -52,6 +52,10 @@ StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノ
 ## Phase 5初期版
 
 MatchHistory.tsx → getMatchHistory / getHistoryMatchの限定IPC → HistoryService → LCUの履歴GET。history-roles.tsが履歴のlane/roleと序盤の位置・CS・SmiteからRoleを判定する。履歴・生タイムラインは永続化せず、選択した対面と試合情報を既存のMatch up入力欄へ渡す。保存は従来のNotebookRepositoryを使用する。認証情報やPUUIDはMain内に留める。[使い方・判定方法・検証範囲](match-history.md)。
+
+## Match upのChampion Pool
+
+MatchupPool.tsxはAppが取得した既存のpoolを現在のRoleで絞り、自信度降順で表示する。選択は既存のchoose/navigateへ渡し、敵・Roleと未保存メモ確認を保持する。編集ボタンからChampion Libraryへ遷移し、initialRoleで同じRoleを開く。データベースやIPCの追加はない。
 
 ## 敵チャンピオンへの共通対策
 

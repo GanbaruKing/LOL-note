@@ -1,6 +1,6 @@
 # Phase 4: Statistics
 
-Match upの左側とChamp Selectに、Comfort Picksとは独立した統計を表示する。行をクリックするとアプリ内の対象メモを開く。ゲーム側のPickを変更せず、Comfort Picksにも自動登録しない。
+Champ Selectに、Comfort Picksとは独立した統計を表示する。Match up左側の統計表示はChampion Poolに置き換えた。行をクリックするとアプリ内の対象メモを開く。ゲーム側のPickを変更せず、Comfort Picksにも自動登録しない。
 
 ## データ
 

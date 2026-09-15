@@ -8,9 +8,19 @@
 
 2026-09-15の後続タスクで、ユーザーがPhase 5「試合履歴からの振り返り」の開発を承認。`feature/match-history-review`で初期版を実装した。統計機能は引き続き保留。
 
-## 最新追記：敵チャンピオンへの共通対策
+## 最新追記：Match upのChampion Pool
 
-- 現ブランチは`feature/champion-counter-notes`。`af0d887`から分岐。
+- 現ブランチは`feature/matchup-champion-pool`。`42fb0b9`から分岐。
+- ユーザー依頼によりMatch up左側のTop Matchup PicksをChampion Poolへ置換。
+- 現在のRoleのプールを自信度順に表示し、選択すると自分Championだけを切り替える。未保存メモの確認は既存動作を使用。
+- 「プールを編集」から同じRoleのChampion Libraryへ移動できる。既存プールを共有し、DB変更なし。
+- Champ Selectの統計表示は引き続き存在。統計収集の保留方針は継続。
+- 追加依頼で製品名をLOL Noteへ変更。ウィンドウ・HTML title・サイドバー・package名を更新し、userData/sessionDataは従来のlol-matchup-companionフォルダーを使用して既存データを引き継ぐ。
+- Build・28 unit tests・全9件のE2E・Lint・Git diffチェック成功。初回の保存フォルダー作成と再起動後のプール保持も確認した。
+
+## 追記：敵チャンピオンへの共通対策
+
+- この機能の実装時のブランチは`feature/champion-counter-notes`。`af0d887`から分岐。
 - ユーザー依頼: Champion LibraryのChampion Notesとは別に敵チャンピオンへの共通対策を書き、Match upでその敵を選んだとき表示する。
 - Champion詳細に共通対策の文章欄（最大10,000文字）を追加。敵Champion単位で1件保存し、自分Champion・Roleに依存しない。空欄で保存すると削除する。
 - Match upのMy Notesの上に敵への対策を表示。Champion Notesとの同時編集、保存失敗時の入力保持、未保存移動確認に対応。

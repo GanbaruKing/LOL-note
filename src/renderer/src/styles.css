@@ -1560,6 +1560,57 @@ h1 {
   font-size: 11px;
 }
 
+.matchup-pool {
+  margin-top: 20px;
+  padding: 16px;
+}
+.matchup-pool h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.matchup-pool > p {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.matchup-pool-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+.matchup-pool-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px;
+  border: 1px solid transparent;
+}
+.matchup-pool-pick[aria-pressed='true'] {
+  border-color: #a38ae0;
+  background: #2a263c;
+}
+.matchup-pool-pick strong {
+  font-size: 13px;
+}
+.matchup-pool-pick small {
+  font-size: 11px;
+  margin-top: 3px;
+}
+.matchup-pool-pick .pool-confidence {
+  color: #c4b2f4;
+}
+.matchup-pool-pick .selected-mark {
+  margin-left: auto;
+}
+.pool-manage {
+  margin-top: 16px;
+  padding: 8px 0;
+  color: #c4b2f4;
+  font-size: 12px;
+}
+
 .counter-editor,
 .enemy-counter {
   padding: 24px;

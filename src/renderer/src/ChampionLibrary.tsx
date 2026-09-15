@@ -4,6 +4,7 @@ import { ROLES, type Champion, type PoolEntry, type Role } from '../../shared/co
 
 export default function ChampionLibrary({
   champions,
+  initialRole = 'TOP',
   pool,
   busy,
   ready,
@@ -12,6 +13,7 @@ export default function ChampionLibrary({
   onRemove,
 }: {
   champions: Champion[]
+  initialRole?: Role
   pool: PoolEntry[]
   busy: boolean
   ready: boolean
@@ -19,7 +21,7 @@ export default function ChampionLibrary({
   onSave: (entry: PoolEntry) => void
   onRemove: (entry: PoolEntry) => void
 }) {
-  const [role, setRole] = useState<Role>('TOP')
+  const [role, setRole] = useState<Role>(initialRole)
   const [query, setQuery] = useState('')
   const [laneFilter, setLaneFilter] = useState<Role | 'ALL'>('ALL')
   const lanesById: Record<string, string[]> = laneData.lanes

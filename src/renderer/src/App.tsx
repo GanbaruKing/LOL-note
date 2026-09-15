@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
 import MyPicks from './MyPicks'
-import Statistics from './Statistics'
+import MatchupPool from './MatchupPool'
 import NoteSearch from './NoteSearch'
 import ChampSelect from './ChampSelect'
 import MatchHistory from './MatchHistory'
@@ -577,11 +577,9 @@ export default function App() {
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol">
-            M<span>·</span>
+            N<span>·</span>
           </div>
-          <div>
-            MATCHUP<small>COMPANION</small>
-          </div>
+          <div>LOL Note</div>
         </div>
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="メインナビゲーション">
@@ -769,13 +767,14 @@ export default function App() {
                 Clientへログインすると、最近の試合から対面メモを書けます。保存したメモはオフラインでも読めます。クラウド同期はありません。
               </p>
               <p className="muted">
-                LoL Matchup Companion is not endorsed by Riot Games. League of Legends and its
-                assets are trademarks of Riot Games.
+                LOL Note is not endorsed by Riot Games. League of Legends and its assets are
+                trademarks of Riot Games.
               </p>
             </section>
           ) : page === 'champions' && !championDetailOpen ? (
             <ChampionLibrary
               champions={champions}
+              initialRole={key.role}
               pool={pool}
               ready={poolReady}
               busy={busy}
@@ -977,12 +976,20 @@ export default function App() {
                     refreshToken={summaries}
                     onSelect={choose}
                   />
-                  <Statistics
-                    key={key.enemyChampionId + key.role}
-                    enemyChampionId={key.enemyChampionId}
-                    role={key.role}
+                  <MatchupPool
                     champions={champions}
-                    onSelect={choose}
+                    pool={pool}
+                    role={key.role}
+                    selectedId={key.myChampionId}
+                    ready={poolReady}
+                    busy={busy}
+                    onSelect={(myChampionId) => choose({ ...key, myChampionId })}
+                    onManage={() =>
+                      navigate(() => {
+                        setPage('champions')
+                        setChampionDetailOpen(false)
+                      })
+                    }
                   />
                 </aside>
                 <section className="matchup-detail">
