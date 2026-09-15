@@ -5,6 +5,8 @@ export default tseslint.config(
   {
     ignores: [
       'node_modules/**',
+      '**/node_modules/**',
+      'tools/stats/**',
       'out/**',
       '.npm-cache/**',
       '.electron-cache/**',
