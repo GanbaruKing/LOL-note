@@ -297,7 +297,7 @@ export class NotebookRepository {
     const v = object(input),
       championId = this.championId(v.championId)
     if (typeof v.body !== 'string' || v.body.length > 10000)
-      throw new ValidationError('共通対策は10,000文字以内で入力してください。')
+      throw new ValidationError('対策は10,000文字以内で入力してください。')
     const body = v.body.trim()
     return this.transaction(() => {
       if (!body)

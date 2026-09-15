@@ -17,16 +17,16 @@ export default function EnemyCounter({ enemy }: { enemy: Champion }) {
         else setError(result.error)
       })
       .catch(() => {
-        if (!cancelled) setError('共通対策を読み込めませんでした。')
+        if (!cancelled) setError('対策を読み込めませんでした。')
       })
     return () => {
       cancelled = true
     }
   }, [enemy.id, retry])
   return (
-    <section className="enemy-counter panel" aria-label="敵チャンピオンの共通対策">
+    <section className="enemy-counter panel" aria-label="敵チャンピオンの対策">
       <div className="section-title">
-        <h2>{enemy.name}への共通対策</h2>
+        <h2>{enemy.name}対策</h2>
       </div>
       <p className="muted">自分のチャンピオン・Roleを問わず共通する対策</p>
       {error ? (
@@ -34,12 +34,12 @@ export default function EnemyCounter({ enemy }: { enemy: Champion }) {
           {error} <button onClick={() => setRetry((n) => n + 1)}>再読み込み</button>
         </div>
       ) : body === null ? (
-        <p role="status">共通対策を読み込み中…</p>
+        <p role="status">対策を読み込み中…</p>
       ) : body ? (
         <p className="counter-body">{body}</p>
       ) : (
         <p className="muted">
-          共通対策はまだありません。Championsで{enemy.name}を開くと記入できます。
+          対策はまだありません。Championsで{enemy.name}を開くと記入できます。
         </p>
       )}
     </section>

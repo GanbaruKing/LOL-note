@@ -17,13 +17,13 @@ test('shared enemy counters survive independent note edits and appear for any ow
     await page.context().setOffline(true)
     await page.getByRole('button', { name: /Champions/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
-    const counter = page.getByLabel('このチャンピオンへの対策', { exact: true })
+    const counter = page.getByLabel('Darius対策の内容', { exact: true })
     await counter.fill('Qの外側に当たらない。\nパッシブが溜まったら離れる。')
     await page.getByLabel('新しいメモ', { exact: true }).fill('Darius自身のコンボ')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(counter).toHaveValue(/パッシブ/)
     await page.getByLabel('新しいメモ', { exact: true }).fill('保存していないChampion Notes')
-    await page.getByRole('button', { name: '共通対策を保存', exact: true }).click()
+    await page.getByRole('button', { name: '対策を保存', exact: true }).click()
     await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue(
       '保存していないChampion Notes',
     )
@@ -33,8 +33,8 @@ test('shared enemy counters survive independent note edits and appear for any ow
     const lock = new DatabaseSync(join(folder, 'notebook.sqlite'))
     lock.exec('BEGIN IMMEDIATE')
     try {
-      await page.getByRole('button', { name: '共通対策を保存', exact: true }).click()
-      await expect(page.getByLabel('共通対策の編集')).toContainText(
+      await page.getByRole('button', { name: '対策を保存', exact: true }).click()
+      await expect(page.getByLabel('チャンピオン対策の編集')).toContainText(
         'データを読み書きできませんでした',
         { timeout: 10000 },
       )
@@ -43,8 +43,8 @@ test('shared enemy counters survive independent note edits and appear for any ow
       lock.exec('ROLLBACK')
       lock.close()
     }
-    await page.getByRole('button', { name: '共通対策を保存', exact: true }).click()
-    await expect(page.getByLabel('共通対策の編集')).toContainText('共通対策を保存しました')
+    await page.getByRole('button', { name: '対策を保存', exact: true }).click()
+    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('対策を保存しました')
     await counter.fill('破棄する変更')
     await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
@@ -57,7 +57,7 @@ test('shared enemy counters survive independent note edits and appear for any ow
     await page.evaluate(() => window.scrollTo(0, 0))
     await page.screenshot({ path: 'docs/screenshots/champion-counters.png', fullPage: true })
     await page.getByRole('button', { name: /Match up/ }).click()
-    const shared = page.getByLabel('敵チャンピオンの共通対策')
+    const shared = page.getByLabel('敵チャンピオンの対策')
     await expect(shared).toContainText('5スタック')
     await expect(shared).not.toContainText('Darius自身のコンボ')
     await page.getByRole('button', { name: '自分のチャンピオンを選択' }).click()
@@ -69,22 +69,20 @@ test('shared enemy counters survive independent note edits and appear for any ow
     await page.getByRole('button', { name: '相手のチャンピオンを選択' }).click()
     await page.getByLabel('相手のチャンピオンを検索').fill('Ahri')
     await page.locator('.picker-results').getByRole('button', { name: /Ahri/ }).click()
-    await expect(shared).toContainText('Ahriへの共通対策')
+    await expect(shared).toContainText('Ahri対策')
     await expect(shared).not.toContainText('5スタック')
     await app.close()
     app = await electron.launch({ args: [resolve('.')], env })
     page = await app.firstWindow()
-    await expect(page.getByLabel('敵チャンピオンの共通対策')).toContainText('5スタック')
+    await expect(page.getByLabel('敵チャンピオンの対策')).toContainText('5スタック')
     await page.getByRole('button', { name: /Champions/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
-    await page.getByLabel('このチャンピオンへの対策').fill('')
-    await page.getByRole('button', { name: '共通対策を保存', exact: true }).click()
-    await expect(page.getByLabel('共通対策の編集')).toContainText('共通対策を保存しました')
+    await page.getByLabel('Darius対策の内容').fill('')
+    await page.getByRole('button', { name: '対策を保存', exact: true }).click()
+    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('対策を保存しました')
     await expect(page.locator('.note-body')).toHaveText('Darius自身のコンボ')
     await page.getByRole('button', { name: /Match up/ }).click()
-    await expect(page.getByLabel('敵チャンピオンの共通対策')).toContainText(
-      '共通対策はまだありません',
-    )
+    await expect(page.getByLabel('敵チャンピオンの対策')).toContainText('対策はまだありません')
   } finally {
     await app.close()
   }

@@ -14,6 +14,7 @@
 - ユーザー依頼: Champion LibraryのChampion Notesとは別に敵チャンピオンへの共通対策を書き、Match upでその敵を選んだとき表示する。
 - Champion詳細に共通対策の文章欄（最大10,000文字）を追加。敵Champion単位で1件保存し、自分Champion・Roleに依存しない。空欄で保存すると削除する。
 - Match upのMy Notesの上に敵への対策を表示。Champion Notesとの同時編集、保存失敗時の入力保持、未保存移動確認に対応。
+- 表示名はユーザーの追加指定により「共通対策」から「Darius対策」のようなチャンピオン名＋対策へ変更。Champion LibraryとMatch upの両方に適用。
 - schema v5のchampion_countersを追加。既存ノートは移行時に保持する。
 - 保存先・実装の説明はdatabase.md、architecture.md、READMEを参照。
 - 検証: Build・28 unit tests・全8件のE2E・Lint成功。画面写真はテストデータ。

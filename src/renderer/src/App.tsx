@@ -368,9 +368,9 @@ export default function App() {
       )
       setChampionData(data)
       setCounterBody(data.counterStrategy)
-      setCounterStatus('共通対策を保存しました')
+      setCounterStatus('対策を保存しました')
     } catch (e) {
-      setCounterStatus(e instanceof Error ? e.message : '共通対策を保存できませんでした。')
+      setCounterStatus(e instanceof Error ? e.message : '対策を保存できませんでした。')
     } finally {
       setBusy(false)
     }
@@ -812,9 +812,9 @@ export default function App() {
                   </div>
                 )}
                 {notesPanel}
-                <section className="counter-editor panel" aria-label="共通対策の編集">
+                <section className="counter-editor panel" aria-label="チャンピオン対策の編集">
                   <div className="section-title">
-                    <h2>共通対策</h2>
+                    <h2>{selectedChampion?.name}対策</h2>
                     <span className="save-status" role="status">
                       {counterStatus}
                     </span>
@@ -830,7 +830,7 @@ export default function App() {
                     }}
                   >
                     <div className="editor-heading">
-                      <label htmlFor="counter-body">このチャンピオンへの対策</label>
+                      <label htmlFor="counter-body">{selectedChampion?.name}対策の内容</label>
                       <span>{counterBody.length.toLocaleString()} / 10,000</span>
                     </div>
                     <textarea
@@ -859,7 +859,7 @@ export default function App() {
                         type="submit"
                         disabled={!ready || busy || !counterDirty}
                       >
-                        共通対策を保存
+                        対策を保存
                       </button>
                     </div>
                   </form>
