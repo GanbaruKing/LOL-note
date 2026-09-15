@@ -8,6 +8,7 @@ import { NotebookRepository } from './repository'
 import { ValidationError } from '../shared/validation'
 import type { Result } from '../shared/contracts'
 import { LcuService, createDiscovery } from './lcu'
+import { HistoryService } from './history'
 
 let repository: NotebookRepository | undefined
 let mainWindow: BrowserWindow | null = null
@@ -20,8 +21,13 @@ const devUrl = !app.isPackaged ? process.env.ELECTRON_RENDERER_URL : undefined
 const rendererUrl = devUrl ? new URL(devUrl).href : pathToFileURL(rendererFile).href
 
 function registerApi(databasePath: string) {
+  const history = new HistoryService(
+    createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
+  )
   const statistics = new JsonStatisticsProvider(join(app.getPath('userData'), 'statistics.json'))
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getMatchHistory: () => history.list(),
+    getHistoryMatch: (input) => history.detail(input),
     getStatistics: (input) => statistics.get(input),
     importStatistics: async () => {
       const selection = await dialog.showOpenDialog(mainWindow!, {

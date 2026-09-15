@@ -92,6 +92,30 @@ export interface LcuState {
   message: string
 }
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string }
+export interface HistoryGame {
+  gameId: number
+  createdAt: number
+  duration: number
+  queueId: number
+  championId: number
+  role: Role | null
+  win: boolean | null
+  kills: number | null
+  deaths: number | null
+  assists: number | null
+}
+export interface HistoryList {
+  games: HistoryGame[]
+  skipped: number
+}
+export interface HistoryMatch extends HistoryGame {
+  roleSource: 'history' | 'timeline' | 'unknown'
+  enemies: {
+    championId: number
+    role: Role | null
+    roleSource: 'history' | 'timeline' | 'unknown'
+  }[]
+}
 export interface StatisticsQuery {
   region?: string
   rank?: string
@@ -113,6 +137,8 @@ export interface StatisticsData {
   rows: (MatchupKey & { games: number; wins: number })[]
 }
 export interface NotebookApi {
+  getMatchHistory(): Promise<Result<HistoryList>>
+  getHistoryMatch(gameId: number): Promise<Result<HistoryMatch>>
   getStatistics(input: StatisticsQuery): Promise<Result<StatisticsData | null>>
   importStatistics(): Promise<Result<boolean>>
 

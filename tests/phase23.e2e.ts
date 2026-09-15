@@ -36,7 +36,9 @@ test('Phase 2 knowledge flows into a read-only live Champ Select session', async
     await page.getByLabel('自分のチャンピオンを検索').fill('Garen')
     await page.locator('.picker-results').getByRole('button', { name: /Garen/ }).click()
     await expect(page.getByText('メモを追加しよう！')).toBeVisible()
-    await expect(page.locator('.matchup-picks select')).toHaveCount(0)
+    await expect(
+      page.getByRole('region', { name: 'Comfort Picks', exact: true }).locator('select'),
+    ).toHaveCount(0)
     await expect(page.getByLabel('My Picksの優先順位')).toHaveCount(0)
     await expect(page.getByLabel('My Picksの自信度')).toHaveCount(0)
     await page.getByRole('button', { name: 'Comfort Picksに追加', exact: true }).click()

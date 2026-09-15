@@ -1559,3 +1559,133 @@ h1 {
   color: #9ba7b9;
   font-size: 11px;
 }
+
+.history-page {
+  display: grid;
+  gap: 18px;
+}
+.history-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+}
+.history-toolbar h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.history-toolbar p {
+  margin: 0;
+}
+.history-toolbar > button {
+  flex-shrink: 0;
+  border: 1px solid #52516c;
+  border-radius: 7px;
+  padding: 10px 16px;
+}
+.history-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(360px, 1.1fr);
+  gap: 20px;
+  align-items: start;
+}
+.history-list {
+  padding: 8px;
+}
+.history-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 12px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+.history-row + .history-row {
+  margin-top: 4px;
+}
+.history-row:hover,
+.history-enemies button:hover {
+  background: #222835;
+}
+.history-row[aria-pressed='true'],
+.history-enemies button[aria-pressed='true'] {
+  border-color: #a38ae0;
+  background: #2a263c;
+}
+.history-row small,
+.history-enemies small {
+  display: block;
+  margin-top: 6px;
+  color: #a7b0c0;
+  font-size: 11px;
+}
+.history-game-info {
+  flex: 1;
+}
+.history-result {
+  text-align: right;
+  flex-shrink: 0;
+}
+.history-win {
+  color: #73cfbd;
+}
+.history-loss {
+  color: #ee9fa7;
+}
+.history-review {
+  padding: 24px;
+}
+.history-review h2 {
+  font-size: 22px;
+  margin: 14px 0;
+}
+.history-review h2 .muted {
+  font-size: 16px;
+}
+.history-review p {
+  line-height: 1.8;
+}
+.history-role {
+  display: grid;
+  gap: 10px;
+  margin: 22px 0;
+  max-width: 240px;
+}
+.history-enemies {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.history-enemies button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #394052;
+  border-radius: 8px;
+  text-align: left;
+}
+.history-enemies .portrait {
+  width: 36px;
+  height: 36px;
+}
+.history-review > .primary {
+  width: 100%;
+  padding: 13px;
+}
+@media (max-width: 1150px) {
+  .history-layout {
+    grid-template-columns: 1fr;
+  }
+  .history-list {
+    max-height: 390px;
+    overflow-y: auto;
+  }
+  .history-enemies {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

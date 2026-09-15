@@ -48,3 +48,7 @@ StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノ
 ## 独立したGlobal統計生成
 
 `tools/stats` はNode.js / TypeScript / SQLiteの独立package。Riotへの通信・永続キュー・標本抽出・補正勝率・Wilson区間・JSON v2生成を担当する。Electronからimportせず、ノートDBも共有しない。現行アプリのJSON v1とは別契約で、アプリ接続は後続作業とする。[設計](global-statistics-design.md)と[実行手順](../tools/stats/README.md)を参照。
+
+## Phase 5初期版
+
+MatchHistory.tsx → getMatchHistory / getHistoryMatchの限定IPC → HistoryService → LCUの履歴GET。history-roles.tsが履歴のlane/roleと序盤の位置・CS・SmiteからRoleを判定する。履歴・生タイムラインは永続化せず、選択した対面と試合情報を既存のMatch up入力欄へ渡す。保存は従来のNotebookRepositoryを使用する。認証情報やPUUIDはMain内に留める。[使い方・判定方法・検証範囲](match-history.md)。

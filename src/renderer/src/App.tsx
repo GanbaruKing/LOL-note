@@ -4,6 +4,7 @@ import MyPicks from './MyPicks'
 import Statistics from './Statistics'
 import NoteSearch from './NoteSearch'
 import ChampSelect from './ChampSelect'
+import MatchHistory from './MatchHistory'
 import {
   CATEGORIES,
   ROLES,
@@ -142,9 +143,9 @@ export default function App() {
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
-  const [page, setPage] = useState<'notebook' | 'champions' | 'settings' | 'search' | 'select'>(
-    'notebook',
-  )
+  const [page, setPage] = useState<
+    'notebook' | 'champions' | 'settings' | 'search' | 'select' | 'history'
+  >('notebook')
   const [lcu, setLcu] = useState<LcuState>({
     status: 'disconnected',
     phase: null,
@@ -160,6 +161,7 @@ export default function App() {
     settings: 'Settings',
     search: 'Search Notes',
     select: 'Champ Select',
+    history: 'Match History',
   }
   const [error, setError] = useState(''),
     [status, setStatus] = useState('')
@@ -582,6 +584,12 @@ export default function App() {
             <span>◈</span>Champions
           </button>
           <button
+            className={page === 'history' ? 'active' : ''}
+            onClick={() => navigate(() => setPage('history'))}
+          >
+            <span>◷</span>Match History
+          </button>
+          <button
             className={page === 'settings' ? 'active' : ''}
             onClick={() => navigate(() => setPage('settings'))}
           >
@@ -630,7 +638,9 @@ export default function App() {
                       ? 'チャンピオン自身の知識と、対面ごとのメモ。'
                       : page === 'search'
                         ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
-                        : 'このNotebookについて。'}
+                        : page === 'history'
+                          ? '最近の試合から対面を選び、気づきをメモに残します。'
+                          : 'このNotebookについて。'}
                 </p>
               )}
             </div>
@@ -654,7 +664,22 @@ export default function App() {
               </button>
             </div>
           )}
-          {page === 'search' ? (
+          {page === 'history' ? (
+            <MatchHistory
+              champions={champions}
+              onOpen={(next, draft) =>
+                navigate(() => {
+                  setKey(next)
+                  setPage('notebook')
+                  setBody(draft)
+                  setTimeout(() => {
+                    editor.current?.focus()
+                    editor.current?.setSelectionRange(draft.length, draft.length)
+                  }, 0)
+                })
+              }
+            />
+          ) : page === 'search' ? (
             <NoteSearch
               champions={champions}
               onOpen={(hit) =>
@@ -706,8 +731,11 @@ export default function App() {
                 Leagueのフォルダーを選択
               </button>
               <hr />
-              <h2>Phase 2 / 3 · Notebook & Champ Select</h2>
-              <p>統計・試合履歴・クラウド同期は今後の実装予定です。</p>
+              <h2>Match History</h2>
+              <p>
+                League
+                Clientへログインすると、最近の試合から対面メモを書けます。保存したメモはオフラインでも読めます。クラウド同期はありません。
+              </p>
               <p className="muted">
                 LoL Matchup Companion is not endorsed by Riot Games. League of Legends and its
                 assets are trademarks of Riot Games.

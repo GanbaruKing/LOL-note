@@ -1,6 +1,6 @@
 # LoL Matchup Companion
 
-独立したRiot統計収集CLIを追加しました。[セットアップ・収集・集計・JSON出力](tools/stats/README.md)を参照してください。新しい統計JSON v2のアプリへの接続は次の工程です。
+試合履歴から対面を自動判定し、振り返りをメモに残せます。[使い方と判定方法](docs/match-history.md)を参照してください。
 
 League of Legendsの対面知識を蓄積する、Windows向けの個人用Notebookです。
 試合後の気づきをチャンピオン・相手・Roleごとに保存し、次の対戦前に読み返せます。
@@ -26,9 +26,10 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - 単体メモ・対面メモのPinと上位表示
 - LCU自動接続・Champion Select検知、Role・確認できる敵Pickの取得
 - 手動の対面選択から、同じComfort Picksと保存済みメモを参照
+- Match Historyから最近の試合を表示し、Role・対戦相手の自動判定から対面メモを作成
 
 初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
-統計はJSON取り込みに対応しています。独立CLIが生成する新しいJSON v2の接続、試合履歴、Installerは後続の工程です。
+統計はJSON v1取り込みに対応しています。[独立統計CLI](tools/stats/README.md)の収集・最適化・JSON v2接続は保留中です。Installerは後続の工程です。
 
 ## 起動手順
 
@@ -79,7 +80,15 @@ Champion Select Activeの通知から画面を開き、対面だと思う敵Cham
 
 ![疑似LCUを使ったChamp Select画面](docs/screenshots/champ-select.png)
 
-実際のLeague Clientに接続し、Champion Select外のphase取得を確認済みです。Champion Select中の遷移はローカルHTTPS疑似LCUで検証しています。実ゲームの選択画面での最終確認は未実施です。
+実際のLeague Clientに接続し、Champion Select外のphase取得を確認済みです。Champion Select中の遷移はローカルHTTPS疑似LCUで検証し、実際の選択画面で自動検知が動いたとのユーザー報告もあります。
+
+### Match History
+
+League ClientへログインしてMatch Historyを開き、最近の試合を選択します。履歴と序盤の位置・CS・サモナースペルからRoleと対戦相手を自動判定します。必要なら修正し、「この対面のメモを書く」から気づきを追記して保存します。
+
+直近20試合のうちサモナーズリフトの試合が対象です。履歴取得にはLeague Clientが必要ですが、保存したメモはオフラインでも読めます。判定できない場合はRoleと相手を選べます。[判定の詳細と検証範囲](docs/match-history.md)。
+
+![試合履歴の画面。テストデータを表示しています。](docs/screenshots/match-history.png)
 
 ## 開発・検証
 

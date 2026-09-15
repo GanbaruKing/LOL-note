@@ -80,10 +80,25 @@ export function parseSession(
     ],
   }
 }
-export function readLcu(
-  credentials: LcuCredentials,
-  path: '/lol-gameflow/v1/gameflow-phase' | '/lol-champ-select/v1/session',
-): Promise<unknown> {
+export type LcuPath =
+  | '/lol-gameflow/v1/gameflow-phase'
+  | '/lol-champ-select/v1/session'
+  | '/lol-summoner/v1/current-summoner'
+  | '/lol-match-history/v1/products/lol/current-summoner/matches?begIndex=0&endIndex=19'
+  | `/lol-match-history/v1/games/${number}`
+  | `/lol-match-history/v1/game-timelines/${number}`
+export function readLcu(credentials: LcuCredentials, path: LcuPath): Promise<unknown> {
+  if (
+    ![
+      '/lol-gameflow/v1/gameflow-phase',
+      '/lol-champ-select/v1/session',
+      '/lol-summoner/v1/current-summoner',
+      '/lol-match-history/v1/products/lol/current-summoner/matches?begIndex=0&endIndex=19',
+    ].includes(path) &&
+    !/^\/lol-match-history\/v1\/(games|game-timelines)\/[1-9]\d*$/.test(path)
+  ) {
+    return Promise.reject(new Error('Invalid LCU path'))
+  }
   return new Promise((resolve, reject) => {
     // Self-signed LCU certificate exception is restricted to this loopback request.
     const req = request(
@@ -106,7 +121,10 @@ export function readLcu(
         let size = 0
         res.on('data', (chunk: Buffer) => {
           size += chunk.length
-          if (size > 1024 * 1024) req.destroy(new Error('LCU response too large'))
+          const limit = path.startsWith('/lol-match-history/v1/game-timelines/')
+            ? 8 * 1024 * 1024
+            : 1024 * 1024
+          if (size > limit) req.destroy(new Error('LCU response too large'))
           else chunks.push(chunk)
         })
         res.on('end', () => {

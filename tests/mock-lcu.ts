@@ -2,6 +2,7 @@ import { createServer } from 'node:https'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { historyFixture, timelineFixture } from './history-fixtures'
 
 // Test-only ephemeral credentials and certificate. Never accesses the installed League client.
 export async function createMockLcu(folder: string) {
@@ -35,6 +36,11 @@ export async function createMockLcu(folder: string) {
     role: 'top',
     enemies: [122, 86],
     broken: false,
+    history: { games: { games: [historyFixture(), historyFixture(12346)] } },
+    historyDetail: historyFixture(),
+    historyTimeline: timelineFixture(),
+    historyDelay: 0,
+    historyBroken: false,
   }
   const paths: string[] = []
   const server = createServer({ key: readFileSync(key), cert: readFileSync(cert) }, (req, res) => {
@@ -65,7 +71,20 @@ export async function createMockLcu(folder: string) {
           theirTeam: scenario.enemies.map((championId) => ({ championId })),
         }),
       )
-    else res.writeHead(404).end()
+    else if (req.url === '/lol-summoner/v1/current-summoner')
+      res.end(JSON.stringify({ puuid: 'test-own' }))
+    else if (req.url?.startsWith('/lol-match-history/')) {
+      if (scenario.historyBroken) {
+        res.writeHead(503).end()
+        return
+      }
+      const payload = req.url.includes('matches?')
+        ? scenario.history
+        : req.url.includes('game-timelines')
+          ? scenario.historyTimeline
+          : { ...scenario.historyDetail, gameId: Number(req.url.split('/').at(-1)) }
+      setTimeout(() => res.end(JSON.stringify(payload)), scenario.historyDelay)
+    } else res.writeHead(404).end()
   })
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
   const address = server.address()
