@@ -117,26 +117,6 @@ export interface HistoryMatch extends HistoryGame {
     roleSource: 'history' | 'timeline' | 'unknown'
   }[]
 }
-export interface StatisticsQuery {
-  region?: string
-  rank?: string
-  patch?: string
-  minGames?: number
-  enemyChampionId: number
-  role: Role
-  demo: boolean
-}
-export interface StatisticsData {
-  schemaVersion: 1
-  isDemo: boolean
-  source: string
-  patch: string
-  region: string
-  rank: string
-  queue: string
-  generatedAt: string
-  rows: (MatchupKey & { games: number; wins: number })[]
-}
 export interface NotebookApi {
   exportBackup(): Promise<Result<string | null>>
   restoreBackup(): Promise<Result<string | null>>
@@ -144,8 +124,6 @@ export interface NotebookApi {
   saveChampionCounter(input: { championId: number; body: string }): Promise<Result<ChampionPage>>
   getMatchHistory(): Promise<Result<HistoryList>>
   getHistoryMatch(gameId: number): Promise<Result<HistoryMatch>>
-  getStatistics(input: StatisticsQuery): Promise<Result<StatisticsData | null>>
-  importStatistics(): Promise<Result<boolean>>
 
   listMyPicks(input: { enemyChampionId: number; role: Role }): Promise<Result<MyPick[]>>
   saveMyPick(input: MatchupKey): Promise<Result<MyPick[]>>

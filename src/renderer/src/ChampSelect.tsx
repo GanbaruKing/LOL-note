@@ -9,7 +9,6 @@ import {
   type Role,
 } from '../../shared/contracts'
 import MyPicks from './MyPicks'
-import Statistics from './Statistics'
 
 export default function ChampSelect({
   state,
@@ -155,15 +154,6 @@ export default function ChampSelect({
           role={role}
           champions={champions}
           readOnly
-          onSelect={(key) => setManualOwn(key.myChampionId)}
-        />
-      )}
-      {currentEnemy && role && (
-        <Statistics
-          key={currentEnemy + role}
-          enemyChampionId={currentEnemy}
-          role={role}
-          champions={champions}
           onSelect={(key) => setManualOwn(key.myChampionId)}
         />
       )}

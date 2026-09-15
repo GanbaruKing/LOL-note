@@ -39,3 +39,7 @@ Get-FileHash dist/LOL-Note-Setup-0.1.0-x64.exe -Algorithm SHA256
 - app.asarの275エントリーを確認し、個人DB・.env・統計収集データ・テストコードが同梱されていないことを確認。
 - インストーラー生成成功。SHA256はdist/SHA256SUMS.txtに保存。署名は未付与。
 - クリーンなWindows環境でのインストール・更新・アンインストールとショートカットの実操作は未検証。
+
+### 統計機能削除後の再検証
+
+統計画面・IPC・取り込み・収集CLIを削除。Build / Lint / 23 unit tests / 9 E2E / Git diffチェック成功。統計を含まないインストーラーを再生成し、梱包済みMain/Preloadから統計APIがなくなったことを確認した。SHA256SUMS.txtも更新済み。

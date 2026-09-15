@@ -96,6 +96,12 @@ test('Phase 2 knowledge flows into a read-only live Champ Select session', async
     await page.getByRole('button', { name: 'LCUの選択へ戻す' }).click()
     await expect(page.locator('.select-notes')).toContainText('Ghost中は距離を取る')
     await page.evaluate(() => window.scrollTo(0, 0))
+    await expect(page.getByRole('region', { name: 'Statistics', exact: true })).toHaveCount(0)
+    expect(
+      await page.evaluate(
+        () => 'getStatistics' in window.notebook || 'importStatistics' in window.notebook,
+      ),
+    ).toBe(false)
     await page.screenshot({ path: 'docs/screenshots/champ-select.png', fullPage: true })
     mock.scenario.own = 0
     mock.scenario.intent = 86

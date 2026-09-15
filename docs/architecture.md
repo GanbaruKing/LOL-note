@@ -30,24 +30,12 @@ MyPicks.tsxは敵Champion×Roleに対する自分の候補を管理する。Note
 
 Mainの限定IPCにMy Picks、Pin、検索、LCU snapshot、フォルダー選択を追加。ハンドラーは非同期処理の失敗も安全なResultに変換する。LcuServiceはアプリのライフサイクルで起動・停止する。詳細はlcu.mdを参照。
 
-## 拡張点
-
-統計は将来StatisticsProviderに隔離し、Repositoryへ外部API依存を持ち込まない。現時点で空のServiceクラスは作らない。
-
 ## 参照資料
 
 - [Electron Context Isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation)
 - [Electron Sandboxing](https://www.electronjs.org/docs/latest/tutorial/sandbox)
 - [Node SQLite](https://nodejs.org/api/sqlite.html)
 - [Riot Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon)
-
-## Phase 4
-
-StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノートDBと分離し、userData/statistics.jsonに保存する。統計の取り込み・参照は限定IPCで行い、StatisticsコンポーネントをChamp Selectで利用する。Match up側は後続のUI変更でChampion Poolへ置換した。詳細はstatistics.mdを参照。
-
-## 独立したGlobal統計生成
-
-`tools/stats` はNode.js / TypeScript / SQLiteの独立package。Riotへの通信・永続キュー・標本抽出・補正勝率・Wilson区間・JSON v2生成を担当する。Electronからimportせず、ノートDBも共有しない。現行アプリのJSON v1とは別契約で、アプリ接続は後続作業とする。[設計](global-statistics-design.md)と[実行手順](../tools/stats/README.md)を参照。
 
 ## Phase 5初期版
 
@@ -65,6 +53,6 @@ Match upのEnemyCounter.tsxは敵Champion IDを使ってgetChampionCounterを読
 
 ## バックアップとWindows配布
 
-Settings → 限定IPC → Mainのファイルダイアログ → NotebookRepository。backup.tsで形式・列・値を検証し、6テーブルを一括置換する。復元前の自動JSON退避とSQLiteトランザクションで既存データを保護する。設定・認証・統計とは分離する。詳細は[backup.md](backup.md)。
+Settings → 限定IPC → Mainのファイルダイアログ → NotebookRepository。backup.tsで形式・列・値を検証し、6テーブルを一括置換する。復元前の自動JSON退避とSQLiteトランザクションで既存データを保護する。設定・認証とは分離する。詳細は[backup.md](backup.md)。
 
 electron-viteのoutをelectron-builderでNSISに梱包する。アプリ名はLOL Note、保存先は互換性のためlol-matchup-companionのまま。詳細は[release.md](release.md)。

@@ -1,4 +1,3 @@
-import { JsonStatisticsProvider } from './statistics'
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import { join, extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -47,7 +46,6 @@ function registerApi(databasePath: string) {
   const history = new HistoryService(
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
-  const statistics = new JsonStatisticsProvider(join(app.getPath('userData'), 'statistics.json'))
   const handlers: Record<string, (input: unknown) => unknown> = {
     exportBackup: async () => {
       const choice = await dialog.showSaveDialog(mainWindow!, {
@@ -82,7 +80,7 @@ function registerApi(databasePath: string) {
         title: 'バックアップから復元',
         message: '保存済みのメモ・対策・評価・登録ピックを置き換えます。',
         detail:
-          '現在のデータは復元前に自動バックアップします。Leagueのフォルダー設定と統計JSONは変更しません。',
+          '現在のデータは復元前に自動バックアップします。Leagueのフォルダー設定は変更しません。',
         buttons: ['キャンセル', '復元する'],
         defaultId: 0,
         cancelId: 0,
@@ -99,17 +97,6 @@ function registerApi(databasePath: string) {
     saveChampionCounter: (input) => repository!.saveChampionCounter(input),
     getMatchHistory: () => history.list(),
     getHistoryMatch: (input) => history.detail(input),
-    getStatistics: (input) => statistics.get(input),
-    importStatistics: async () => {
-      const selection = await dialog.showOpenDialog(mainWindow!, {
-        title: '統計JSONを取り込む（既存の統計を置き換えます）',
-        properties: ['openFile'],
-        filters: [{ name: 'Statistics JSON', extensions: ['json'] }],
-      })
-      if (selection.canceled || !selection.filePaths[0]) return false
-      statistics.import(selection.filePaths[0])
-      return true
-    },
     getLcuState: () => lcu!.snapshot(),
     selectLeagueFolder: async () => {
       const selection = await dialog.showOpenDialog(mainWindow!, {

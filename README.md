@@ -29,8 +29,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - 手動の対面選択から、同じComfort Picksと保存済みメモを参照
 - Match Historyから最近の試合を表示し、Role・対戦相手の自動判定から対面メモを作成
 
-初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
-統計はJSON v1取り込みに対応しています。[独立統計CLI](tools/stats/README.md)の収集・最適化・JSON v2接続は保留中です。
+初期データに個人メモは挿入しません。画像のメモはE2Eテストで入力した例です。
 
 ## Windows版のインストール
 
@@ -81,7 +80,7 @@ Match up左側のFavorite Championsには、選択中のRoleに登録したチ�
 
 Settingsの「バックアップを保存」で、対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Champions・Comfort PicksをJSONへ保存できます。
 
-「バックアップから復元」は現在の内容を置き換えます。確認後、復元前のデータを保存先フォルダー内の `backups/` に自動退避します。不正なファイルや書き込み失敗時は既存データを保持します。Leagueのフォルダー設定、統計JSON、履歴、認証情報は対象外です。[形式と復元の詳細](docs/backup.md)。
+「バックアップから復元」は現在の内容を置き換えます。確認後、復元前のデータを保存先フォルダー内の `backups/` に自動退避します。不正なファイルや書き込み失敗時は既存データを保持します。Leagueのフォルダー設定、履歴、認証情報は対象外です。[形式と復元の詳細](docs/backup.md)。
 
 ![バックアップ設定。表示パスは説明用の例です。](docs/screenshots/backup.png)
 
@@ -173,13 +172,3 @@ Champion名・画像は [Riot Games Data Dragon](https://developer.riotgames.com
 LOL Note is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
 
 All Championsはレーンタブと名前検索を組み合わせて絞り込めます。レーン分類は同梱データを使用し、分類未収録のチャンピオンはAllに表示します。分類元：[Meraki Analytics](https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json)。
-
-## Statistics（Phase 4）
-
-Champ Selectで、100試合以上の対面統計を勝率順に表示します。Match upのTop Matchup PicksはChampion Poolに置き換えました。Comfort Picksとは別管理です。初期版はJSON取り込み対応で、実統計の自動取得は未実装です。「サンプルを見る」では架空データと明示した表示を確認できます。JSON形式・出典・パッチの扱いは[統計の説明](docs/statistics.md)を参照してください。
-
-## Riot APIによる履歴標本の収集
-
-APIキーを設定したPowerShellで `npm run stats:collect` を実行し、Riot IDを入力します。日本サーバー・Solo/Duoの履歴から対面統計JSONを生成します。出力の `.riot-data/statistics.json` をStatisticsから取り込んでください。全体勝率ではなく指定プレイヤー履歴の標本です。手順・取得条件・制限は[Riot収集ツール](docs/riot-collector.md)に記載しています。
-
-StatisticsのTop Matchup Picksは、地域・ランク帯・パッチ・最低試合数を指定して勝率上位10体を表示します。一般統計の自動収集サーバーはまだ未接続です。指定条件と一致するデータのみ表示し、個人履歴を全体統計として流用しません。
