@@ -44,3 +44,7 @@ Mainの限定IPCにMy Picks、Pin、検索、LCU snapshot、フォルダー選�
 ## Phase 4
 
 StatisticsProvider / JsonStatisticsProviderをMainに追加。統計は個人ノートDBと分離し、userData/statistics.jsonに保存する。統計の取り込み・参照は限定IPCで行い、同じStatisticsコンポーネントをMatch upとChamp Selectで利用する。詳細はstatistics.mdを参照。
+
+## 独立したGlobal統計生成
+
+`tools/stats` はNode.js / TypeScript / SQLiteの独立package。Riotへの通信・永続キュー・標本抽出・補正勝率・Wilson区間・JSON v2生成を担当する。Electronからimportせず、ノートDBも共有しない。現行アプリのJSON v1とは別契約で、アプリ接続は後続作業とする。[設計](global-statistics-design.md)と[実行手順](../tools/stats/README.md)を参照。

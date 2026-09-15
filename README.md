@@ -1,5 +1,7 @@
 # LoL Matchup Companion
 
+独立したRiot統計収集CLIを追加しました。[セットアップ・収集・集計・JSON出力](tools/stats/README.md)を参照してください。新しい統計JSON v2のアプリへの接続は次の工程です。
+
 League of Legendsの対面知識を蓄積する、Windows向けの個人用Notebookです。
 試合後の気づきをチャンピオン・相手・Roleごとに保存し、次の対戦前に読み返せます。
 
@@ -26,7 +28,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - 手動の対面選択から、同じComfort Picksと保存済みメモを参照
 
 初期データに個人メモや統計サンプルは挿入しません。画像のメモはE2Eテストで入力した例です。
-統計、試合履歴、Installerは未実装です。
+統計はJSON取り込みに対応しています。独立CLIが生成する新しいJSON v2の接続、試合履歴、Installerは後続の工程です。
 
 ## 起動手順
 
