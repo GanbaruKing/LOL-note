@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { NotebookApi } from '../shared/contracts'
 
 const api: NotebookApi = {
+  openCounterSource: (url) => ipcRenderer.invoke('notebook:openCounterSource', url),
   exportBackup: () => ipcRenderer.invoke('notebook:exportBackup'),
   restoreBackup: () => ipcRenderer.invoke('notebook:restoreBackup'),
   getChampionCounter: (championId) => ipcRenderer.invoke('notebook:getChampionCounter', championId),

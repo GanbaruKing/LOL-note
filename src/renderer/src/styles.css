@@ -1694,3 +1694,47 @@ h1 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+.curated-counters {
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.curated-counters h3 {
+  margin: 0 0 8px;
+}
+.curated-counters > .muted {
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.curated-counter {
+  border-top: 1px solid #303642;
+  padding: 14px 0;
+}
+.curated-counter .section-title {
+  margin-bottom: 8px;
+}
+.curated-counter .section-title span {
+  color: #a99bff;
+  font-size: 12px;
+}
+.curated-counter p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 6px 0;
+}
+.curated-counter summary {
+  cursor: pointer;
+  color: #a99bff;
+  font-size: 12px;
+}
+.counter-sources {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.counter-sources button {
+  color: #c5bbff;
+  text-decoration: underline;
+  font-size: 12px;
+}

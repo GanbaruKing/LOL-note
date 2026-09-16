@@ -9,6 +9,7 @@ import {
   type Role,
 } from '../../shared/contracts'
 import MyPicks from './MyPicks'
+import CuratedCounters from './CuratedCounters'
 
 export default function ChampSelect({
   state,
@@ -157,6 +158,7 @@ export default function ChampSelect({
           onSelect={(key) => setManualOwn(key.myChampionId)}
         />
       )}
+      {currentEnemy && role && <CuratedCounters championId={currentEnemy} role={role} />}
       {error && (
         <p className="error-banner" role="alert">
           {error}

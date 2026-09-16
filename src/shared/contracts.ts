@@ -118,6 +118,7 @@ export interface HistoryMatch extends HistoryGame {
   }[]
 }
 export interface NotebookApi {
+  openCounterSource(url: string): Promise<Result<void>>
   exportBackup(): Promise<Result<string | null>>
   restoreBackup(): Promise<Result<string | null>>
   getChampionCounter(championId: number): Promise<Result<string>>

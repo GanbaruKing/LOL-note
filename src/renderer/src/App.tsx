@@ -6,6 +6,7 @@ import NoteSearch from './NoteSearch'
 import ChampSelect from './ChampSelect'
 import MatchHistory from './MatchHistory'
 import EnemyCounter from './EnemyCounter'
+import CuratedCounters from './CuratedCounters'
 import {
   CATEGORIES,
   ROLES,
@@ -859,6 +860,7 @@ export default function App() {
                   </div>
                 )}
                 {notesPanel}
+                <CuratedCounters championId={championId} />
                 <section className="counter-editor panel" aria-label="チャンピオン対策の編集">
                   <div className="section-title">
                     <h2>{selectedChampion?.name}対策</h2>
@@ -1133,7 +1135,12 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                  {enemy && <EnemyCounter key={enemy.id} enemy={enemy} />}
+                  {enemy && (
+                    <>
+                      <CuratedCounters championId={enemy.id} role={key.role} />
+                      <EnemyCounter key={enemy.id} enemy={enemy} />
+                    </>
+                  )}
                   {notesPanel}
                   <p className="detail-footer">
                     ノートは自分のチャンピオン・相手・Roleの組み合わせごとに保存されます。

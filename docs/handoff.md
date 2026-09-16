@@ -12,7 +12,7 @@
 ## Gitと実行
 
 - Repository: https://github.com/GanbaruKing/LOL-note
-- 現在の作業ブランチ: feature/remove-statistics。インストーラーとバックアップ追加80b68f5から分岐。
+- 現在の作業ブランチ: feature/curated-counter-notes。統計削除c1b7312から分岐。
 - mainへの統合準備として変更をコミットする。push・GitHub Release公開は行わない。
 - 続ける前にgit status / git log / git branchを確認する。古いmainから直近のUI変更を落とさない。
 - Node.js 24以降。npm ci → npm run dev。配布版はnpm run dist。
@@ -24,6 +24,7 @@ Electron / React / TypeScript / node:sqlite。ノートはオフラインで利�
 - Match up: 自分×敵×Roleのメモ、カテゴリー、難易度、評価、Pin。
 - Champion Library: 日英検索、レーン別表示、Champion Notes、対面メモ一覧、Champion Pool。
 - 敵チャンピオンへの対策: Champion Notesとは独立した1体1文章。「Darius対策」のように表示し、Match upで敵に選ぶと表示。最大10000文字、空欄保存で削除。未保存入力は別々に保護する。
+- 初期カウンターメモ: resources/counter-notes.jsonに167体・197組。5レーン別、短い理由と出典付き。Library / Match up / Champ Selectに表示し、個人DBには挿入しない。選定方法と未収録6体・一部Roleの扱いはdocs/curated-counters.md。統計収集機能は復活させていない。
 - Match up左側はFavorite Champions。現在Roleのプールを自信度順に表示し、自分のチャンピオンだけ切り替える。「プールを編集」で同じRoleのLibraryを開く。
 - Comfort Picks: 敵×Roleごとの得意ピック。空表示は「敵チャンピオン名に対して得意なピックを追加しましょう。」。評価順という説明文は表示しない。
 - Search: Champion Notesと対面メモの横断検索。対策欄は検索対象外。
@@ -42,6 +43,6 @@ Electron / React / TypeScript / node:sqlite。ノートはオフラインで利�
 
 ## 検証と今後
 
-npm test（23件）、npm run lint、npm run test:e2e（9件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
+npm test（24件）、npm run lint、npm run test:e2e（10件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
 
 次に残るのはクリーンなWindowsでのインストール・更新・アンインストール試験、公開配布に向けたコード署名、必要ならGitHub Release公開。統計機能は削除済み。機能面では履歴の記入済み管理や対策欄の検索対応が候補だが未着手。

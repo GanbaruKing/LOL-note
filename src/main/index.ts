@@ -1,4 +1,5 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import counterNotes from '../../resources/counter-notes.json'
 import { join, extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { mkdirSync, readFileSync, statSync, writeFileSync, renameSync } from 'node:fs'
@@ -47,6 +48,14 @@ function registerApi(databasePath: string) {
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
   const handlers: Record<string, (input: unknown) => unknown> = {
+    openCounterSource: async (input) => {
+      if (
+        typeof input !== 'string' ||
+        !counterNotes.entries.some((entry) => entry.sources.some((source) => source.url === input))
+      )
+        throw new ValidationError('この出典は開けません。')
+      await shell.openExternal(input)
+    },
     exportBackup: async () => {
       const choice = await dialog.showSaveDialog(mainWindow!, {
         title: 'バックアップを保存',

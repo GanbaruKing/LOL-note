@@ -1,0 +1,73 @@
+import { useState } from 'react'
+import catalog from '../../../resources/champions.json'
+import data from '../../../resources/counter-notes.json'
+import type { Role } from '../../shared/contracts'
+
+export default function CuratedCounters({ championId, role }: { championId: number; role?: Role }) {
+  const [error, setError] = useState('')
+  const entries = data.entries.filter(
+    (entry) => entry.championId === championId && (!role || entry.role === role),
+  )
+  return (
+    <section className="curated-counters panel" aria-label="初期カウンターメモ">
+      <h3>カウンターピック</h3>
+      <p className="muted">初期メモ · {data.checkedAt}確認</p>
+      {entries.length ? (
+        entries.map((entry) => (
+          <article key={`${entry.role}-${entry.counterId}`} className="curated-counter">
+            <div className="section-title">
+              <strong>{catalog.champions.find((c) => c.id === entry.counterId)?.name}</strong>
+              <span>{entry.role}</span>
+            </div>
+            <p>{entry.reason}</p>
+            <details>
+              <summary>根拠・出典</summary>
+              <p className="muted">
+                {entry.basis === 'wiki-matchup'
+                  ? 'Wikiの相性解説とOP.GGを照合。'
+                  : 'OP.GGの傾向とWikiのスキル仕様からの考察。'}{' '}
+                {entry.role === 'BOTTOM' || entry.role === 'SUPPORT'
+                  ? 'BOTは相方との組み合わせにも左右されます。'
+                  : entry.role === 'JUNGLE'
+                    ? 'ジャングル全体の相性で、1対1の勝敗だけを示すものではありません。'
+                    : ''}
+              </p>
+              {entry.evidence.map((item) => (
+                <p key={item.patch} className="muted">
+                  OP.GG {item.patch} · {item.games.toLocaleString()}試合 · 候補側の対戦勝率{' '}
+                  {item.counterWinRate.toFixed(2)}% · Emerald+ / 全地域
+                </p>
+              ))}
+              <p className="muted">試合全体の勝率です。レーンの勝率を示すものではありません。</p>
+              <div className="counter-sources">
+                {entry.sources.map((source, index) => (
+                  <button
+                    key={source.url}
+                    onClick={async () => {
+                      setError('')
+                      try {
+                        const result = await window.notebook.openCounterSource(source.url)
+                        if (!result.ok) setError(result.error)
+                      } catch {
+                        setError('出典を開けませんでした。')
+                      }
+                    }}
+                  >
+                    {source.label}
+                    {index > 1 ? '' : ' ↗'}
+                  </button>
+                ))}
+              </div>
+            </details>
+          </article>
+        ))
+      ) : (
+        <p className="muted">このレーンで十分な根拠を確認できた候補は、まだ登録されていません。</p>
+      )}
+      {error && <p role="alert">{error}</p>}
+      <p className="muted">
+        パッチや熟練度によって相性は変わります。個人メモとは別に表示しています。
+      </p>
+    </section>
+  )
+}
