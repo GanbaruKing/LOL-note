@@ -1,6 +1,6 @@
 # 次の開発への引き継ぎ
 
-更新: 2026-09-16。製品名は **LOL Note**。
+更新: 2026-09-22。製品名は **LOL Note**。
 
 ## ユーザー方針
 
@@ -12,7 +12,7 @@
 ## Gitと実行
 
 - Repository: https://github.com/GanbaruKing/LOL-note
-- 現在の作業ブランチ: feature/curated-counter-notes。統計削除c1b7312から分岐。
+- 現在の作業ブランチ: codex/usability。初期カウンター追加dac8461から分岐。
 - mainへの統合準備として変更をコミットする。push・GitHub Release公開は行わない。
 - 続ける前にgit status / git log / git branchを確認する。古いmainから直近のUI変更を落とさない。
 - Node.js 24以降。npm ci → npm run dev。配布版はnpm run dist。
@@ -43,6 +43,8 @@ Electron / React / TypeScript / node:sqlite。ノートはオフラインで利�
 
 ## 検証と今後
 
-npm test（24件）、npm run lint、npm run test:e2e（10件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
+npm test（24件）、npm run lint、npm run test:e2e（11件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
+
+操作改善: メモへの固定ショートカット、未保存表示、Libraryの検索・レーン・詳細から戻る位置の保持、ひらがな/全角検索、Match up選択の矢印/Enter/Esc操作。初期カウンターから候補×敵×Roleの対面ページを開ける。未保存確認を経由し、ゲーム内Pick操作は行わない。UIの保持状態はアプリ終了まで。
 
 次に残るのはクリーンなWindowsでのインストール・更新・アンインストール試験、公開配布に向けたコード署名、必要ならGitHub Release公開。統計機能は削除済み。機能面では履歴の記入済み管理や対策欄の検索対応が候補だが未着手。

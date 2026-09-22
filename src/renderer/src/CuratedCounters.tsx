@@ -3,7 +3,17 @@ import catalog from '../../../resources/champions.json'
 import data from '../../../resources/counter-notes.json'
 import type { Role } from '../../shared/contracts'
 
-export default function CuratedCounters({ championId, role }: { championId: number; role?: Role }) {
+export default function CuratedCounters({
+  championId,
+  role,
+  onSelect,
+  busy = false,
+}: {
+  championId: number
+  role?: Role
+  busy?: boolean
+  onSelect?: (championId: number, role: Role) => void
+}) {
   const [error, setError] = useState('')
   const entries = data.entries.filter(
     (entry) => entry.championId === championId && (!role || entry.role === role),
@@ -16,8 +26,23 @@ export default function CuratedCounters({ championId, role }: { championId: numb
         entries.map((entry) => (
           <article key={`${entry.role}-${entry.counterId}`} className="curated-counter">
             <div className="section-title">
+              <img
+                className="portrait"
+                src={`./champions/${catalog.champions.find((c) => c.id === entry.counterId)?.slug}.png`}
+                alt=""
+              />
               <strong>{catalog.champions.find((c) => c.id === entry.counterId)?.name}</strong>
               <span>{entry.role}</span>
+              {onSelect && (
+                <button
+                  className="counter-use"
+                  disabled={busy}
+                  onClick={() => onSelect(entry.counterId, entry.role as Role)}
+                  aria-label={`${catalog.champions.find((c) => c.id === entry.counterId)?.name}で対面メモを開く`}
+                >
+                  このピックでメモを開く →
+                </button>
+              )}
             </div>
             <p>{entry.reason}</p>
             <details>
@@ -62,7 +87,10 @@ export default function CuratedCounters({ championId, role }: { championId: numb
           </article>
         ))
       ) : (
-        <p className="muted">このレーンで十分な根拠を確認できた候補は、まだ登録されていません。</p>
+        <p className="muted">
+          {role ? 'このレーン' : 'このチャンピオン'}
+          で十分な根拠を確認できた候補は、まだ登録されていません。
+        </p>
       )}
       {error && <p role="alert">{error}</p>}
       <p className="muted">

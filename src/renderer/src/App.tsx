@@ -7,6 +7,7 @@ import ChampSelect from './ChampSelect'
 import MatchHistory from './MatchHistory'
 import EnemyCounter from './EnemyCounter'
 import CuratedCounters from './CuratedCounters'
+import { normalizeChampionSearch } from './championSearch'
 import {
   CATEGORIES,
   ROLES,
@@ -56,6 +57,8 @@ function ChampionPicker({
   const [open, setOpen] = useState(false),
     [query, setQuery] = useState('')
   const root = useRef<HTMLDivElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const [active, setActive] = useState(0)
   useEffect(() => {
     const close = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false)
@@ -64,26 +67,31 @@ function ChampionPicker({
     return () => document.removeEventListener('pointerdown', close)
   }, [])
   const filtered = champions.filter((c) =>
-    `${c.name} ${c.nameJa} ${c.slug}`
-      .toLocaleLowerCase()
-      .includes(query.trim().toLocaleLowerCase()),
+    normalizeChampionSearch(`${c.name} ${c.nameJa} ${c.slug}`).includes(
+      normalizeChampionSearch(query),
+    ),
   )
   return (
     <div
       className="picker"
       ref={root}
       onKeyDown={(e) => {
-        if (e.key === 'Escape') setOpen(false)
+        if (e.key === 'Escape') {
+          setOpen(false)
+          trigger.current?.focus()
+        }
       }}
     >
       <span className="eyebrow">{label}</span>
       <button
         className="picker-button"
+        ref={trigger}
         disabled={disabled}
         aria-label={`${label}を選択`}
         aria-expanded={open}
         onClick={() => {
           setQuery('')
+          setActive(0)
           setOpen(!open)
         }}
       >
@@ -101,15 +109,44 @@ function ChampionPicker({
             aria-label={`${label}を検索`}
             placeholder="日本語・英語で検索…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setActive(0)
+            }}
+            onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing) return
+              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault()
+                const next = Math.max(
+                  0,
+                  Math.min(filtered.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)),
+                )
+                setActive(next)
+                const candidate = root.current
+                  ?.querySelectorAll('.picker-results button')
+                  .item(next)
+                candidate?.scrollIntoView({ block: 'nearest' })
+              }
+              if (e.key === 'Enter' && filtered[active]) {
+                e.preventDefault()
+                onChange(filtered[active].id)
+                setOpen(false)
+                trigger.current?.focus()
+              }
+            }}
           />
+          <p className="picker-help" role="status">
+            {filtered[active]?.name ?? '候補なし'} · ↑ ↓ で選択 · Enterで決定
+          </p>
           <div className="picker-results">
-            {filtered.map((c) => (
+            {filtered.map((c, index) => (
               <button
                 key={c.id}
+                className={active === index ? 'keyboard-active' : ''}
                 onClick={() => {
                   onChange(c.id)
                   setOpen(false)
+                  trigger.current?.focus()
                 }}
               >
                 <Portrait champion={c} />
@@ -141,6 +178,12 @@ export default function App() {
   const [championDetailOpen, setChampionDetailOpen] = useState(false)
   const [pool, setPool] = useState<PoolEntry[]>([])
   const [poolReady, setPoolReady] = useState(false)
+  const [libraryView, setLibraryView] = useState<{
+    role: Role
+    query: string
+    laneFilter: Role | 'ALL'
+  }>({ role: 'TOP', query: '', laneFilter: 'ALL' })
+  const libraryScroll = useRef(0)
   const [detailRole, setDetailRole] = useState<Role | 'ALL'>('ALL')
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [counterBody, setCounterBody] = useState('')
@@ -199,6 +242,15 @@ export default function App() {
     page === 'champions'
       ? !championLoading && championData?.championId === championId
       : !loading && !!matchup && sameKey(key, matchup)
+
+  useEffect(() => {
+    window.scrollTo(0, page === 'champions' && !championDetailOpen ? libraryScroll.current : 0)
+  }, [page, championDetailOpen, championId])
+
+  function focusEditor() {
+    editor.current?.scrollIntoView({ block: 'center' })
+    editor.current?.focus({ preventScroll: true })
+  }
 
   async function initialize() {
     try {
@@ -401,14 +453,14 @@ export default function App() {
     championData?.matchups.filter((m) => detailRole === 'ALL' || m.role === detailRole) ?? []
 
   const notesPanel = (
-    <section className="notes-panel panel">
+    <section className="notes-panel panel" id="personal-notes">
       <div className="section-title">
         <div className="notes-title">
           <h2>{page === 'champions' ? 'Champion Notes' : 'My Notes'}</h2>
           <span className="count">{activeNotes?.length ?? 0}</span>
         </div>
         <span className="save-status" role="status">
-          {busy ? '保存中…' : status || 'SQLite · ローカル保存'}
+          {busy ? '保存中…' : noteDirty ? '未保存の変更があります' : status || 'この端末に保存'}
         </span>
       </div>
       <div className="notes-content">
@@ -543,7 +595,7 @@ export default function App() {
           }
           onChange={(e) => setBody(e.target.value)}
           onKeyDown={(e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            if (!e.nativeEvent.isComposing && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
               e.preventDefault()
               e.currentTarget.form?.requestSubmit()
             }
@@ -650,6 +702,27 @@ export default function App() {
           </span>
         </header>
         <main>
+          {(page === 'notebook' || (page === 'champions' && championDetailOpen)) && (
+            <div className="quick-note-bar">
+              <span>
+                {page === 'champions'
+                  ? selectedChampion?.name
+                  : `${mine?.name ?? ''} vs ${enemy?.name ?? ''} · ${key.role}`}
+              </span>
+              <div>
+                <button
+                  onClick={() =>
+                    document.getElementById('personal-notes')?.scrollIntoView({ block: 'start' })
+                  }
+                >
+                  メモを読む
+                </button>
+                <button className="primary" disabled={!ready || busy} onClick={focusEditor}>
+                  {noteDirty ? '書きかけのメモへ' : 'メモを書く'}
+                </button>
+              </div>
+            </div>
+          )}
           <div className={`lcu-banner ${lcu.status}`} role="status">
             <span>{lcu.message}</span>
             {lcu.status === 'champ-select' && page !== 'select' && (
@@ -823,12 +896,14 @@ export default function App() {
           ) : page === 'champions' && !championDetailOpen ? (
             <ChampionLibrary
               champions={champions}
-              initialRole={key.role}
+              view={libraryView}
+              onViewChange={setLibraryView}
               pool={pool}
               ready={poolReady}
               busy={busy}
               onOpen={(id) =>
                 navigate(() => {
+                  libraryScroll.current = window.scrollY
                   setChampionId(id)
                   setChampionDetailOpen(true)
                   setDetailRole('ALL')
@@ -860,7 +935,13 @@ export default function App() {
                   </div>
                 )}
                 {notesPanel}
-                <CuratedCounters championId={championId} />
+                <CuratedCounters
+                  championId={championId}
+                  busy={busy}
+                  onSelect={(counterId, role) =>
+                    choose({ myChampionId: counterId, enemyChampionId: championId, role })
+                  }
+                />
                 <section className="counter-editor panel" aria-label="チャンピオン対策の編集">
                   <div className="section-title">
                     <h2>{selectedChampion?.name}対策</h2>
@@ -893,7 +974,11 @@ export default function App() {
                         setCounterStatus('')
                       }}
                       onKeyDown={(e) => {
-                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        if (
+                          !e.nativeEvent.isComposing &&
+                          (e.ctrlKey || e.metaKey) &&
+                          e.key === 'Enter'
+                        ) {
                           e.preventDefault()
                           e.currentTarget.form?.requestSubmit()
                         }
@@ -1036,6 +1121,7 @@ export default function App() {
                     onSelect={(myChampionId) => choose({ ...key, myChampionId })}
                     onManage={() =>
                       navigate(() => {
+                        setLibraryView((view) => ({ ...view, role: key.role }))
                         setPage('champions')
                         setChampionDetailOpen(false)
                       })
@@ -1137,7 +1223,14 @@ export default function App() {
                   )}
                   {enemy && (
                     <>
-                      <CuratedCounters championId={enemy.id} role={key.role} />
+                      <CuratedCounters
+                        championId={enemy.id}
+                        role={key.role}
+                        busy={busy}
+                        onSelect={(counterId, role) =>
+                          choose({ myChampionId: counterId, enemyChampionId: enemy.id, role })
+                        }
+                      />
                       <EnemyCounter key={enemy.id} enemy={enemy} />
                     </>
                   )}

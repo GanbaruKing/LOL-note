@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { normalizeChampionSearch } from './championSearch'
 import laneData from '../../../resources/champion-lanes.json'
 import { ROLES, type Champion, type PoolEntry, type Role } from '../../shared/contracts'
 
 export default function ChampionLibrary({
   champions,
-  initialRole = 'TOP',
+  view,
+  onViewChange,
   pool,
   busy,
   ready,
@@ -13,7 +14,8 @@ export default function ChampionLibrary({
   onRemove,
 }: {
   champions: Champion[]
-  initialRole?: Role
+  view: { role: Role; query: string; laneFilter: Role | 'ALL' }
+  onViewChange: (view: { role: Role; query: string; laneFilter: Role | 'ALL' }) => void
   pool: PoolEntry[]
   busy: boolean
   ready: boolean
@@ -21,15 +23,18 @@ export default function ChampionLibrary({
   onSave: (entry: PoolEntry) => void
   onRemove: (entry: PoolEntry) => void
 }) {
-  const [role, setRole] = useState<Role>(initialRole)
-  const [query, setQuery] = useState('')
-  const [laneFilter, setLaneFilter] = useState<Role | 'ALL'>('ALL')
+  const { role, query, laneFilter } = view
+  const setRole = (role: Role) => onViewChange({ ...view, role })
+  const setQuery = (query: string) => onViewChange({ ...view, query })
+  const setLaneFilter = (laneFilter: Role | 'ALL') => onViewChange({ ...view, laneFilter })
   const lanesById: Record<string, string[]> = laneData.lanes
   const lanePool = pool.filter((p) => p.role === role)
   const filtered = champions.filter(
     (c) =>
       (laneFilter === 'ALL' || lanesById[c.id]?.includes(laneFilter)) &&
-      `${c.name} ${c.nameJa}`.toLowerCase().includes(query.trim().toLowerCase()),
+      normalizeChampionSearch(`${c.name} ${c.nameJa} ${c.slug}`).includes(
+        normalizeChampionSearch(query),
+      ),
   )
   return (
     <div className="champion-library">
@@ -121,6 +126,16 @@ export default function ChampionLibrary({
             {lane === 'ALL' ? 'All' : lane}
           </button>
         ))}
+      </div>
+      <div className="library-results-summary">
+        <span role="status">
+          {filtered.length} / {champions.length}体
+        </span>
+        {(query || laneFilter !== 'ALL') && (
+          <button onClick={() => onViewChange({ ...view, query: '', laneFilter: 'ALL' })}>
+            検索・絞り込みをクリア
+          </button>
+        )}
       </div>
       <div className="champion-grid">
         {filtered.map((c) => {

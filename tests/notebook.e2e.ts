@@ -139,6 +139,8 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
       'ダリウス対面のメモ',
     )
     await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
+    await expect(page.getByLabel('チャンピオン一覧を検索')).toHaveValue('ガレン')
+    await page.getByRole('button', { name: '検索・絞り込みをクリア' }).click()
     await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
     await page.evaluate(() => window.scrollTo(0, 0))

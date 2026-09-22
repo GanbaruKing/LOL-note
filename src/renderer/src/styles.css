@@ -1738,3 +1738,87 @@ h1 {
   text-decoration: underline;
   font-size: 12px;
 }
+
+.quick-note-bar {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  background: #191d28;
+  border: 1px solid #41475b;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px #0004;
+}
+.quick-note-bar > span {
+  font-weight: 600;
+}
+.quick-note-bar > div {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.quick-note-bar button {
+  padding: 9px 14px;
+}
+#personal-notes,
+.note-editor {
+  scroll-margin-top: 82px;
+}
+.notes-empty {
+  padding: 24px;
+}
+.notes-panel + .curated-counters {
+  margin-top: 20px;
+}
+.curated-counter .section-title {
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.curated-counter .portrait {
+  width: 32px;
+  height: 32px;
+}
+.curated-counter .counter-use {
+  margin-left: auto;
+  padding: 8px 10px;
+  color: #ccc4ff;
+  border: 1px solid #49415e;
+}
+.picker-help {
+  padding: 8px;
+  color: #b2b9cb;
+  font-size: 12px;
+}
+.picker-results button.keyboard-active {
+  background: #35304e;
+  outline: 1px solid #a99bff;
+  outline-offset: -2px;
+}
+.library-results-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #b2b9cb;
+  margin: 12px 0;
+}
+.library-results-summary button {
+  padding: 8px 12px;
+  color: #ccc4ff;
+}
+.note-body {
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

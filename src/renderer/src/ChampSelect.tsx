@@ -158,7 +158,15 @@ export default function ChampSelect({
           onSelect={(key) => setManualOwn(key.myChampionId)}
         />
       )}
-      {currentEnemy && role && <CuratedCounters championId={currentEnemy} role={role} />}
+      {currentEnemy && role && (
+        <CuratedCounters
+          championId={currentEnemy}
+          role={role}
+          onSelect={(counterId, selectedRole) =>
+            onOpen({ myChampionId: counterId, enemyChampionId: currentEnemy, role: selectedRole })
+          }
+        />
+      )}
       {error && (
         <p className="error-banner" role="alert">
           {error}
