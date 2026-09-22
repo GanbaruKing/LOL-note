@@ -20,7 +20,7 @@ export default function CuratedCounters({
   )
   return (
     <section className="curated-counters panel" aria-label="初期カウンターメモ">
-      <h3>カウンターピック</h3>
+      <h3>{catalog.champions.find((c) => c.id === championId)?.name}へのカウンターピック</h3>
       <p className="muted">初期メモ · {data.checkedAt}確認</p>
       {entries.length ? (
         entries.map((entry) => (

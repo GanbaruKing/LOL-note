@@ -12,7 +12,11 @@ test('search, return navigation and counter shortcuts preserve the writing flow'
   const app = await electron.launch({ args: [resolve('.')], env })
   try {
     const page = await app.firstWindow()
-    await page.getByRole('button', { name: '自分のチャンピオンを選択' }).click()
+    await expect(page.locator('.opponent-heading')).toContainText('vs Darius')
+    await page
+      .locator('.own-pick-context')
+      .getByRole('button', { name: '変更', exact: true })
+      .click()
     const search = page.getByLabel('自分のチャンピオンを検索')
     await search.fill('がれん')
     await search.press('Enter')

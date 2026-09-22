@@ -456,7 +456,11 @@ export default function App() {
     <section className="notes-panel panel" id="personal-notes">
       <div className="section-title">
         <div className="notes-title">
-          <h2>{page === 'champions' ? 'Champion Notes' : 'My Notes'}</h2>
+          <h2>
+            {page === 'champions'
+              ? 'Champion Notes'
+              : `${mine?.name ?? ''}で${enemy?.name ?? ''}と戦うメモ`}
+          </h2>
           <span className="count">{activeNotes?.length ?? 0}</span>
         </div>
         <span className="save-status" role="status">
@@ -707,7 +711,7 @@ export default function App() {
               <span>
                 {page === 'champions'
                   ? selectedChampion?.name
-                  : `${mine?.name ?? ''} vs ${enemy?.name ?? ''} · ${key.role}`}
+                  : `vs ${enemy?.name ?? ''} · ${key.role} ／ 使用：${mine?.name ?? ''}`}
               </span>
               <div>
                 <button
@@ -1132,31 +1136,38 @@ export default function App() {
                   {mine && enemy && (
                     <div className="matchup-hero panel">
                       <div className="hero-top">
-                        <span className="eyebrow">MATCHUP OVERVIEW</span>
+                        <span className="eyebrow">対戦相手の対策</span>
                         <span className="role-badge">◇ {key.role}</span>
                       </div>
-                      <div className="versus">
-                        <div className="fighter">
-                          <Portrait champion={mine} large />
-                          <div>
-                            <span className="eyebrow accent">YOUR PICK</span>
-                            <h2>{mine.name}</h2>
-                            <p>{mine.nameJa}</p>
-                          </div>
+                      <div className="opponent-heading">
+                        <Portrait champion={enemy} large />
+                        <div>
+                          <h2>
+                            <span>vs</span> {enemy.name}
+                          </h2>
+                          <p>{enemy.nameJa}対策</p>
                         </div>
-                        <span className="vs">VS</span>
-                        <div className="fighter enemy">
-                          <div>
-                            <span className="eyebrow">OPPONENT</span>
-                            <h2>{enemy.name}</h2>
-                            <p>{enemy.nameJa}</p>
-                          </div>
-                          <Portrait champion={enemy} large />
-                        </div>
+                      </div>
+                      <div className="own-pick-context">
+                        <span>使用チャンピオン</span>
+                        <Portrait champion={mine} />
+                        <strong>{mine.name}</strong>
+                        <button
+                          disabled={busy}
+                          onClick={() => {
+                            const picker = document.querySelector<HTMLButtonElement>(
+                              '.selection-bar .picker-button',
+                            )
+                            picker?.scrollIntoView({ block: 'center' })
+                            picker?.click()
+                          }}
+                        >
+                          変更
+                        </button>
                       </div>
                       <div className="overview-controls">
                         <div>
-                          <label htmlFor="difficulty">難易度</label>
+                          <label htmlFor="difficulty">この対面の難易度</label>
                           <select
                             id="difficulty"
                             value={matchup?.difficulty ?? 'Unset'}

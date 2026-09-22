@@ -536,45 +536,47 @@ h1 {
   border-radius: 4px;
   color: #b6b2cb;
 }
-.versus {
+.opponent-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 13px;
-  margin: 27px 0;
+  gap: 18px;
+  margin: 22px 0;
 }
-.fighter {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-.fighter h2 {
-  font-size: 25px;
-  font-weight: 600;
-  letter-spacing: -0.7px;
-  margin: 8px 0 4px;
+.opponent-heading h2 {
+  font-size: 30px;
+  letter-spacing: -0.5px;
   overflow-wrap: anywhere;
 }
-.fighter p {
-  font-size: 10px;
-  color: #8993a6;
+.opponent-heading h2 span {
+  font-size: 19px;
+  color: #aaa4c1;
+  font-weight: 400;
 }
-.fighter .eyebrow {
-  font-size: 8px;
-  letter-spacing: 1.1px;
+.opponent-heading p {
+  color: #b2b9cb;
+  margin-top: 6px;
 }
-.fighter.enemy {
-  text-align: right;
-}
-.fighter.enemy .portrait {
-  filter: saturate(0.7);
-}
-.vs {
+.own-pick-context {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  color: #aab2c3;
   font-size: 12px;
-  letter-spacing: 3px;
-  color: #6c7183;
-  font-style: italic;
+}
+.own-pick-context .portrait {
+  width: 28px;
+  height: 28px;
+}
+.own-pick-context strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: #c5cad5;
+}
+.own-pick-context button {
+  padding: 6px 10px;
+  border: 1px solid #41475b;
 }
 .overview-controls {
   border-top: 1px solid #30323e;
@@ -943,16 +945,7 @@ h1 {
   .matchup-hero {
     padding: 17px 17px 0;
   }
-  .fighter {
-    gap: 9px;
-  }
-  .fighter h2 {
-    font-size: 21px;
-  }
-  .fighter .large {
-    width: 58px;
-    height: 58px;
-  }
+
   .personal-label {
     display: none;
   }

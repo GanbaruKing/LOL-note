@@ -189,7 +189,7 @@ test('offline Electron notebook: CRUD, isolation, validation and restart persist
     await page.getByLabel('メモのカテゴリー').selectOption('Trading')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('DariusのQを見てから距離を調整する。')
-    await page.getByLabel('難易度', { exact: true }).selectOption('Hard')
+    await page.getByLabel('この対面の難易度', { exact: true }).selectOption('Hard')
     await page.getByRole('button', { name: '評価4', exact: true }).click()
     await expect(page.getByRole('button', { name: '評価4', exact: true })).toHaveAttribute(
       'aria-pressed',
@@ -278,7 +278,7 @@ test('offline Electron notebook: CRUD, isolation, validation and restart persist
     page = await app.firstWindow()
     await page.context().setOffline(true)
     await expect(page.locator('.note-body')).toHaveText('Ghost中は距離を取る。')
-    await expect(page.getByLabel('難易度', { exact: true })).toHaveValue('Hard')
+    await expect(page.getByLabel('この対面の難易度', { exact: true })).toHaveValue('Hard')
     await expect(page.getByRole('button', { name: '評価4', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
