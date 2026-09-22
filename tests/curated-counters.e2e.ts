@@ -28,10 +28,13 @@ test('curated picks work offline, filter by role and never seed or replace perso
     await expect(panel).not.toContainText('Dr. Mundo')
     await page.getByRole('button', { name: /Champions/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
-    await expect(panel).toContainText('Dr. Mundo')
+    await expect(panel).toHaveCount(0)
     await expect(page.getByLabel('Darius対策の内容', { exact: true })).toHaveValue(
       '自分の対策を保持',
     )
+    await page.getByRole('button', { name: /Match up/ }).click()
+    await page.getByLabel('ROLE', { exact: true }).selectOption('TOP')
+    await expect(panel).toContainText('Dr. Mundo')
     await app.evaluate(({ shell }) => {
       shell.openExternal = async (url) => {
         ;(globalThis as typeof globalThis & { counterSource?: string }).counterSource = url

@@ -2,7 +2,7 @@
 
 2026-09-16確認。全173体を調査対象とし、TOP / JUNGLE / MID / BOTTOM / SUPPORTのレーン別に、167体・197組を収録した。1チャンピオン・1レーンあたり最大3候補。全チャンピオンの全主要ロールを埋めたデータではない。
 
-Championsの詳細、Match up、Champ Selectに表示する。Match upとChamp Selectでは選択中の敵とRoleで絞る。Championsでは登録済みの全Roleを表示する。候補は「表示中の敵に対して選ぶチャンピオン」であり、逆方向ではない。
+Match upとChamp Selectに表示し、選択中の敵とRoleで絞る。Champion Libraryでは表示しない。候補は「表示中の敵に対して選ぶチャンピオン」であり、逆方向ではない。
 
 ![Dariusへの初期カウンターメモ。個人対策欄はテスト用の例。](screenshots/curated-counters.png)
 

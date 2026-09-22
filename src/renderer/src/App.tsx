@@ -31,7 +31,6 @@ async function unwrap<T>(promise: Promise<Result<T>>): Promise<T> {
 }
 const sameKey = (a: MatchupKey, b: MatchupKey) =>
   a.myChampionId === b.myChampionId && a.enemyChampionId === b.enemyChampionId && a.role === b.role
-const difficultyLabel = { Unset: '未設定', Easy: 'Easy', Even: 'Even', Hard: 'Hard' }
 function Portrait({ champion, large = false }: { champion: Champion; large?: boolean }) {
   return (
     <img
@@ -658,7 +657,7 @@ export default function App() {
             className={page === 'notebook' ? 'active' : ''}
             onClick={() => navigate(() => setPage('notebook'))}
           >
-            <span>▤</span>Match up<span className="nav-count">{summaries.length}</span>
+            <span>▤</span>Match up
           </button>
           <button
             className={page === 'champions' ? 'active' : ''}
@@ -939,13 +938,6 @@ export default function App() {
                   </div>
                 )}
                 {notesPanel}
-                <CuratedCounters
-                  championId={championId}
-                  busy={busy}
-                  onSelect={(counterId, role) =>
-                    choose({ myChampionId: counterId, enemyChampionId: championId, role })
-                  }
-                />
                 <section className="counter-editor panel" aria-label="チャンピオン対策の編集">
                   <div className="section-title">
                     <h2>{selectedChampion?.name}対策</h2>
@@ -1152,47 +1144,8 @@ export default function App() {
                         <span>使用チャンピオン</span>
                         <Portrait champion={mine} />
                         <strong>{mine.name}</strong>
-                        <button
-                          disabled={busy}
-                          onClick={() => {
-                            const picker = document.querySelector<HTMLButtonElement>(
-                              '.selection-bar .picker-button',
-                            )
-                            picker?.scrollIntoView({ block: 'center' })
-                            picker?.click()
-                          }}
-                        >
-                          変更
-                        </button>
                       </div>
                       <div className="overview-controls">
-                        <div>
-                          <label htmlFor="difficulty">この対面の難易度</label>
-                          <select
-                            id="difficulty"
-                            value={matchup?.difficulty ?? 'Unset'}
-                            disabled={!ready || busy}
-                            onChange={(e) =>
-                              void mutate(
-                                () =>
-                                  window.notebook.saveOverview({
-                                    key,
-                                    overview: {
-                                      difficulty: e.target.value as Matchup['difficulty'],
-                                      rating: matchup?.rating ?? null,
-                                    },
-                                  }),
-                                '評価を保存しました',
-                              )
-                            }
-                          >
-                            {Object.entries(difficultyLabel).map(([value, label]) => (
-                              <option key={value} value={value}>
-                                {label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
                         <div className="rating">
                           <span>自分の評価</span>
                           <div role="group" aria-label="自分の評価">

@@ -13,10 +13,10 @@ test('search, return navigation and counter shortcuts preserve the writing flow'
   try {
     const page = await app.firstWindow()
     await expect(page.locator('.opponent-heading')).toContainText('vs Darius')
-    await page
-      .locator('.own-pick-context')
-      .getByRole('button', { name: '変更', exact: true })
-      .click()
+    await expect(page.locator('.own-pick-context button')).toHaveCount(0)
+    await expect(page.locator('#difficulty')).toHaveCount(0)
+    await expect(page.locator('.nav-count')).toHaveCount(0)
+    await page.getByRole('button', { name: '自分のチャンピオンを選択' }).click()
     const search = page.getByLabel('自分のチャンピオンを検索')
     await search.fill('がれん')
     await search.press('Enter')
@@ -46,6 +46,8 @@ test('search, return navigation and counter shortcuts preserve the writing flow'
         .getByRole('button', { name: 'TOP', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true')
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
+    await expect(page.getByRole('region', { name: '初期カウンターメモ' })).toHaveCount(0)
+    await page.getByRole('button', { name: /Match up/ }).click()
     await page.getByRole('button', { name: 'メモを書く', exact: true }).click()
     const editor = page.getByLabel('新しいメモ', { exact: true })
     await expect(editor).toBeFocused()

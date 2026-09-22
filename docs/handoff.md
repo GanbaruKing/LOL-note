@@ -21,10 +21,10 @@
 
 Electron / React / TypeScript / node:sqlite。ノートはオフラインで利用できる。
 
-- Match up: 自分×敵×Roleのメモ、カテゴリー、難易度、評価、Pin。
+- Match up: 自分×敵×Roleのメモ、カテゴリー、評価、Pin。
 - Champion Library: 日英検索、レーン別表示、Champion Notes、対面メモ一覧、Champion Pool。
 - 敵チャンピオンへの対策: Champion Notesとは独立した1体1文章。「Darius対策」のように表示し、Match upで敵に選ぶと表示。最大10000文字、空欄保存で削除。未保存入力は別々に保護する。
-- 初期カウンターメモ: resources/counter-notes.jsonに167体・197組。5レーン別、短い理由と出典付き。Library / Match up / Champ Selectに表示し、個人DBには挿入しない。選定方法と未収録6体・一部Roleの扱いはdocs/curated-counters.md。統計収集機能は復活させていない。
+- 初期カウンターメモ: resources/counter-notes.jsonに167体・197組。5レーン別、短い理由と出典付き。Match up / Champ Selectに表示し、個人DBには挿入しない。選定方法と未収録6体・一部Roleの扱いはdocs/curated-counters.md。統計収集機能は復活させていない。
 - Match up左側はFavorite Champions。現在Roleのプールを自信度順に表示し、自分のチャンピオンだけ切り替える。「プールを編集」で同じRoleのLibraryを開く。
 - Comfort Picks: 敵×Roleごとの得意ピック。空表示は「敵チャンピオン名に対して得意なピックを追加しましょう。」。評価順という説明文は表示しない。
 - Search: Champion Notesと対面メモの横断検索。対策欄は検索対象外。
@@ -47,6 +47,6 @@ npm test（24件）、npm run lint、npm run test:e2e（11件）、npm run dist�
 
 操作改善: メモへの固定ショートカット、未保存表示、Libraryの検索・レーン・詳細から戻る位置の保持、ひらがな/全角検索、Match up選択の矢印/Enter/Esc操作。初期カウンターから候補×敵×Roleの対面ページを開ける。未保存確認を経由し、ゲーム内Pick操作は行わない。UIの保持状態はアプリ終了まで。
 
-Match upの見出しは敵を主役にした「vs Darius」形式。自分のPickは小さな補足行に表示し、「変更」から既存の選択欄を開く。カウンター見出しは「Dariusへのカウンターピック」、個人メモは「AatroxでDariusと戦うメモ」と対象を明記する。
+Match upの見出しは敵を主役にした「vs Darius」形式。自分のPickは小さな補足行に表示する。変更は上部の選択欄から行う。重複する変更ボタン・難易度選択・ナビのMatch up件数は削除済み。既存の難易度データはバックアップ互換性のため保持。カウンター見出しは「Dariusへのカウンターピック」、個人メモは「AatroxでDariusと戦うメモ」と対象を明記する。
 
 次に残るのはクリーンなWindowsでのインストール・更新・アンインストール試験、公開配布に向けたコード署名、必要ならGitHub Release公開。統計機能は削除済み。機能面では履歴の記入済み管理や対策欄の検索対応が候補だが未着手。

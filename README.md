@@ -12,7 +12,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 - 173体のチャンピオンを日本語・英語で検索して選択
 - 自分 × 相手 × RoleごとのMatchupページ
 - メモの追加・編集・削除、任意カテゴリー
-- 難易度・5段階評価
+- 5段階評価
 - 保存済みMatchup一覧とChampion / Role検索
 - SQLite永続化。League Clientもネット接続も不要
 - 未保存変更の確認、保存失敗時の入力保持
