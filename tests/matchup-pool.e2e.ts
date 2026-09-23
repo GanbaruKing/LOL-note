@@ -64,3 +64,27 @@ test('matchup pool replaces statistics and selects own picks by lane without los
     await app.close()
   }
 })
+
+test('Comfort Picks refreshes externally added personal picks when window regains focus', async () => {
+  mkdirSync('.test-data', { recursive: true })
+  const folder = mkdtempSync(resolve('.test-data', 'comfort-refresh-'))
+  const repo = new NotebookRepository(join(folder, 'notebook.sqlite'), catalog.champions)
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter((e): e is [string, string] => e[1] !== undefined),
+  )
+  delete env.ELECTRON_RUN_AS_NODE
+  env.NOTEBOOK_TEST_DATA_DIR = folder
+  const app = await electron.launch({ args: [resolve('.')], env })
+  try {
+    const page = await app.firstWindow()
+    const picks = page.getByRole('region', { name: 'Comfort Picks', exact: true })
+    await expect(picks).toContainText('得意なピックを追加しましょう')
+    repo.saveMyPick({ myChampionId: 2, enemyChampionId: 122, role: 'TOP' })
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await expect(picks).toContainText('Olaf')
+    await expect(page.locator('.quick-note-bar')).toHaveCount(0)
+  } finally {
+    await app.close()
+    repo.close()
+  }
+})

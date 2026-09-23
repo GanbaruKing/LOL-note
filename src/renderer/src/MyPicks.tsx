@@ -22,24 +22,31 @@ export default function MyPicks({
     [error, setError] = useState('')
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
-    setError('')
-    window.notebook
-      .listMyPicks({ enemyChampionId, role })
-      .then((r) => {
-        if (!cancelled) {
-          if (r.ok) setPicks(r.data)
-          else setError(r.error)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setError('Comfort Picksを読み込めません。')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+    let request = 0
+    const load = () => {
+      const current = ++request
+      setLoading(true)
+      setError('')
+      window.notebook
+        .listMyPicks({ enemyChampionId, role })
+        .then((r) => {
+          if (!cancelled && current === request) {
+            if (r.ok) setPicks(r.data)
+            else setError(r.error)
+          }
+        })
+        .catch(() => {
+          if (!cancelled && current === request) setError('Comfort Picksを読み込めません。')
+        })
+        .finally(() => {
+          if (!cancelled && current === request) setLoading(false)
+        })
+    }
+    load()
+    window.addEventListener('focus', load)
     return () => {
       cancelled = true
+      window.removeEventListener('focus', load)
     }
   }, [enemyChampionId, role, refreshToken])
   async function save(operation: () => Promise<Result<MyPick[]>>) {

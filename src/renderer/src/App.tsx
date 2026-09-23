@@ -250,11 +250,6 @@ export default function App() {
     window.scrollTo(0, page === 'champions' && !championDetailOpen ? libraryScroll.current : 0)
   }, [page, championDetailOpen, championId])
 
-  function focusEditor() {
-    editor.current?.scrollIntoView({ block: 'center' })
-    editor.current?.focus({ preventScroll: true })
-  }
-
   async function initialize() {
     try {
       setError('')
@@ -717,27 +712,6 @@ export default function App() {
           </span>
         </header>
         <main>
-          {(page === 'notebook' || (page === 'champions' && championDetailOpen)) && (
-            <div className="quick-note-bar">
-              <span>
-                {page === 'champions'
-                  ? selectedChampion?.name
-                  : `vs ${enemy?.name ?? ''} · ${key.role} ／ 使用：${mine?.name ?? ''}`}
-              </span>
-              <div>
-                <button
-                  onClick={() =>
-                    document.getElementById('personal-notes')?.scrollIntoView({ block: 'start' })
-                  }
-                >
-                  メモを読む
-                </button>
-                <button className="primary" disabled={!ready || busy} onClick={focusEditor}>
-                  {noteDirty ? '書きかけのメモへ' : 'メモを書く'}
-                </button>
-              </div>
-            </div>
-          )}
           <div className={`lcu-banner ${lcu.status}`} role="status">
             <span>{lcu.message}</span>
             {lcu.status === 'champ-select' && page !== 'select' && (
