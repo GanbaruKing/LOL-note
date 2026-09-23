@@ -20,8 +20,8 @@ test('matchup pool replaces statistics and selects own picks by lane without los
   const app = await electron.launch({ args: [resolve('.')], env })
   try {
     const page = await app.firstWindow()
-    await expect(page).toHaveTitle('LOL Note')
-    expect(await app.evaluate(({ app }) => app.getName())).toBe('LOL Note')
+    await expect(page).toHaveTitle('RiftNote')
+    expect(await app.evaluate(({ app }) => app.getName())).toBe('RiftNote')
     const panel = page.getByRole('region', { name: 'Match upのFavorite Champions' })
     await expect(panel.locator('.matchup-pool-pick')).toHaveCount(2)
     await expect(panel.locator('.matchup-pool-pick').first()).toContainText('Garen')

@@ -30,7 +30,7 @@ export interface NotebookBackup {
 }
 export function parseBackup(input: unknown): NotebookBackup {
   const fail = (): never => {
-    throw new ValidationError('LOL Noteのバックアップ形式が正しくありません。')
+    throw new ValidationError('RiftNoteのバックアップ形式が正しくありません。')
   }
   const root = object(input)
   if (

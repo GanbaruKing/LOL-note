@@ -15,7 +15,7 @@ import { HistoryService } from './history'
 let repository: NotebookRepository | undefined
 let mainWindow: BrowserWindow | null = null
 let lcu: LcuService | undefined
-app.setName('LOL Note')
+app.setName('RiftNote')
 // Keep the existing storage identity when renaming the product, including Chromium data.
 // Only explicit test launches can redirect storage; the renderer cannot choose a path.
 const storageDirectory =
@@ -61,8 +61,8 @@ function registerApi(databasePath: string) {
     exportBackup: async () => {
       const choice = await dialog.showSaveDialog(mainWindow!, {
         title: 'バックアップを保存',
-        defaultPath: `LOL-Note-${new Date().toISOString().slice(0, 10)}.json`,
-        filters: [{ name: 'LOL Note Backup', extensions: ['json'] }],
+        defaultPath: `RiftNote-${new Date().toISOString().slice(0, 10)}.json`,
+        filters: [{ name: 'RiftNote Backup', extensions: ['json'] }],
       })
       if (choice.canceled || !choice.filePath) return null
       if (extname(choice.filePath).toLowerCase() !== '.json')
@@ -74,7 +74,7 @@ function registerApi(databasePath: string) {
       const choice = await dialog.showOpenDialog(mainWindow!, {
         title: 'バックアップから復元',
         properties: ['openFile'],
-        filters: [{ name: 'LOL Note Backup', extensions: ['json'] }],
+        filters: [{ name: 'RiftNote Backup', extensions: ['json'] }],
       })
       if (choice.canceled || !choice.filePaths[0]) return null
       const path = choice.filePaths[0]
@@ -84,7 +84,7 @@ function registerApi(databasePath: string) {
       try {
         backup = parseBackup(JSON.parse(readFileSync(path, 'utf8')))
       } catch {
-        throw new ValidationError('有効なLOL Noteバックアップを選択してください。')
+        throw new ValidationError('有効なRiftNoteバックアップを選択してください。')
       }
       const confirmation = await dialog.showMessageBox(mainWindow!, {
         type: 'warning',
@@ -184,7 +184,7 @@ async function createWindow() {
     height: 940,
     minWidth: 1000,
     minHeight: 720,
-    title: 'LOL Note',
+    title: 'RiftNote',
     backgroundColor: '#101217',
     autoHideMenuBar: true,
     show: false,

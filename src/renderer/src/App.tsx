@@ -640,7 +640,7 @@ export default function App() {
           <div className="brand-symbol">
             N<span>·</span>
           </div>
-          <div>LOL Note</div>
+          <div>RiftNote</div>
         </div>
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="メインナビゲーション">
@@ -907,7 +907,7 @@ export default function App() {
                 Clientへログインすると、最近の試合から対面メモを書けます。保存したメモはオフラインでも読めます。クラウド同期はありません。
               </p>
               <p className="muted">
-                LOL Note is not endorsed by Riot Games. League of Legends and its assets are
+                RiftNote is not endorsed by Riot Games. League of Legends and its assets are
                 trademarks of Riot Games.
               </p>
             </section>

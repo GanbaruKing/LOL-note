@@ -1,5 +1,5 @@
 appId: io.github.ganbaruking.lolnote
-productName: LOL Note
+productName: RiftNote
 directories:
   output: dist
 files:
@@ -20,6 +20,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: LOL Note
+  shortcutName: RiftNote
   deleteAppDataOnUninstall: false
-artifactName: LOL-Note-Setup-${version}-${arch}.${ext}
+artifactName: RiftNote-Setup-${version}-${arch}.${ext}

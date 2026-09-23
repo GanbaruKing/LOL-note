@@ -46,7 +46,7 @@ test('settings exports, cancels, rejects invalid backups and restores with a saf
     })
     writeFileSync(backupPath, '{bad json')
     await page.getByRole('button', { name: 'バックアップから復元', exact: true }).click()
-    await expect(page.getByRole('alert')).toContainText('有効なLOL Note')
+    await expect(page.getByRole('alert')).toContainText('有効なRiftNote')
     writeFileSync(backupPath, JSON.stringify(saved))
     await app.evaluate(({ dialog }) => {
       dialog.showMessageBox = async () => ({ response: 1, checkboxChecked: false })

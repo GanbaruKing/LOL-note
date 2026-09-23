@@ -1,4 +1,4 @@
-# LOL Note
+# RiftNote
 
 試合履歴から対面を自動判定し、振り返りをメモに残せます。[使い方と判定方法](docs/match-history.md)を参照してください。
 
@@ -36,7 +36,7 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 
 ## Windows版のインストール
 
-`LOL-Note-Setup-0.1.0-x64.exe` を実行し、画面に従ってインストールします。Windows x64向けです。Node.jsやnpmは不要で、スタートメニューまたはデスクトップの「LOL Note」から起動できます。
+`RiftNote-Setup-0.1.0-x64.exe` を実行し、画面に従ってインストールします。Windows x64向けです。Node.jsやnpmは不要で、スタートメニューまたはデスクトップの「RiftNote」から起動できます。
 
 現在のビルドは署名なしです。Windowsの警告が表示される場合があります。インストーラーの作成方法と検証範囲は[配布手順](docs/release.md)を参照してください。GitHub Releaseへの公開はまだ行っていません。
 
@@ -176,6 +176,6 @@ APIキー、LCU認証情報、`.env`、個人DBはコミットしません。こ
 ## Assets
 
 Champion名・画像は [Riot Games Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon) を利用しています。
-LOL Note is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
+RiftNote is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
 
 All Championsはレーンタブと名前検索を組み合わせて絞り込めます。レーン分類は同梱データを使用し、分類未収録のチャンピオンはAllに表示します。分類元：[Meraki Analytics](https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json)。
