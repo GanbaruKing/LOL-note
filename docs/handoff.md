@@ -19,7 +19,7 @@
 
 ## 現在の機能
 
-- ノートブック試作：チャンピオン非依存の章・記事。章名変更・所属変更・上下移動・検索・お気に入り・書式付き閲覧・自動保存。画面限定のアイボリー＋ゴールドのテーマ。詳細はdocs/knowledge-book.md。settingsのknowledge-bookキーで保存するためDBはv5のまま。バックアップはv2に更新し、v1読込にも対応。
+- Notebook：チャンピオン非依存の章・記事。章名変更・所属変更・上下移動・検索・お気に入り・書式付き閲覧・自動保存。他画面と統一したダークテーマ。サイドバーはSearch → Notebookの順。詳細はdocs/knowledge-book.md。settingsのknowledge-bookキーで保存するためDBはv5のまま。バックアップはv2に更新し、v1読込にも対応。
 
 Electron / React / TypeScript / node:sqlite。ノートはオフラインで利用できる。
 

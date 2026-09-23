@@ -1,94 +1,6 @@
-.app-shell.book-theme {
-  color: #302e28;
-  background: #f4f1ea;
-  color-scheme: light;
-  min-height: 100vh;
-}
-.book-theme .sidebar {
-  background: #ece8df;
-  border-color: #dcd5c7;
-}
-.book-theme .brand,
-.book-theme .sidebar button,
-.book-theme .sidebar-bottom {
-  color: #4d483f;
-}
-.book-theme .brand-symbol {
-  background: #faf8f2;
-  border-color: #a79061;
-  color: #826b40;
-}
-.book-theme .sidebar nav button:hover {
-  background: #e3ddcf;
-}
-.book-theme .sidebar nav button.active {
-  background: #faf8f3;
-  color: #715b31;
-  border-left-color: #a68c55;
-  box-shadow: 0 2px 10px #6d583409;
-}
-.book-theme .workspace-label,
-.book-theme .version,
-.book-theme .muted {
-  color: #787163;
-}
-.book-theme .sidebar-bottom,
-.book-theme .topbar {
-  border-color: #ddd6c9;
-}
-.book-theme .topbar {
-  color: #595144;
-  background: #f8f6f1;
-}
-.book-theme .offline-badge {
-  color: #5b7264;
-  border-color: #cdd6ca;
-}
-.book-theme .workspace > main {
-  max-width: 1700px;
-  padding: 36px 38px;
-}
-.book-theme .lcu-banner,
-.book-theme .page-heading {
+.book-view .lcu-banner,
+.book-view .page-heading {
   display: none;
-}
-.book-theme input,
-.book-theme textarea,
-.book-theme select {
-  background: #fffefa;
-  color: #302e28;
-  border-color: #ded7c9;
-}
-.book-theme input::placeholder,
-.book-theme textarea::placeholder {
-  color: #979184;
-}
-.book-theme input:focus,
-.book-theme textarea:focus,
-.book-theme select:focus {
-  border-color: #a79061;
-  box-shadow: 0 0 0 2px #aa92571a;
-}
-.book-theme button {
-  color: #625744;
-}
-.book-theme button:hover {
-  background: #eee8da;
-}
-.book-theme button:focus-visible {
-  outline-color: #91763e;
-}
-.book-theme .error-banner {
-  background: #f8e9e4;
-  color: #8a3c28;
-}
-.book-theme .modal {
-  background: #fffdf7;
-  color: #302e28;
-}
-.book-theme .primary {
-  background: #826b40;
-  color: #fffdf7;
 }
 .book-heading {
   display: flex;
@@ -98,7 +10,7 @@
   margin-bottom: 32px;
 }
 .book-kicker {
-  color: #927b4e;
+  color: #b4a2ed;
   font-size: 10px;
   letter-spacing: 2.4px;
   font-weight: 600;
@@ -109,18 +21,10 @@
   letter-spacing: 1px;
   margin: 12px 0 10px;
 }
-.book-heading h1 span {
-  display: inline-block;
-  color: #998665;
-  margin-left: 20px;
-  font:
-    italic 25px Georgia,
-    serif;
-  letter-spacing: 0;
-}
+
 .book-heading p {
   font-size: 12px;
-  color: #827969;
+  color: #9ba5b8;
   letter-spacing: 1px;
 }
 .book-save {
@@ -128,12 +32,12 @@
   gap: 12px;
   align-items: center;
   font-size: 11px;
-  color: #777461;
+  color: #9ba5b8;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 .book-save button {
-  border: 1px solid #d6ccb8;
+  border: 1px solid #303642;
   padding: 8px 12px;
 }
 .book-layout {
@@ -149,20 +53,18 @@
 .book-index-heading {
   display: flex;
   justify-content: space-between;
-  font:
-    10px Georgia,
-    serif;
+  font-size: 10px;
   letter-spacing: 1.7px;
-  color: #867854;
+  color: #b4a2ed;
   padding-bottom: 18px;
-  border-bottom: 1px solid #d7cfbd;
+  border-bottom: 1px solid #303642;
   margin-bottom: 18px;
 }
 .book-index > input {
   width: 100%;
   font-size: 12px;
   padding: 12px;
-  border-radius: 3px;
+  border-radius: 7px;
 }
 .book-chapters {
   margin-top: 20px;
@@ -175,24 +77,22 @@
   gap: 12px;
   align-items: center;
   padding: 11px 10px;
-  border-radius: 3px;
+  border-radius: 7px;
   overflow-wrap: anywhere;
 }
 .book-chapters button[aria-pressed='true'] {
-  background: #e7e0d1;
-  color: #65502b;
+  background: #302b43;
+  color: #d1c4ff;
 }
 .chapter-number {
-  font:
-    12px Georgia,
-    serif;
-  color: #9b855a;
+  font-size: 12px;
+  color: #b4a2ed;
   flex-shrink: 0;
   width: 18px;
 }
 .book-chapters small {
   margin-left: auto;
-  color: #8d8371;
+  color: #9ba5b8;
 }
 .book-add-chapter {
   padding: 12px 10px;
@@ -220,7 +120,7 @@
   padding: 7px;
 }
 .book-article-heading {
-  border-top: 1px solid #d7cfbd;
+  border-top: 1px solid #303642;
   margin-top: 18px;
   padding-top: 22px;
   display: flex;
@@ -233,17 +133,17 @@
   font-weight: 500;
   overflow-wrap: anywhere;
 }
-.book-theme .book-gold-button {
-  background: #826b40;
-  color: #fffdf7;
-  border: 1px solid #826b40;
-  border-radius: 3px;
+.book-view .book-primary-button {
+  background: #b4a2ed;
+  color: #1b1f28;
+  border: 1px solid #303642;
+  border-radius: 7px;
   padding: 9px 13px;
   font-size: 12px;
   flex-shrink: 0;
 }
-.book-theme .book-gold-button:hover {
-  background: #69542e;
+.book-view .book-primary-button:hover {
+  background: #c5b5fb;
 }
 .book-articles {
   margin-top: 14px;
@@ -257,38 +157,38 @@
   text-align: left;
   padding: 15px 13px;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: 7px;
 }
 .book-articles > button[aria-pressed='true'] {
-  background: #fffdf7;
-  border-color: #cbbb98;
-  box-shadow: 0 3px 12px #745a2810;
+  background: #1b1f28;
+  border-color: #303642;
+  box-shadow: 0 3px 12px #00000010;
 }
 .book-articles strong {
   font-size: 13px;
   font-weight: 600;
-  color: #413a2f;
+  color: #e7e9ef;
   overflow-wrap: anywhere;
 }
 .book-articles small {
   margin-top: 7px;
   font-size: 11px;
   line-height: 1.7;
-  color: #8c8372;
+  color: #9ba5b8;
   overflow-wrap: anywhere;
 }
 .book-list-empty {
   font-size: 12px;
-  color: #8c8372;
+  color: #9ba5b8;
   line-height: 1.9;
   padding: 20px 8px;
 }
 .book-paper {
-  background: #fffefb;
-  border: 1px solid #e0d9cc;
-  border-top: 3px solid #ad976b;
-  box-shadow: 0 15px 40px #75603c0a;
-  border-radius: 3px;
+  background: #1b1f28;
+  border: 1px solid #303642;
+  border-top: 1px solid #303642;
+  box-shadow: 0 15px 40px #00000010;
+  border-radius: 7px;
   padding: 26px 38px;
   width: 100%;
   min-height: 650px;
@@ -300,7 +200,7 @@
   align-items: center;
   gap: 16px;
   padding-bottom: 24px;
-  color: #978362;
+  color: #b4a2ed;
   font-size: 10px;
   letter-spacing: 1.5px;
 }
@@ -310,8 +210,8 @@
 .book-paper-top > div {
   display: flex;
   flex-shrink: 0;
-  border: 1px solid #e2d9c8;
-  border-radius: 3px;
+  border: 1px solid #303642;
+  border-radius: 7px;
   padding: 3px;
 }
 .book-paper-top button {
@@ -320,12 +220,12 @@
   border-radius: 2px;
 }
 .book-paper-top button[aria-pressed='true'] {
-  background: #eee8dc;
-  color: #705a30;
+  background: #302b43;
+  color: #d1c4ff;
 }
-.book-theme .book-title {
+.book-view .book-title {
   width: 100%;
-  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+  font-family: inherit;
   font-size: 27px;
   line-height: 1.6;
   font-weight: 500;
@@ -341,8 +241,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  color: #96866b;
-  border-bottom: 1px solid #e7e0d5;
+  color: #9ba5b8;
+  border-bottom: 1px solid #303642;
   padding-bottom: 22px;
   font-size: 11px;
 }
@@ -360,8 +260,8 @@
   padding: 7px 8px;
 }
 .book-article-meta button[aria-pressed='true'] {
-  color: #916d25;
-  background: #f5eedc;
+  color: #b4a2ed;
+  background: #302b43;
 }
 .book-article-meta > span {
   margin-left: auto;
@@ -376,15 +276,15 @@
 .book-format button {
   padding: 6px 9px;
   font-size: 11px;
-  border: 1px solid #e3dccf;
-  border-radius: 3px;
+  border: 1px solid #303642;
+  border-radius: 7px;
 }
 .book-format span {
   margin-left: auto;
-  color: #9b9386;
+  color: #9ba5b8;
   font-size: 10px;
 }
-.book-theme .book-body {
+.book-view .book-body {
   width: 100%;
   min-height: 390px;
   resize: vertical;
@@ -399,10 +299,10 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  border-top: 1px solid #e7e0d5;
+  border-top: 1px solid #303642;
   padding-top: 16px;
   font-size: 10px;
-  color: #96866b;
+  color: #9ba5b8;
 }
 .book-paper-footer button {
   padding: 6px 9px;
@@ -411,7 +311,7 @@
 .book-prose {
   font-size: 14px;
   line-height: 2;
-  color: #443f35;
+  color: #d9deea;
   padding: 24px 0 40px;
   min-height: 390px;
   overflow-wrap: anywhere;
@@ -419,7 +319,7 @@
 .book-prose h2,
 .book-prose h3,
 .book-prose h4 {
-  font-family: 'Yu Mincho', Georgia, serif;
+  font-family: inherit;
   font-weight: 600;
   margin: 20px 0 12px;
 }
@@ -428,7 +328,7 @@
 }
 .book-prose h3 {
   font-size: 20px;
-  border-bottom: 1px solid #e7e0d5;
+  border-bottom: 1px solid #303642;
   padding-bottom: 10px;
 }
 .book-prose h4 {
@@ -445,11 +345,11 @@
 }
 .book-bullet span,
 .book-check span {
-  color: #a08a5c;
+  color: #b4a2ed;
 }
 .book-prose blockquote {
-  background: #f6f2e9;
-  border-left: 2px solid #b39a65;
+  background: #242131;
+  border-left: 2px solid #303642;
   padding: 14px 18px;
   margin: 18px 0;
   white-space: pre-wrap;
@@ -462,24 +362,22 @@
   padding: 62px 0 80px;
 }
 .book-monogram {
-  font:
-    italic 72px Georgia,
-    serif;
-  color: #ad9566;
+  font-size: 72px;
+  color: #b4a2ed;
   margin: 30px auto;
   width: 108px;
   height: 108px;
-  border: 1px solid #ded0b3;
+  border: 1px solid #303642;
   line-height: 108px;
 }
 .book-welcome h2 {
-  font-family: 'Yu Mincho', Georgia, serif;
+  font-family: inherit;
   font-size: 25px;
   font-weight: 500;
   margin-bottom: 20px;
 }
 .book-welcome p {
-  color: #837967;
+  color: #9ba5b8;
   line-height: 2.2;
   font-size: 12px;
   margin-bottom: 26px;
@@ -489,20 +387,20 @@
   margin-top: 22px;
 }
 .book-error {
-  color: #8b4533;
-  background: #f7e9e3;
-  border: 1px solid #ddc1b6;
+  color: #f1b0b8;
+  background: #352128;
+  border: 1px solid #303642;
   padding: 12px;
   margin-bottom: 20px;
 }
 .book-loading {
   padding: 60px;
   text-align: center;
-  color: #766c59;
+  color: #9ba5b8;
 }
 .book-delete {
-  background: #fffdf7;
-  color: #40382b;
+  background: #1b1f28;
+  color: #e7e9ef;
   padding: 32px;
   border-radius: 6px;
   max-width: 480px;
@@ -521,9 +419,6 @@
   margin-right: 10px;
 }
 @media (max-width: 1200px) {
-  .book-theme .workspace > main {
-    padding: 26px 22px;
-  }
   .book-layout {
     grid-template-columns: 210px minmax(0, 1fr);
     gap: 18px;
@@ -534,11 +429,7 @@
   .book-heading h1 {
     font-size: 26px;
   }
-  .book-heading h1 span {
-    display: block;
-    margin: 8px 0 0;
-    font-size: 21px;
-  }
+
   .book-save {
     max-width: 160px;
   }
@@ -546,4 +437,13 @@
     width: 100%;
     margin-top: 8px;
   }
+}
+
+.book-view .book-primary-button {
+  color: #211a36;
+  border-color: #b4a2ed;
+}
+.book-heading h1 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }

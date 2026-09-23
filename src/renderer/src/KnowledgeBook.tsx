@@ -221,22 +221,20 @@ export default function KnowledgeBook({
             <button onClick={() => void load()}>再読み込み</button>
           </>
         ) : (
-          'ノートブックを開いています…'
+          'Notebookを開いています…'
         )}
       </section>
     )
   return (
-    <section className="knowledge-book" aria-label="ノートブック">
+    <section className="knowledge-book" aria-label="Notebook">
       <header className="book-heading">
         <div>
           <span className="book-kicker">YOUR PERSONAL LEAGUE COMPENDIUM</span>
-          <h1>
-            ノートブック<span>Notebook</span>
-          </h1>
+          <h1>Notebook</h1>
           <p>学んだことを、一冊の知識に。</p>
         </div>
         <div className="book-save">
-          <span role="status" aria-label="ノートブック保存状態">
+          <span role="status" aria-label="Notebook保存状態">
             {saving
               ? '保存中…'
               : error
@@ -262,7 +260,7 @@ export default function KnowledgeBook({
             <span>{book.articles.length} ARTICLES</span>
           </div>
           <input
-            aria-label="ノートブックを検索"
+            aria-label="Notebookを検索"
             placeholder="記事を検索…"
             value={query}
             onChange={(e) => {
@@ -391,7 +389,7 @@ export default function KnowledgeBook({
                       ? '未整理'
                       : 'すべての記事'))}
             </h2>
-            <button className="book-gold-button" onClick={newArticle}>
+            <button className="book-primary-button" onClick={newArticle}>
               ＋ 記事
             </button>
           </div>
@@ -551,7 +549,7 @@ export default function KnowledgeBook({
                 <br />
                 チャンピオンに縛られず、一つずつ知識を残しましょう。
               </p>
-              <button className="book-gold-button" onClick={newArticle}>
+              <button className="book-primary-button" onClick={newArticle}>
                 最初の記事を書く
               </button>
               <p className="book-welcome-hint">「章を作成」で整理。迷ったら未整理のままでも。</p>
@@ -565,7 +563,7 @@ export default function KnowledgeBook({
             className="book-delete"
             role="alertdialog"
             aria-modal="true"
-            aria-label="ノートブックの削除確認"
+            aria-label="Notebookの削除確認"
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 e.preventDefault()
@@ -595,7 +593,7 @@ export default function KnowledgeBook({
               キャンセル
             </button>
             <button
-              className="book-gold-button"
+              className="book-primary-button"
               onClick={() => {
                 if (deleting === 'chapter') {
                   update({

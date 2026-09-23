@@ -206,7 +206,7 @@ export default function App() {
     message: 'League Clientを確認中…',
   })
   const titles = {
-    book: 'ノートブック',
+    book: 'Notebook',
     notebook: 'Match up',
     champions: 'Champion Library',
     settings: 'Settings',
@@ -634,7 +634,7 @@ export default function App() {
   )
 
   return (
-    <div className={`app-shell${page === 'book' ? ' book-theme' : ''}`}>
+    <div className={`app-shell${page === 'book' ? ' book-view' : ''}`}>
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol">
@@ -645,18 +645,18 @@ export default function App() {
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="メインナビゲーション">
           <button
+            className={page === 'search' ? 'active' : ''}
+            onClick={() => navigate(() => setPage('search'))}
+          >
+            <span>⌕</span>Search
+          </button>
+          <button
             className={page === 'book' ? 'active' : ''}
             onClick={() => {
               if (page !== 'book') navigate(() => setPage('book'))
             }}
           >
-            <span>▥</span>ノートブック
-          </button>
-          <button
-            className={page === 'search' ? 'active' : ''}
-            onClick={() => navigate(() => setPage('search'))}
-          >
-            <span>⌕</span>Search
+            <span>▥</span>Notebook
           </button>
           <button
             className={page === 'select' ? 'active' : ''}
@@ -830,7 +830,7 @@ export default function App() {
               <h2>ローカルデータ</h2>
               <h3>バックアップ・復元</h3>
               <p>
-                メモ・ノートブックの章と記事・対策・評価・Favorite Champions・Comfort
+                メモ・Notebookの章と記事・対策・評価・Favorite Champions・Comfort
                 PicksをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
               </p>
               {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
