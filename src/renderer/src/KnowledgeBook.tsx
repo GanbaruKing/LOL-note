@@ -229,9 +229,7 @@ export default function KnowledgeBook({
     <section className="knowledge-book" aria-label="Notebook">
       <header className="book-heading">
         <div>
-          <span className="book-kicker">YOUR PERSONAL LEAGUE COMPENDIUM</span>
           <h1>Notebook</h1>
-          <p>学んだことを、一冊の知識に。</p>
         </div>
         <div className="book-save">
           <span role="status" aria-label="Notebook保存状態">

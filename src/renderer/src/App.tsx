@@ -659,13 +659,6 @@ export default function App() {
             <span>▥</span>Notebook
           </button>
           <button
-            className={page === 'select' ? 'active' : ''}
-            onClick={() => navigate(() => setPage('select'))}
-          >
-            <span>◇</span>Champ Select
-            {lcu.status === 'champ-select' && <span className="connection-dot" />}
-          </button>
-          <button
             className={page === 'notebook' ? 'active' : ''}
             onClick={() => navigate(() => setPage('notebook'))}
           >
@@ -687,6 +680,13 @@ export default function App() {
             onClick={() => navigate(() => setPage('history'))}
           >
             <span>◷</span>Match History
+          </button>
+          <button
+            className={page === 'select' ? 'active' : ''}
+            onClick={() => navigate(() => setPage('select'))}
+          >
+            <span>◇</span>Champ Select
+            {lcu.status === 'champ-select' && <span className="connection-dot" />}
           </button>
           <button
             className={page === 'settings' ? 'active' : ''}
@@ -748,19 +748,16 @@ export default function App() {
           </div>
           <div className="page-heading">
             <div>
-              <span className="eyebrow accent">THE PERSONAL PLAYBOOK</span>
               <h1>{titles[page]}</h1>
-              {page !== 'select' && (
+              {page !== 'select' && page !== 'champions' && (
                 <p>
                   {page === 'notebook'
                     ? 'チャンピオン・対面・レーンごとのメモと評価を管理します。'
-                    : page === 'champions'
-                      ? 'チャンピオン自身の知識と、対面ごとのメモ。'
-                      : page === 'search'
-                        ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
-                        : page === 'history'
-                          ? '最近の試合から対面を選び、気づきをメモに残します。'
-                          : 'このNotebookについて。'}
+                    : page === 'search'
+                      ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
+                      : page === 'history'
+                        ? '最近の試合から対面を選び、気づきをメモに残します。'
+                        : 'このNotebookについて。'}
                 </p>
               )}
             </div>
