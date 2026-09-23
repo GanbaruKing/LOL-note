@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite'
+import { emptyKnowledgeBook, parseKnowledgeBook } from '../shared/knowledge'
 import { backupTables, parseBackup, type NotebookBackup } from './backup'
 import type {
   Champion,
@@ -122,10 +123,24 @@ export class NotebookRepository {
   close() {
     this.db.close()
   }
+  getKnowledgeBook() {
+    const row = this.db.prepare("SELECT value FROM settings WHERE key='knowledge-book'").get()
+    return row ? parseKnowledgeBook(JSON.parse(row.value as string)) : emptyKnowledgeBook()
+  }
+  saveKnowledgeBook(input: unknown) {
+    const book = parseKnowledgeBook(input)
+    this.db
+      .prepare(
+        "INSERT INTO settings(key,value) VALUES('knowledge-book',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+      )
+      .run(JSON.stringify(book))
+    return book
+  }
   exportBackup(): NotebookBackup {
     return this.transaction(() => ({
       format: 'lol-note',
-      version: 1,
+      version: 2,
+      knowledgeBook: this.getKnowledgeBook(),
       createdAt: new Date().toISOString(),
       tables: Object.fromEntries(
         Object.entries(backupTables).map(([table, columns]) => [
@@ -139,6 +154,7 @@ export class NotebookRepository {
     const backup = parseBackup(input)
     try {
       this.transaction(() => {
+        this.saveKnowledgeBook(backup.knowledgeBook)
         for (const table of Object.keys(backupTables).reverse())
           this.db.exec(`DELETE FROM ${table}`)
         for (const [table, columns] of Object.entries(backupTables)) {

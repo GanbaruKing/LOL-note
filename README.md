@@ -9,6 +9,8 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 
 ## 主な機能
 
+- ノートブック：チャンピオンと独立した章・記事、自動保存、全文検索、お気に入り。アイボリーとゴールドの明るいデザイン。[使い方](docs/knowledge-book.md)
+
 - 173体のチャンピオンを日本語・英語で検索して選択
 - 自分 × 相手 × RoleごとのMatchupページ
 - メモの追加・編集・削除、任意カテゴリー
@@ -83,7 +85,7 @@ Match up左側のFavorite Championsには、選択中のRoleに登録したチ�
 
 ### バックアップ・復元
 
-Settingsの「バックアップを保存」で、対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Champions・Comfort PicksをJSONへ保存できます。
+Settingsの「バックアップを保存」で、ノートブックの章と記事・対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Champions・Comfort PicksをJSONへ保存できます。
 
 「バックアップから復元」は現在の内容を置き換えます。確認後、復元前のデータを保存先フォルダー内の `backups/` に自動退避します。不正なファイルや書き込み失敗時は既存データを保持します。Leagueのフォルダー設定、履歴、認証情報は対象外です。[形式と復元の詳細](docs/backup.md)。
 

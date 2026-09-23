@@ -1,5 +1,7 @@
 import { CATEGORIES, DIFFICULTIES, ROLES } from '../shared/contracts'
 import { object, ValidationError } from '../shared/validation'
+import { emptyKnowledgeBook, parseKnowledgeBook } from '../shared/knowledge'
+import type { KnowledgeBook } from '../shared/contracts'
 
 // Only these tables and columns can enter a backup or a restore statement.
 export const backupTables = {
@@ -21,7 +23,8 @@ export const backupTables = {
 export type BackupRow = Record<string, string | number | null>
 export interface NotebookBackup {
   format: 'lol-note'
-  version: 1
+  version: 2
+  knowledgeBook: KnowledgeBook
   createdAt: string
   tables: Record<keyof typeof backupTables, BackupRow[]>
 }
@@ -30,7 +33,14 @@ export function parseBackup(input: unknown): NotebookBackup {
     throw new ValidationError('LOL Noteのバックアップ形式が正しくありません。')
   }
   const root = object(input)
-  if (root.format !== 'lol-note' || root.version !== 1 || typeof root.createdAt !== 'string') fail()
+  if (
+    root.format !== 'lol-note' ||
+    (root.version !== 1 && root.version !== 2) ||
+    typeof root.createdAt !== 'string'
+  )
+    fail()
+  const knowledgeBook =
+    root.version === 1 ? emptyKnowledgeBook() : parseKnowledgeBook(root.knowledgeBook)
   const tables = object(root.tables)
   const result = {} as NotebookBackup['tables']
   let count = 0
@@ -71,5 +81,11 @@ export function parseBackup(input: unknown): NotebookBackup {
       return clean
     })
   }
-  return { format: 'lol-note', version: 1, createdAt: root.createdAt as string, tables: result }
+  return {
+    format: 'lol-note',
+    version: 2,
+    knowledgeBook,
+    createdAt: root.createdAt as string,
+    tables: result,
+  }
 }

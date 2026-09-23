@@ -118,6 +118,8 @@ export interface HistoryMatch extends HistoryGame {
   }[]
 }
 export interface NotebookApi {
+  getKnowledgeBook(): Promise<Result<KnowledgeBook>>
+  saveKnowledgeBook(book: KnowledgeBook): Promise<Result<KnowledgeBook>>
   openCounterSource(url: string): Promise<Result<void>>
   exportBackup(): Promise<Result<string | null>>
   restoreBackup(): Promise<Result<string | null>>
@@ -152,4 +154,16 @@ export interface NotebookApi {
   updateNote(input: NoteInput & { id: number }): Promise<Result<Matchup>>
   deleteNote(input: { key: MatchupKey; id: number }): Promise<Result<Matchup>>
   getInfo(): Promise<Result<{ databasePath: string; catalogVersion: string }>>
+}
+
+export interface KnowledgeBook {
+  chapters: { id: string; title: string }[]
+  articles: {
+    id: string
+    chapterId: string | null
+    title: string
+    body: string
+    favorite: boolean
+    updatedAt: string
+  }[]
 }

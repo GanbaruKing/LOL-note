@@ -7,6 +7,7 @@ import ChampSelect from './ChampSelect'
 import MatchHistory from './MatchHistory'
 import EnemyCounter from './EnemyCounter'
 import CuratedCounters from './CuratedCounters'
+import KnowledgeBook from './KnowledgeBook'
 import { normalizeChampionSearch } from './championSearch'
 import {
   CATEGORIES,
@@ -190,8 +191,10 @@ export default function App() {
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
   const [backupStatus, setBackupStatus] = useState('')
+  const [bookDirty, setBookDirty] = useState(false)
+  const [bookSaving, setBookSaving] = useState(false)
   const [page, setPage] = useState<
-    'notebook' | 'champions' | 'settings' | 'search' | 'select' | 'history'
+    'notebook' | 'champions' | 'settings' | 'search' | 'select' | 'history' | 'book'
   >('notebook')
   const [lcu, setLcu] = useState<LcuState>({
     status: 'disconnected',
@@ -203,6 +206,7 @@ export default function App() {
     message: 'League Clientを確認中…',
   })
   const titles = {
+    book: 'ノートブック',
     notebook: 'Match up',
     champions: 'Champion Library',
     settings: 'Settings',
@@ -233,7 +237,7 @@ export default function App() {
     championDetailOpen &&
     championData?.championId === championId &&
     counterBody !== championData.counterStrategy
-  const dirty = noteDirty || counterDirty
+  const dirty = noteDirty || counterDirty || bookDirty
   const selectedChampion = byId.get(championId)
   const activeNotes = page === 'champions' ? championData?.notes : matchup?.notes
   const activeLoading = page === 'champions' ? championLoading : loading
@@ -343,14 +347,14 @@ export default function App() {
   }, [championId, page, reload, championDetailOpen])
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => {
-      if (dirty || busy) {
+      if (dirty || busy || bookSaving) {
         event.preventDefault()
         event.returnValue = ''
       }
     }
     window.addEventListener('beforeunload', beforeUnload)
     return () => window.removeEventListener('beforeunload', beforeUnload)
-  }, [dirty, busy])
+  }, [dirty, busy, bookSaving])
 
   function resetEditor() {
     setEditing(null)
@@ -359,7 +363,7 @@ export default function App() {
     setDeleting(null)
   }
   function navigate(action: () => void) {
-    if (busy) return
+    if (busy || bookSaving) return
     if (dirty) setPendingNavigation(() => action)
     else {
       resetEditor()
@@ -630,7 +634,7 @@ export default function App() {
   )
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${page === 'book' ? ' book-theme' : ''}`}>
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol">
@@ -640,6 +644,14 @@ export default function App() {
         </div>
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="メインナビゲーション">
+          <button
+            className={page === 'book' ? 'active' : ''}
+            onClick={() => {
+              if (page !== 'book') navigate(() => setPage('book'))
+            }}
+          >
+            <span>▥</span>ノートブック
+          </button>
           <button
             className={page === 'search' ? 'active' : ''}
             onClick={() => navigate(() => setPage('search'))}
@@ -772,7 +784,13 @@ export default function App() {
               </button>
             </div>
           )}
-          {page === 'history' ? (
+          {page === 'book' ? (
+            <KnowledgeBook
+              onDirtyChange={setBookDirty}
+              onSavingChange={setBookSaving}
+              paused={!!pendingNavigation}
+            />
+          ) : page === 'history' ? (
             <MatchHistory
               champions={champions}
               onOpen={(next, draft) =>
@@ -812,7 +830,7 @@ export default function App() {
               <h2>ローカルデータ</h2>
               <h3>バックアップ・復元</h3>
               <p>
-                メモ・対策・評価・Favorite Champions・Comfort
+                メモ・ノートブックの章と記事・対策・評価・Favorite Champions・Comfort
                 PicksをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
               </p>
               {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
@@ -1224,8 +1242,10 @@ export default function App() {
               </button>
               <button
                 className="danger"
+                disabled={bookSaving}
                 onClick={() => {
                   const action = pendingNavigation
+                  setBookDirty(false)
                   setPendingNavigation(null)
                   resetEditor()
                   setCounterBody(championData?.counterStrategy ?? '')
