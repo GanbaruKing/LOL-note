@@ -23,7 +23,7 @@
 
 Electron / React / TypeScript / node:sqlite。ノートはオフラインで利用できる。
 
-- Match up: 自分×敵×Roleのメモ、カテゴリー、評価、Pin。
+- Match up: 自分×敵×Roleのメモ、カテゴリー、評価、Pin。敵チャンピオンの右にQ/W/E/Rのランク別基礎CDを表示。resources/champion-cooldowns.jsonにData Dragon 16.18.1の173体分を同梱し、オフライン表示。1秒未満など通常CDとして解釈できない値は「特殊」。変身後・チャージ回復・条件付き短縮を含む完全なスキル仕様ではない。更新はnpm run data:cooldowns（champions.jsonと同版）。
 - Champion Library: 日英検索、レーン別表示、Champion Notes、対面メモ一覧、Champion Pool。
 - 敵チャンピオンへの対策: Champion Notesとは独立した1体1文章。「Darius対策」のように表示し、Match upで敵に選ぶと表示。最大10000文字、空欄保存で削除。未保存入力は別々に保護する。
 - 初期カウンターメモ: resources/counter-notes.jsonに167体・197組。5レーン別、短い理由と出典付き。Match up / Champ Selectに表示し、個人DBには挿入しない。選定方法と未収録6体・一部Roleの扱いはdocs/curated-counters.md。統計収集機能は復活させていない。

@@ -8,6 +8,7 @@ import MatchHistory from './MatchHistory'
 import EnemyCounter from './EnemyCounter'
 import CuratedCounters from './CuratedCounters'
 import KnowledgeBook from './KnowledgeBook'
+import SkillCooldowns from './SkillCooldowns'
 import { normalizeChampionSearch } from './championSearch'
 import laneData from '../../../resources/champion-lanes.json'
 import {
@@ -1142,14 +1143,17 @@ export default function App() {
                         <span className="eyebrow">対戦相手の対策</span>
                         <span className="role-badge">◇ {key.role}</span>
                       </div>
-                      <div className="opponent-heading">
-                        <Portrait champion={enemy} large />
-                        <div>
-                          <h2>
-                            <span>vs</span> {enemy.name}
-                          </h2>
-                          <p>{enemy.nameJa}対策</p>
+                      <div className="opponent-summary">
+                        <div className="opponent-heading">
+                          <Portrait champion={enemy} large />
+                          <div>
+                            <h2>
+                              <span>vs</span> {enemy.name}
+                            </h2>
+                            <p>{enemy.nameJa}対策</p>
+                          </div>
                         </div>
+                        <SkillCooldowns champion={enemy} />
                       </div>
                       <div className="own-pick-context">
                         <span>使用チャンピオン</span>

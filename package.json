@@ -15,7 +15,8 @@
     "data:refresh": "node scripts/refresh-champions.mjs",
     "lint": "eslint .",
     "format": "prettier --write src tests scripts docs *.json *.ts *.mjs README.md",
-    "dist": "npm run build && electron-builder --win --x64 --publish never"
+    "dist": "npm run build && electron-builder --win --x64 --publish never",
+    "data:cooldowns": "node scripts/refresh-cooldowns.mjs"
   },
   "engines": {
     "node": ">=24.0.0"
