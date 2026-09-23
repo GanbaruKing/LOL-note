@@ -383,6 +383,9 @@ h1 {
   border-color: #b4a2ed;
 }
 .picker-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
   max-height: 310px;
   overflow: auto;
   margin-top: 8px;
@@ -390,16 +393,27 @@ h1 {
 .picker-results button {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-width: 0;
   width: 100%;
   padding: 8px;
   text-align: left;
+}
+.picker-results button > span:not(.selected-mark) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.picker-results .portrait {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
 }
 .picker-results small {
   font-size: 10px;
   margin-top: 3px;
 }
 .picker-results p {
+  grid-column: 1 / -1;
   padding: 18px 5px;
   font-size: 12px;
 }

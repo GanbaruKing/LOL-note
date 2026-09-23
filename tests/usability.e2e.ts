@@ -90,6 +90,16 @@ test('matchup pickers combine lane filters and search independently of matchup r
     await page.setViewportSize({ width: 1000, height: 720 })
     for (const label of ['自分のチャンピオン', '相手のチャンピオン']) {
       await page.getByRole('button', { name: label + 'を選択' }).click()
+      const candidates = page.locator('.picker-results button')
+      const first = await candidates.nth(0).boundingBox()
+      const second = await candidates.nth(1).boundingBox()
+      expect(first).not.toBeNull()
+      expect(second).not.toBeNull()
+      expect(Math.abs(first!.y - second!.y)).toBeLessThan(2)
+      expect(second!.x).toBeGreaterThan(first!.x)
+      if (label === '自分のチャンピオン') {
+        await page.screenshot({ path: 'docs/screenshots/champion-picker.png' })
+      }
       const lanes = page.getByRole('group', { name: label + 'のレーン絞り込み' })
       const search = page.getByLabel(label + 'を検索')
       await lanes.getByRole('button', { name: 'TOP', exact: true }).click()
