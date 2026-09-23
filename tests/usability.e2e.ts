@@ -76,3 +76,43 @@ test('search, return navigation and counter shortcuts preserve the writing flow'
     await app.close()
   }
 })
+
+test('matchup pickers combine lane filters and search independently of matchup role', async () => {
+  mkdirSync('.test-data', { recursive: true })
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter((e): e is [string, string] => e[1] !== undefined),
+  )
+  env.NOTEBOOK_TEST_DATA_DIR = mkdtempSync(resolve('.test-data', 'picker-lanes-'))
+  delete env.ELECTRON_RUN_AS_NODE
+  const app = await electron.launch({ args: [resolve('.')], env })
+  try {
+    const page = await app.firstWindow()
+    await page.setViewportSize({ width: 1000, height: 720 })
+    for (const label of ['自分のチャンピオン', '相手のチャンピオン']) {
+      await page.getByRole('button', { name: label + 'を選択' }).click()
+      const lanes = page.getByRole('group', { name: label + 'のレーン絞り込み' })
+      const search = page.getByLabel(label + 'を検索')
+      await lanes.getByRole('button', { name: 'TOP', exact: true }).click()
+      await search.fill('あーり')
+      await expect(page.locator('.picker-results button')).toHaveCount(0)
+      await lanes.getByRole('button', { name: 'MID', exact: true }).click()
+      await expect(page.locator('.picker-results button')).toHaveCount(1)
+      await expect(search).toBeFocused()
+      await search.press('Enter')
+      await expect(page.getByRole('button', { name: label + 'を選択' })).toContainText('Ahri')
+      await expect(page.getByLabel('ROLE', { exact: true })).toHaveValue('TOP')
+      await page.getByRole('button', { name: label + 'を選択' }).click()
+      await expect(lanes.getByRole('button', { name: 'MID', exact: true })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      await lanes.getByRole('button', { name: 'All', exact: true }).click()
+      await search.fill('がれん')
+      await expect(page.locator('.picker-results button')).toHaveCount(1)
+      await search.press('Escape')
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  } finally {
+    await app.close()
+  }
+})

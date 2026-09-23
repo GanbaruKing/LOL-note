@@ -9,6 +9,7 @@ import EnemyCounter from './EnemyCounter'
 import CuratedCounters from './CuratedCounters'
 import KnowledgeBook from './KnowledgeBook'
 import { normalizeChampionSearch } from './championSearch'
+import laneData from '../../../resources/champion-lanes.json'
 import {
   CATEGORIES,
   ROLES,
@@ -59,6 +60,8 @@ function ChampionPicker({
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
   const [active, setActive] = useState(0)
+  const [laneFilter, setLaneFilter] = useState<Role | 'ALL'>('ALL')
+  const lanesById: Record<string, string[]> = laneData.lanes
   useEffect(() => {
     const close = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false)
@@ -66,10 +69,12 @@ function ChampionPicker({
     document.addEventListener('pointerdown', close)
     return () => document.removeEventListener('pointerdown', close)
   }, [])
-  const filtered = champions.filter((c) =>
-    normalizeChampionSearch(`${c.name} ${c.nameJa} ${c.slug}`).includes(
-      normalizeChampionSearch(query),
-    ),
+  const filtered = champions.filter(
+    (c) =>
+      (laneFilter === 'ALL' || lanesById[c.id]?.includes(laneFilter)) &&
+      normalizeChampionSearch(`${c.name} ${c.nameJa} ${c.slug}`).includes(
+        normalizeChampionSearch(query),
+      ),
   )
   return (
     <div
@@ -104,6 +109,23 @@ function ChampionPicker({
       </button>
       {open && (
         <div className="picker-menu">
+          <div className="picker-lanes" role="group" aria-label={`${label}のレーン絞り込み`}>
+            {(['ALL', ...ROLES] as const).map((lane) => (
+              <button
+                key={lane}
+                type="button"
+                aria-pressed={laneFilter === lane}
+                onClick={() => {
+                  setLaneFilter(lane)
+                  setActive(0)
+                  root.current?.querySelector('input')?.focus()
+                  root.current?.querySelector('.picker-results')?.scrollTo(0, 0)
+                }}
+              >
+                {lane === 'ALL' ? 'All' : lane}
+              </button>
+            ))}
+          </div>
           <input
             autoFocus
             aria-label={`${label}を検索`}

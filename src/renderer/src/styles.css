@@ -367,6 +367,21 @@ h1 {
   width: 100%;
   font-size: 12px;
 }
+.picker-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.picker-lanes button {
+  padding: 7px 4px;
+  font-size: 10px;
+}
+.picker-lanes button[aria-pressed='true'] {
+  color: #d1c4ff;
+  background: #302b43;
+  border-color: #b4a2ed;
+}
 .picker-results {
   max-height: 310px;
   overflow: auto;
