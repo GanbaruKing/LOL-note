@@ -806,9 +806,9 @@ h1 {
 .note-body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  line-height: 1.9;
-  font-size: 12px;
-  color: #cbd0db;
+  line-height: 2;
+  font-size: 16px;
+  color: #e0e4ec;
   margin-top: 12px;
 }
 .note-editor {
@@ -832,10 +832,11 @@ h1 {
 }
 .note-editor textarea {
   width: 100%;
-  min-height: 93px;
+  min-height: 144px;
   resize: vertical;
-  line-height: 1.8;
-  font-size: 12px;
+  line-height: 2;
+  font-size: 16px;
+  color: #e0e4ec;
   background: #191e27;
 }
 .editor-toolbar {
@@ -1651,6 +1652,9 @@ h1 {
   width: 100%;
   min-height: 160px;
   resize: vertical;
+  font-size: 16px;
+  line-height: 2;
+  color: #e0e4ec;
 }
 .enemy-counter {
   margin: 20px 0;
@@ -1658,6 +1662,9 @@ h1 {
 .counter-body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 2;
+  color: #e0e4ec;
 }
 
 .history-page {
@@ -1813,8 +1820,8 @@ h1 {
   font-size: 12px;
 }
 .curated-counter p {
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 2;
   margin: 6px 0;
 }
 .curated-counter summary {

@@ -292,7 +292,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 2.1;
 }
 .book-paper-footer {
@@ -309,7 +309,7 @@
   font-size: 11px;
 }
 .book-prose {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 2;
   color: #d9deea;
   padding: 24px 0 40px;
@@ -332,7 +332,7 @@
   padding-bottom: 10px;
 }
 .book-prose h4 {
-  font-size: 16px;
+  font-size: 18px;
 }
 .book-prose p {
   white-space: pre-wrap;

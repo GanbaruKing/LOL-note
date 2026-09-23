@@ -43,6 +43,8 @@ Electron / React / TypeScript / node:sqlite。ノートはオフラインで利�
 - バックアップ仕様: docs/backup.md。配布手順: docs/release.md。
 - リリース梱包対象はout、package情報、LICENSE、実行時依存のみ。distはGit対象外。
 
+メモ本文・入力欄・対策・初期カウンター理由・Notebook本文は16px。対面メモと対策の行間は2倍で、長文を読みやすくしている。
+
 ## 検証と今後
 
 npm test（26件）、npm run lint、npm run test:e2e（12件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
