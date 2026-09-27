@@ -119,6 +119,7 @@ export interface HistoryMatch extends HistoryGame {
   }[]
 }
 export interface NotebookApi {
+  savePage(input: PageSaveInput): Promise<Result<PageSaveResult>>
   getLoadout(key: MatchupKey): Promise<Result<import('./loadout').Loadout>>
   saveLoadout(input: {
     key: MatchupKey
@@ -160,6 +161,21 @@ export interface NotebookApi {
   updateNote(input: NoteInput & { id: number }): Promise<Result<Matchup>>
   deleteNote(input: { key: MatchupKey; id: number }): Promise<Result<Matchup>>
   getInfo(): Promise<Result<{ databasePath: string; catalogVersion: string }>>
+}
+
+export type PageNoteDraft = { id?: number; category: Category; body: string }
+export type PageSaveInput =
+  | {
+      scope: 'matchup'
+      key: MatchupKey
+      note?: PageNoteDraft
+      loadout?: import('./loadout').Loadout
+    }
+  | { scope: 'champion'; championId: number; note?: PageNoteDraft; counterBody?: string }
+export interface PageSaveResult {
+  matchup?: Matchup
+  championPage?: ChampionPage
+  loadout?: import('./loadout').Loadout
 }
 
 export interface KnowledgeBook {

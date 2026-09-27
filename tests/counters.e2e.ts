@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 
-test('shared enemy counters survive independent note edits and appear for any own champion and role', async () => {
+test('champion page saves notes and counters together and shares counters across matchups', async () => {
   mkdirSync('.test-data', { recursive: true })
   const folder = mkdtempSync(resolve('.test-data', 'counters-'))
   const env = Object.fromEntries(
@@ -22,29 +22,33 @@ test('shared enemy counters survive independent note edits and appear for any ow
     await page.getByLabel('新しいメモ', { exact: true }).fill('Darius自身のコンボ')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(counter).toHaveValue(/パッシブ/)
-    await page.getByLabel('新しいメモ', { exact: true }).fill('保存していないChampion Notes')
-    await page.getByRole('button', { name: '対策を保存', exact: true }).click()
-    await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue(
-      '保存していないChampion Notes',
-    )
-    await page.getByLabel('新しいメモ', { exact: true }).fill('')
+    await expect(
+      page.getByRole('button', { name: 'ページの変更を保存', exact: true }),
+    ).toBeDisabled()
+    await counter.fill('Qの外側に当たらない。追加')
+    await page.getByLabel('新しいメモ', { exact: true }).fill('ページ単位で追加したメモ')
+    await page.getByRole('button', { name: 'ページの変更を保存', exact: true }).click()
+    await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue('')
+    await expect(page.locator('.note-body')).toContainText([
+      'ページ単位で追加したメモ',
+      'Darius自身のコンボ',
+    ])
     // Failed writes retain counter input and can be retried after the DB lock is released.
     await counter.fill('Qの外側に当たらない。\n5スタックになったら離れる。')
     const lock = new DatabaseSync(join(folder, 'notebook.sqlite'))
     lock.exec('BEGIN IMMEDIATE')
     try {
       await page.getByRole('button', { name: '対策を保存', exact: true }).click()
-      await expect(page.getByLabel('チャンピオン対策の編集')).toContainText(
-        'データを読み書きできませんでした',
-        { timeout: 10000 },
-      )
+      await expect(page.getByRole('alert')).toContainText('データを読み書きできませんでした', {
+        timeout: 10000,
+      })
       await expect(counter).toHaveValue(/5スタック/)
     } finally {
       lock.exec('ROLLBACK')
       lock.close()
     }
     await page.getByRole('button', { name: '対策を保存', exact: true }).click()
-    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('対策を保存しました')
+    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('保存済み')
     await counter.fill('破棄する変更')
     await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
@@ -79,8 +83,11 @@ test('shared enemy counters survive independent note edits and appear for any ow
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
     await page.getByLabel('Darius対策の内容').fill('')
     await page.getByRole('button', { name: '対策を保存', exact: true }).click()
-    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('対策を保存しました')
-    await expect(page.locator('.note-body')).toHaveText('Darius自身のコンボ')
+    await expect(page.getByLabel('チャンピオン対策の編集')).toContainText('保存済み')
+    await expect(page.locator('.note-body')).toContainText([
+      'ページ単位で追加したメモ',
+      'Darius自身のコンボ',
+    ])
     await page.getByRole('button', { name: /Match up/ }).click()
     await expect(page.getByLabel('敵チャンピオンの対策')).toContainText('対策はまだありません')
   } finally {

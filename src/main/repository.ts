@@ -27,6 +27,7 @@ import {
 
 const sqlList = (items: readonly string[]) => items.map((v) => `'${v}'`).join(',')
 export class NotebookRepository {
+  private transactionDepth = 0
   private db: DatabaseSync
   constructor(path: string, champions: Champion[]) {
     this.db = new DatabaseSync(path)
@@ -141,6 +142,33 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  savePage(input: unknown): import('../shared/contracts').PageSaveResult {
+    const v = object(input)
+    if (v.scope !== 'matchup' && v.scope !== 'champion')
+      throw new ValidationError('保存するページが正しくありません。')
+    return this.transaction(() => {
+      const note = v.note === undefined ? undefined : object(v.note)
+      if (v.scope === 'matchup') {
+        const key = this.key(v.key)
+        const loadout =
+          v.loadout === undefined ? undefined : this.saveLoadout({ key, loadout: v.loadout })
+        if (note) {
+          const draft = { ...parseNoteContent(note), key, id: note.id }
+          if (note.id === undefined) this.addNote(draft)
+          else this.updateNote(draft)
+        }
+        return { matchup: this.getMatchup(key), loadout }
+      }
+      const championId = this.championId(v.championId)
+      if (v.counterBody !== undefined) this.saveChampionCounter({ championId, body: v.counterBody })
+      if (note) {
+        const draft = { ...parseNoteContent(note), championId, id: note.id }
+        if (note.id === undefined) this.addChampionNote(draft)
+        else this.updateChampionNote(draft)
+      }
+      return { championPage: this.getChampionPage(championId) }
+    })
   }
   private loadoutKey(input: unknown) {
     const key = this.key(input)
@@ -458,14 +486,20 @@ export class NotebookRepository {
     })
   }
   private transaction<T>(run: () => T): T {
-    this.db.exec('BEGIN IMMEDIATE')
+    const depth = this.transactionDepth
+    const savepoint = `notebook_${depth}`
+    this.db.exec(depth === 0 ? 'BEGIN IMMEDIATE' : `SAVEPOINT ${savepoint}`)
+    this.transactionDepth++
     try {
       const result = run()
-      this.db.exec('COMMIT')
+      this.db.exec(depth === 0 ? 'COMMIT' : `RELEASE SAVEPOINT ${savepoint}`)
       return result
     } catch (error) {
-      this.db.exec('ROLLBACK')
+      this.db.exec(depth === 0 ? 'ROLLBACK' : `ROLLBACK TO SAVEPOINT ${savepoint}`)
+      if (depth !== 0) this.db.exec(`RELEASE SAVEPOINT ${savepoint}`)
       throw error
+    } finally {
+      this.transactionDepth--
     }
   }
   private key(input: unknown): MatchupKey {

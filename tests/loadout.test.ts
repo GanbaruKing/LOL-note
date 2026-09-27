@@ -11,6 +11,78 @@ import { emptyLoadout } from '../src/shared/loadout'
 import catalog from '../resources/champions.json'
 import data from '../resources/loadout.json'
 const key = { myChampionId: 266, enemyChampionId: 122, role: 'TOP' }
+test('page saves commit drafts together and roll back partial writes on validation or ownership errors', () => {
+  const path = join(mkdtempSync(join(tmpdir(), 'page-save-')), 'test.sqlite')
+  const repo = new NotebookRepository(path, catalog.champions)
+  try {
+    repo.saveMyPick(key)
+    const picks = repo.exportBackup().tables.my_picks
+    const loadout = { ...emptyLoadout(), buildNotes: 'ページのビルド', runeNotes: 'ページのルーン' }
+    const result = repo.savePage({
+      scope: 'matchup',
+      key,
+      loadout,
+      note: { category: 'General', body: '同時保存' },
+    })
+    assert.deepEqual(result.loadout, loadout)
+    assert.equal(result.matchup?.notes[0].body, '同時保存')
+    const original = repo.exportBackup()
+    assert.throws(() =>
+      repo.savePage({
+        scope: 'matchup',
+        key,
+        loadout: { ...loadout, buildNotes: 'ロールバック' },
+        note: { category: 'General', body: '' },
+      }),
+    )
+    assert.deepEqual(repo.exportBackup().loadouts, original.loadouts)
+    assert.deepEqual(repo.exportBackup().tables, original.tables)
+    const otherNote = repo.addNote({
+      key: { ...key, role: 'MID' },
+      category: 'General',
+      body: '別ページ',
+    }).notes[0]
+    assert.throws(() =>
+      repo.savePage({
+        scope: 'matchup',
+        key,
+        loadout: emptyLoadout(),
+        note: { id: otherNote.id, category: 'General', body: '誤更新' },
+      }),
+    )
+    assert.deepEqual(repo.getLoadout(key), loadout)
+    const updated = repo.savePage({
+      scope: 'matchup',
+      key,
+      note: { id: result.matchup!.notes[0].id, category: 'Rune', body: '編集保存' },
+    })
+    assert.equal(updated.matchup?.notes.length, 1)
+    assert.equal(updated.matchup?.notes[0].body, '編集保存')
+    repo.savePage({
+      scope: 'champion',
+      championId: 122,
+      counterBody: '共通対策',
+      note: { category: 'General', body: 'チャンピオンメモ' },
+    })
+    const champion = repo.getChampionPage(122)
+    assert.equal(champion.counterStrategy, '共通対策')
+    assert.equal(champion.notes[0].body, 'チャンピオンメモ')
+    assert.throws(() =>
+      repo.savePage({
+        scope: 'champion',
+        championId: 122,
+        counterBody: '失敗する対策',
+        note: { category: 'invalid', body: '無効なメモ' },
+      }),
+    )
+    assert.deepEqual(repo.getChampionPage(122), champion)
+    repo.savePage({ scope: 'champion', championId: 122, counterBody: '' })
+    assert.equal(repo.getChampionPage(122).counterStrategy, '')
+    assert.deepEqual(repo.exportBackup().tables.my_picks, picks)
+  } finally {
+    repo.close()
+  }
+})
 test('loadouts persist separately by matchup and restore atomically with personal picks', () => {
   const path = join(mkdtempSync(join(tmpdir(), 'loadout-')), 'test.sqlite')
   let repo = new NotebookRepository(path, catalog.champions)

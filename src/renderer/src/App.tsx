@@ -1,4 +1,4 @@
-import LoadoutEditor from './LoadoutEditor'
+import LoadoutEditor, { type LoadoutEditorHandle } from './LoadoutEditor'
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
 import MyPicks from './MyPicks'
@@ -261,6 +261,9 @@ export default function App() {
     championDetailOpen &&
     championData?.championId === championId &&
     counterBody !== championData.counterStrategy
+  const loadoutEditor = useRef<LoadoutEditorHandle>(null)
+  const pageSaveInFlight = useRef(false)
+  const [pageSaveStatus, setPageSaveStatus] = useState('')
   const [loadoutDirty, setLoadoutDirty] = useState(false)
   const [loadoutSaving, setLoadoutSaving] = useState(false)
   const [loadoutEpoch, setLoadoutEpoch] = useState(0)
@@ -389,6 +392,7 @@ export default function App() {
     if (dirty) setPendingNavigation(() => action)
     else {
       resetEditor()
+      setPageSaveStatus('')
       setCounterBody(championData?.counterStrategy ?? '')
       action()
     }
@@ -436,24 +440,68 @@ export default function App() {
       setBusy(false)
     }
   }
-  async function saveCounter() {
-    if (!ready || busy || !counterDirty) return
+  const pageSaveSupported = page === 'notebook' || (page === 'champions' && championDetailOpen)
+  const pageDirty = noteDirty || counterDirty || (page === 'notebook' && loadoutDirty)
+  async function savePage(): Promise<boolean> {
+    if (!pageSaveSupported || !ready || busy || pendingNavigation || pageSaveInFlight.current)
+      return false
+    const loadout = page === 'notebook' ? loadoutEditor.current?.draft() : undefined
+    if (!noteDirty && !counterDirty && !loadout) return true
+    const note = noteDirty ? { ...(editing ? { id: editing.id } : {}), category, body } : undefined
+    pageSaveInFlight.current = true
     setBusy(true)
     setError('')
-    setCounterStatus('')
+    setPageSaveStatus('')
     try {
-      const data = await unwrap(
-        window.notebook.saveChampionCounter({ championId, body: counterBody }),
+      const result = await unwrap(
+        window.notebook.savePage(
+          page === 'notebook'
+            ? { scope: 'matchup', key, note, loadout }
+            : { scope: 'champion', championId, note, ...(counterDirty ? { counterBody } : {}) },
+        ),
       )
-      setChampionData(data)
-      setCounterBody(data.counterStrategy)
-      setCounterStatus('対策を保存しました')
+      if (result.matchup) setMatchup(result.matchup)
+      if (result.championPage) {
+        setChampionData(result.championPage)
+        setCounterBody(result.championPage.counterStrategy)
+        setCounterStatus('保存済み')
+      }
+      if (result.loadout) loadoutEditor.current?.saved(result.loadout)
+      if (note) resetEditor()
+      setLoadoutDirty(false)
+      setPageSaveStatus('ページの変更を保存しました')
+      setStatus('ページの変更を保存しました')
+      // Refresh failure must not make an already-committed note look unsaved.
+      try {
+        setSummaries(await unwrap(window.notebook.listMatchups()))
+      } catch {
+        /* Saved content is already reflected above. */
+      }
+      return true
     } catch (e) {
-      setCounterStatus(e instanceof Error ? e.message : '対策を保存できませんでした。')
+      setError(e instanceof Error ? e.message : 'ページを保存できませんでした。')
+      setPageSaveStatus('保存できませんでした。入力は保持されています。')
+      return false
     } finally {
       setBusy(false)
+      pageSaveInFlight.current = false
     }
   }
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (
+        pageSaveSupported &&
+        !event.isComposing &&
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === 's'
+      ) {
+        event.preventDefault()
+        void savePage()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
   function edit(note: Note) {
     navigate(() => {
       setEditing(note)
@@ -587,24 +635,7 @@ export default function App() {
         className="note-editor"
         onSubmit={(e) => {
           e.preventDefault()
-          if (ready && body.trim())
-            void mutate(
-              () =>
-                page === 'champions'
-                  ? editing
-                    ? window.notebook.updateChampionNote({
-                        championId,
-                        id: editing.id,
-                        body,
-                        category,
-                      })
-                    : window.notebook.addChampionNote({ championId, body, category })
-                  : editing
-                    ? window.notebook.updateNote({ key, id: editing.id, body, category })
-                    : window.notebook.addNote({ key, body, category }),
-              editing ? 'メモを更新しました' : 'メモを保存しました',
-              true,
-            )
+          void savePage()
         }}
       >
         <div className="editor-heading">
@@ -641,7 +672,7 @@ export default function App() {
               <option key={c}>{c}</option>
             ))}
           </select>
-          <span className="shortcut">Ctrl + Enter で保存</span>
+          <span className="shortcut">Ctrl + Enter / Ctrl + S でページを保存</span>
           {editing && (
             <button type="button" disabled={busy} onClick={() => navigate(() => {})}>
               キャンセル
@@ -731,6 +762,24 @@ export default function App() {
             <span className="slash">/</span>
             {titles[page]}
           </div>
+          {pageSaveSupported && (
+            <div className="page-save" role="group" aria-label="ページの保存">
+              <span role="status" aria-label="ページ保存状態">
+                {busy || loadoutSaving
+                  ? '保存中…'
+                  : pageDirty
+                    ? '未保存の変更があります'
+                    : pageSaveStatus || '保存済み'}
+              </span>
+              <button
+                className="primary"
+                disabled={!ready || busy || loadoutSaving || !pageDirty}
+                onClick={() => void savePage()}
+              >
+                ページの変更を保存
+              </button>
+            </div>
+          )}
           <span className="offline-badge">
             <span className="connection-dot" />
             OFFLINE READY
@@ -967,7 +1016,7 @@ export default function App() {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
-                      void saveCounter()
+                      void savePage()
                     }}
                   >
                     <div className="editor-heading">
@@ -997,7 +1046,7 @@ export default function App() {
                     />
                     <div className="editor-toolbar">
                       <span className="shortcut">
-                        Ctrl + Enter で保存 · 空欄で保存すると対策を削除
+                        Ctrl + Enter でページを保存 · 空欄で保存すると対策を削除
                       </span>
                       <button
                         className="primary"
@@ -1219,6 +1268,9 @@ export default function App() {
                   <LoadoutEditor
                     key={`${key.myChampionId}-${key.enemyChampionId}-${key.role}-${loadoutEpoch}`}
                     matchupKey={key}
+                    ref={loadoutEditor}
+                    pageBusy={busy}
+                    onSavePage={savePage}
                     onDirty={setLoadoutDirty}
                     onSaving={setLoadoutSaving}
                   />
@@ -1258,6 +1310,7 @@ export default function App() {
                   const action = pendingNavigation
                   setBookDirty(false)
                   setLoadoutDirty(false)
+                  setPageSaveStatus('')
                   setLoadoutEpoch((v) => v + 1)
                   setPendingNavigation(null)
                   resetEditor()

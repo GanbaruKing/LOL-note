@@ -48,6 +48,7 @@ function registerApi(databasePath: string) {
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
   const handlers: Record<string, (input: unknown) => unknown> = {
+    savePage: (input) => repository!.savePage(input),
     getLoadout: (input) => repository!.getLoadout(input),
     saveLoadout: (input) => repository!.saveLoadout(input),
     getKnowledgeBook: () => repository!.getKnowledgeBook(),

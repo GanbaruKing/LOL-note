@@ -1,17 +1,27 @@
 import { ITEM_TIERS, itemTier, compareShopItems } from '../../shared/itemShop'
 import itemCategories from '../../../resources/item-categories.json'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useImperativeHandle, type Ref } from 'react'
 import data from '../../../resources/loadout.json'
 import { emptyLoadout, shardRows, shardNames, type Loadout } from '../../shared/loadout'
 import type { MatchupKey } from '../../shared/contracts'
 import Collapsible from './Collapsible'
 
+export interface LoadoutEditorHandle {
+  draft: () => Loadout | undefined
+  saved: (value: Loadout) => void
+}
 export default function LoadoutEditor({
   matchupKey,
+  ref,
+  pageBusy,
+  onSavePage,
   onDirty,
   onSaving,
 }: {
   matchupKey: MatchupKey
+  ref: Ref<LoadoutEditorHandle>
+  pageBusy: boolean
+  onSavePage: () => Promise<boolean>
   onDirty: (dirty: boolean) => void
   onSaving: (saving: boolean) => void
 }) {
@@ -42,6 +52,19 @@ export default function LoadoutEditor({
     )
     .sort(compareShopItems)
   const dirty = JSON.stringify(value) !== JSON.stringify(saved)
+  useImperativeHandle(
+    ref,
+    () => ({
+      draft: () => (ready && dirty ? value : undefined),
+      saved: (next) => {
+        setSaved(next)
+        setValue(next)
+        setStatus('保存済み')
+        setError('')
+      },
+    }),
+    [ready, dirty, value],
+  )
   useEffect(() => {
     onDirty(dirty)
   }, [dirty, onDirty])
@@ -72,10 +95,8 @@ export default function LoadoutEditor({
     onSaving(true)
     setError('')
     try {
-      const r = await window.notebook.saveLoadout({ key: matchupKey, loadout: value })
-      if (!r.ok) throw new Error(r.error)
-      setSaved(r.data)
-      setValue(r.data)
+      if (!(await onSavePage()))
+        throw new Error('ページを保存できませんでした。入力は保持されています。')
       setStatus('保存済み')
     } catch (e) {
       setError(e instanceof Error ? e.message : '保存できませんでした。')
@@ -132,7 +153,7 @@ export default function LoadoutEditor({
           </p>
         )}
         {!ready && <p>ビルド・ルーンを読み込んでいます。</p>}
-        <fieldset disabled={!ready || saving}>
+        <fieldset disabled={!ready || saving || pageBusy}>
           <section className="build-section" aria-label="ビルド">
             <h3>ビルド</h3>
             <p className="muted">購入順に追加してください。素材・消耗品も記録できます。</p>

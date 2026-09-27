@@ -77,12 +77,21 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await panel
       .getByRole('button', { name: data.trees[1].slots[1].runes[0].name, exact: true })
       .click()
+    await page.getByLabel('新しいメモ', { exact: true }).fill('ビルドと一緒に保存するメモ')
+    const saveBar = await page
+      .getByRole('group', { name: 'ページの保存', exact: true })
+      .boundingBox()
+    expect(saveBar!.y).toBeGreaterThanOrEqual(0)
+    expect(saveBar!.y + saveBar!.height).toBeLessThan(80)
     const lock = new DatabaseSync(join(folder, 'notebook.sqlite'))
     lock.exec('BEGIN IMMEDIATE')
     try {
       await panel.getByRole('button', { name: 'ビルド・ルーンを保存' }).click()
       await expect(panel.getByRole('alert')).toBeVisible({ timeout: 10000 })
       await expect(panel.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
+      await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue(
+        'ビルドと一緒に保存するメモ',
+      )
     } finally {
       lock.exec('ROLLBACK')
       lock.close()
@@ -91,6 +100,13 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await expect(panel.getByRole('status', { name: 'ビルド・ルーン保存状態' })).toHaveText(
       '保存済み',
     )
+    await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue('')
+    await expect(page.locator('.note-body')).toHaveText('ビルドと一緒に保存するメモ')
+    await panel.getByLabel('ルーンの補足').fill('ページ保存ショートカット')
+    await page.keyboard.press('Control+s')
+    await expect(
+      page.getByRole('button', { name: 'ページの変更を保存', exact: true }),
+    ).toBeDisabled()
     const fold = panel.locator(':scope > .collapsible')
     await fold.locator(':scope > summary').click()
     await expect(panel.getByLabel('ビルドの補足')).not.toBeVisible()
@@ -124,6 +140,8 @@ test('offline build and rune editing, navigation protection and collapsible pick
     page = await app.firstWindow()
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
     await expect(page.locator('.rune-columns button[aria-pressed=true]')).toHaveCount(4)
+    await expect(page.getByLabel('ルーンの補足')).toHaveValue('ページ保存ショートカット')
+    await expect(page.locator('.note-body')).toHaveText('ビルドと一緒に保存するメモ')
     await page.getByLabel('ビルドの補足').fill('破棄する変更')
     await page.getByLabel('ROLE', { exact: true }).selectOption('MID')
     await page.getByRole('button', { name: '変更を破棄して移動' }).click()
