@@ -1,13 +1,40 @@
 # 次の開発への引き継ぎ
 
-更新: 2026-09-23。製品名は **RiftNote**。
+## 再開時の要点（最初に読む）
+
+- 引き継ぎ前の実装HEADはc06b299、ブランチはcodex/luxury-notebook。開始時の作業ツリーはクリーン。今回の文書更新はこの後のコミットになる。
+- 最新依頼「メモの文字が小さくて読みにくい」まで完了。本文・入力欄は16px、行間・文字色も調整済み。未処理の機能依頼はなく、次の変更はユーザーと相談する。
+- 最新配布物はdist/RiftNote-Setup-0.1.0-x64.exeとdist/SHA256SUMS.txt。0.1.0、署名なし。文字サイズ変更版をユーザーがインストールしたかは未確認。新しいチャットで勝手に再インストールしない。
+- 最後の変更ではlint/build、knowledge.e2e.tsとusability.e2e.tsの計3件、dist、diff checkが成功。CD追加時にはcooldowns.e2e.tsも成功。直近変更後に全E2Eを一括実行したとは主張しない。
+- ナビ順はSearch → Notebook → Match up → Champions → Match History → Champ Select → Settings。
+- Notebookの白/金の試作は撤回し、全画面ダーク＋紫に統一。英語のNotebook表記。装飾コピーTHE PERSONAL PLAYBOOK、YOUR PERSONAL LEAGUE COMPENDIUM、「学んだことを、一冊の知識に。」「チャンピオン自身の知識と、対面ごとのメモ。」は削除済み。
+- Match upのチャンピオン候補は2列表示。自分・相手それぞれAll/TOP/JUNGLE/MID/BOTTOM/SUPPORTで絞り込み、検索と併用・フィルター保持が可能。
+- 表示名・実行ファイル・インストーラーはRiftNote。GitHub URL、appId、既存保存先、バックアップformat識別子lol-noteは互換性のため維持。
+
+### 個人Comfort Picksの取り込み：重要
+
+- ユーザーの旧Obsidian TOPノートから314組を個人用Comfort Picksへ取り込み済み。不利欄は自分/敵を反転、有利欄はそのまま、五分6件は除外。メモ本文は取り込んでいない。アプリ本体・初期データ・Gitには含めない。
+- 当初は外部スクリプトでDBへ追加し直接照会で314件を確認したが、実際のインストール版では0件だった。保存先文字列は一致し、DB整合性も正常だったが、食い違いの根本原因は未特定。フォーカス時再読み込みだけでは解決しなかった。
+- 実アプリから診断バックアップを出して0件を確認。その最新データの既存テーブル/Notebookを維持し、my_picksだけ314件追加したファイルを作成。ユーザーが「反映してよい」と明示承認後、Settingsのバックアップ復元で反映した。
+- 最後は起動中の実画面で敵K'Sante / TOPにKayle・Singed・Poppy・Yorickの4件が表示されることを確認済み。既存メモ等が復元前の自動バックアップと一致することも確認した。DB照会やテスト用コピーだけでユーザー環境に反映済みと判断しない。
+- 個人用ファイルdist/RiftNote-personal-comfort-picks.jsonはGit無視で、インストーラーにも含まれない。公開・配布しない。取り込み時点のスナップショットなので、後日再適用すると以降の編集を戻してしまう。再取り込みしない。
+- 自動バックアップはアプリ保存フォルダー内backupsにある。通常開発で個人ファイルを再読込する必要はない。
+
+### CD表示の制限と更新
+
+- SkillCooldowns.tsxが敵の右にQ/W/E/Rのランク別基礎CDを表示。狭い画面では下へ折り返す。Data Dragon 16.18.1固定で、自動更新や試合中の残り時間表示ではない。
+- 現実装はCD配列に1秒未満が含まれると「特殊」にする暫定ルール。正規の短いCDも省略され得る。変身・再使用・チャージ回復・攻撃速度依存などを完全には表さない。精度改善を頼まれたらスキルごとの検証が必要。
+- 主なファイルはsrc/renderer/src/SkillCooldowns.tsx、resources/champion-cooldowns.json、scripts/refresh-cooldowns.mjs、tests/cooldowns.e2e.ts。
+- 文字サイズはsrc/renderer/src/styles.cssとknowledge-book.css。チャンピオン選択はApp.tsx内ChampionPicker。
+
+更新: 2026-09-27。製品名は **RiftNote**。
 
 ## ユーザー方針
 
 - ユーザーの依頼で統計機能を削除済み。画面・IPC・サンプル・取り込み・収集CLIを撤去。個人ノートと既存の未追跡データ・.envは保持する。
 - 現在はWindowsアプリ本体を開発。今回、インストーラー、バックアップ・復元、Git・README整理をまとめて進めることが承認された。
 - mainは起動可能に保ち、大きな変更はfeature branch。完成時はBuild・Test・Lint・Git diffを確認する。
-- APIキーを含むtools/stats/.envや取得データ、個人DBは読んだりGitに追加したりしない。
+- APIキーを含むtools/stats/.envや取得データは読まない。個人DB・旧ノートは通常開発では読まない。ユーザーが個人データの取り込み・調査を明示依頼した範囲でのみ扱い、Gitや配布用初期データには含めない。
 
 ## Gitと実行
 
@@ -47,7 +74,7 @@ Electron / React / TypeScript / node:sqlite。ノートはオフラインで利�
 
 ## 検証と今後
 
-npm test（26件）、npm run lint、npm run test:e2e（12件）、npm run dist、git diff --checkで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
+検証コマンドはnpm test、npm run lint、npm run test:e2e、npm run dist、git diff --check。E2Eの現在の件数はnpx playwright test --listで確認する。E2Eは専用DB・疑似LCUを使用する。スクリーンショットはテストデータ。
 
 操作改善: メモへの固定ショートカットはユーザー依頼で削除。Comfort Picksはウィンドウへ戻った際にも再読み込みする。未保存表示、Libraryの検索・レーン・詳細から戻る位置の保持、ひらがな/全角検索、Match up選択の矢印/Enter/Esc操作。初期カウンターから候補×敵×Roleの対面ページを開ける。未保存確認を経由し、ゲーム内Pick操作は行わない。UIの保持状態はアプリ終了まで。
 
