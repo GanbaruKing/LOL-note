@@ -1,0 +1,2141 @@
+{
+  "version": "16.18.1",
+  "items": [
+    {
+      "id": 1001,
+      "name": "ブーツ",
+      "icon": "items/1001.png",
+      "gold": 300
+    },
+    {
+      "id": 1004,
+      "name": "フェアリー チャーム",
+      "icon": "items/1004.png",
+      "gold": 200
+    },
+    {
+      "id": 1006,
+      "name": "再生の珠",
+      "icon": "items/1006.png",
+      "gold": 300
+    },
+    {
+      "id": 1011,
+      "name": "ジャイアント ベルト",
+      "icon": "items/1011.png",
+      "gold": 900
+    },
+    {
+      "id": 1018,
+      "name": "アジリティ クローク",
+      "icon": "items/1018.png",
+      "gold": 600
+    },
+    {
+      "id": 1026,
+      "name": "ブラスティング ワンド",
+      "icon": "items/1026.png",
+      "gold": 850
+    },
+    {
+      "id": 1027,
+      "name": "サファイア クリスタル",
+      "icon": "items/1027.png",
+      "gold": 300
+    },
+    {
+      "id": 1028,
+      "name": "ルビー クリスタル",
+      "icon": "items/1028.png",
+      "gold": 400
+    },
+    {
+      "id": 1029,
+      "name": "クロース アーマー",
+      "icon": "items/1029.png",
+      "gold": 300
+    },
+    {
+      "id": 1031,
+      "name": "チェイン ベスト",
+      "icon": "items/1031.png",
+      "gold": 800
+    },
+    {
+      "id": 1033,
+      "name": "ヌルマジック マント",
+      "icon": "items/1033.png",
+      "gold": 400
+    },
+    {
+      "id": 1036,
+      "name": "ロング ソード",
+      "icon": "items/1036.png",
+      "gold": 350
+    },
+    {
+      "id": 1037,
+      "name": "ピッケル",
+      "icon": "items/1037.png",
+      "gold": 875
+    },
+    {
+      "id": 1038,
+      "name": "B. F. ソード",
+      "icon": "items/1038.png",
+      "gold": 1300
+    },
+    {
+      "id": 1042,
+      "name": "ダガー",
+      "icon": "items/1042.png",
+      "gold": 250
+    },
+    {
+      "id": 1043,
+      "name": "リカーブ ボウ",
+      "icon": "items/1043.png",
+      "gold": 700
+    },
+    {
+      "id": 1052,
+      "name": "増魔の書",
+      "icon": "items/1052.png",
+      "gold": 400
+    },
+    {
+      "id": 1053,
+      "name": "ヴァンパイア セプター",
+      "icon": "items/1053.png",
+      "gold": 900
+    },
+    {
+      "id": 1054,
+      "name": "ドラン シールド",
+      "icon": "items/1054.png",
+      "gold": 450
+    },
+    {
+      "id": 1055,
+      "name": "ドラン ブレード",
+      "icon": "items/1055.png",
+      "gold": 450
+    },
+    {
+      "id": 1056,
+      "name": "ドラン リング",
+      "icon": "items/1056.png",
+      "gold": 400
+    },
+    {
+      "id": 1057,
+      "name": "ネガトロン クローク",
+      "icon": "items/1057.png",
+      "gold": 850
+    },
+    {
+      "id": 1058,
+      "name": "ムダニ デカイ ロッド",
+      "icon": "items/1058.png",
+      "gold": 1200
+    },
+    {
+      "id": 1082,
+      "name": "ダーク シール",
+      "icon": "items/1082.png",
+      "gold": 350
+    },
+    {
+      "id": 1083,
+      "name": "カル",
+      "icon": "items/1083.png",
+      "gold": 450
+    },
+    {
+      "id": 1086,
+      "name": "ドラン ボウ",
+      "icon": "items/1086.png",
+      "gold": 400
+    },
+    {
+      "id": 1101,
+      "name": "スコーチクロウの幼体",
+      "icon": "items/1101.png",
+      "gold": 450
+    },
+    {
+      "id": 1102,
+      "name": "ガストウォーカーの幼体",
+      "icon": "items/1102.png",
+      "gold": 450
+    },
+    {
+      "id": 1103,
+      "name": "モスストンパーの幼体",
+      "icon": "items/1103.png",
+      "gold": 450
+    },
+    {
+      "id": 1105,
+      "name": "モスストンパーの幼体",
+      "icon": "items/1105.png",
+      "gold": 450
+    },
+    {
+      "id": 1106,
+      "name": "ガストウォーカーの幼体",
+      "icon": "items/1106.png",
+      "gold": 450
+    },
+    {
+      "id": 1107,
+      "name": "スコーチクロウの幼体",
+      "icon": "items/1107.png",
+      "gold": 450
+    },
+    {
+      "id": 1120,
+      "name": "ドラン ヘルム",
+      "icon": "items/1120.png",
+      "gold": 450
+    },
+    {
+      "id": 2003,
+      "name": "体力ポーション",
+      "icon": "items/2003.png",
+      "gold": 50
+    },
+    {
+      "id": 2019,
+      "name": "スチール シジル",
+      "icon": "items/2019.png",
+      "gold": 1100
+    },
+    {
+      "id": 2020,
+      "name": "ブルータライザー",
+      "icon": "items/2020.png",
+      "gold": 1337
+    },
+    {
+      "id": 2021,
+      "name": "トンネル掘り",
+      "icon": "items/2021.png",
+      "gold": 1150
+    },
+    {
+      "id": 2022,
+      "name": "輝きのモート",
+      "icon": "items/2022.png",
+      "gold": 250
+    },
+    {
+      "id": 2031,
+      "name": "詰め替えポーション",
+      "icon": "items/2031.png",
+      "gold": 150
+    },
+    {
+      "id": 2051,
+      "name": "ガーディアン ホーン",
+      "icon": "items/2051.png",
+      "gold": 950
+    },
+    {
+      "id": 2055,
+      "name": "コントロール ワード",
+      "icon": "items/2055.png",
+      "gold": 75
+    },
+    {
+      "id": 2065,
+      "name": "シュレリアの戦歌",
+      "icon": "items/2065.png",
+      "gold": 2200
+    },
+    {
+      "id": 2138,
+      "name": "アイアン エリクサー",
+      "icon": "items/2138.png",
+      "gold": 500
+    },
+    {
+      "id": 2139,
+      "name": "ソーサリー エリクサー",
+      "icon": "items/2139.png",
+      "gold": 500
+    },
+    {
+      "id": 2140,
+      "name": "ラース エリクサー",
+      "icon": "items/2140.png",
+      "gold": 500
+    },
+    {
+      "id": 2141,
+      "name": "帽子ジュース",
+      "icon": "items/2141.png",
+      "gold": 300
+    },
+    {
+      "id": 2420,
+      "name": "シーカー アームガード",
+      "icon": "items/2420.png",
+      "gold": 1600
+    },
+    {
+      "id": 2501,
+      "name": "覇王のブラッドメイル",
+      "icon": "items/2501.png",
+      "gold": 3300
+    },
+    {
+      "id": 2502,
+      "name": "終わりなき絶望",
+      "icon": "items/2502.png",
+      "gold": 2800
+    },
+    {
+      "id": 2503,
+      "name": "黒炎のトーチ",
+      "icon": "items/2503.png",
+      "gold": 2800
+    },
+    {
+      "id": 2504,
+      "name": "ケイニック ルーケルン",
+      "icon": "items/2504.png",
+      "gold": 2900
+    },
+    {
+      "id": 2508,
+      "name": "運命の灰",
+      "icon": "items/2508.png",
+      "gold": 900
+    },
+    {
+      "id": 2510,
+      "name": "黄昏と暁",
+      "icon": "items/2510.png",
+      "gold": 3100
+    },
+    {
+      "id": 2512,
+      "name": "フィーンドハンターの矢",
+      "icon": "items/2512.png",
+      "gold": 2650
+    },
+    {
+      "id": 2517,
+      "name": "終わりなき飢え",
+      "icon": "items/2517.png",
+      "gold": 3100
+    },
+    {
+      "id": 2520,
+      "name": "バスティオンブレイカー",
+      "icon": "items/2520.png",
+      "gold": 3000
+    },
+    {
+      "id": 2522,
+      "name": "アクチュアライザー",
+      "icon": "items/2522.png",
+      "gold": 2800
+    },
+    {
+      "id": 2523,
+      "name": "ヘクスオプティックC44",
+      "icon": "items/2523.png",
+      "gold": 2800
+    },
+    {
+      "id": 2524,
+      "name": "バンドルパイプ",
+      "icon": "items/2524.png",
+      "gold": 2300
+    },
+    {
+      "id": 2525,
+      "name": "プロトプラズム ハーネス",
+      "icon": "items/2525.png",
+      "gold": 2600
+    },
+    {
+      "id": 2526,
+      "name": "囁きのサークレット",
+      "icon": "items/2526.png",
+      "gold": 2250
+    },
+    {
+      "id": 3003,
+      "name": "アークエンジェル スタッフ",
+      "icon": "items/3003.png",
+      "gold": 2900
+    },
+    {
+      "id": 3004,
+      "name": "マナムネ",
+      "icon": "items/3004.png",
+      "gold": 2900
+    },
+    {
+      "id": 3006,
+      "name": "バーサーカー ブーツ",
+      "icon": "items/3006.png",
+      "gold": 1100
+    },
+    {
+      "id": 3008,
+      "name": "グラトナス ブーツ",
+      "icon": "items/3008.png",
+      "gold": 1000
+    },
+    {
+      "id": 3009,
+      "name": "スイフトネス ブーツ",
+      "icon": "items/3009.png",
+      "gold": 1000
+    },
+    {
+      "id": 3020,
+      "name": "ソーサラー シューズ",
+      "icon": "items/3020.png",
+      "gold": 1100
+    },
+    {
+      "id": 3024,
+      "name": "グレイシャル バックラー",
+      "icon": "items/3024.png",
+      "gold": 900
+    },
+    {
+      "id": 3026,
+      "name": "ガーディアン エンジェル",
+      "icon": "items/3026.png",
+      "gold": 3200
+    },
+    {
+      "id": 3031,
+      "name": "インフィニティ エッジ",
+      "icon": "items/3031.png",
+      "gold": 3500
+    },
+    {
+      "id": 3032,
+      "name": "ユン・タル ワイルドアロー",
+      "icon": "items/3032.png",
+      "gold": 3000
+    },
+    {
+      "id": 3033,
+      "name": "モータル リマインダー",
+      "icon": "items/3033.png",
+      "gold": 3000
+    },
+    {
+      "id": 3035,
+      "name": "ラスト ウィスパー",
+      "icon": "items/3035.png",
+      "gold": 1450
+    },
+    {
+      "id": 3036,
+      "name": "ドミニク リガード",
+      "icon": "items/3036.png",
+      "gold": 3300
+    },
+    {
+      "id": 3041,
+      "name": "メジャイ ソウルスティーラー",
+      "icon": "items/3041.png",
+      "gold": 1500
+    },
+    {
+      "id": 3044,
+      "name": "ファージ",
+      "icon": "items/3044.png",
+      "gold": 1100
+    },
+    {
+      "id": 3046,
+      "name": "ファントム ダンサー",
+      "icon": "items/3046.png",
+      "gold": 2650
+    },
+    {
+      "id": 3047,
+      "name": "プレート スチールキャップ",
+      "icon": "items/3047.png",
+      "gold": 1200
+    },
+    {
+      "id": 3050,
+      "name": "ジーク コンバージェンス",
+      "icon": "items/3050.png",
+      "gold": 2200
+    },
+    {
+      "id": 3051,
+      "name": "ハースバウンド アックス",
+      "icon": "items/3051.png",
+      "gold": 1200
+    },
+    {
+      "id": 3053,
+      "name": "ステラックの篭手",
+      "icon": "items/3053.png",
+      "gold": 3200
+    },
+    {
+      "id": 3057,
+      "name": "シーン",
+      "icon": "items/3057.png",
+      "gold": 900
+    },
+    {
+      "id": 3065,
+      "name": "スピリット ビサージュ",
+      "icon": "items/3065.png",
+      "gold": 2700
+    },
+    {
+      "id": 3066,
+      "name": "翼のムーンプレート",
+      "icon": "items/3066.png",
+      "gold": 800
+    },
+    {
+      "id": 3067,
+      "name": "キンドルジェム",
+      "icon": "items/3067.png",
+      "gold": 800
+    },
+    {
+      "id": 3068,
+      "name": "サンファイア イージス",
+      "icon": "items/3068.png",
+      "gold": 2800
+    },
+    {
+      "id": 3070,
+      "name": "女神の涙",
+      "icon": "items/3070.png",
+      "gold": 400
+    },
+    {
+      "id": 3071,
+      "name": "ブラック クリーバー",
+      "icon": "items/3071.png",
+      "gold": 3000
+    },
+    {
+      "id": 3072,
+      "name": "ブラッドサースター",
+      "icon": "items/3072.png",
+      "gold": 3400
+    },
+    {
+      "id": 3073,
+      "name": "実験的ヘクスプレート",
+      "icon": "items/3073.png",
+      "gold": 3000
+    },
+    {
+      "id": 3074,
+      "name": "ラヴァナス ハイドラ",
+      "icon": "items/3074.png",
+      "gold": 3300
+    },
+    {
+      "id": 3075,
+      "name": "ソーンメイル",
+      "icon": "items/3075.png",
+      "gold": 2450
+    },
+    {
+      "id": 3076,
+      "name": "ブランブル ベスト",
+      "icon": "items/3076.png",
+      "gold": 800
+    },
+    {
+      "id": 3077,
+      "name": "ティアマット",
+      "icon": "items/3077.png",
+      "gold": 1200
+    },
+    {
+      "id": 3078,
+      "name": "トリニティ フォース",
+      "icon": "items/3078.png",
+      "gold": 3333
+    },
+    {
+      "id": 3082,
+      "name": "ワーデン メイル",
+      "icon": "items/3082.png",
+      "gold": 1000
+    },
+    {
+      "id": 3083,
+      "name": "ワーモグ アーマー",
+      "icon": "items/3083.png",
+      "gold": 3100
+    },
+    {
+      "id": 3084,
+      "name": "心の鋼",
+      "icon": "items/3084.png",
+      "gold": 3000
+    },
+    {
+      "id": 3085,
+      "name": "ルナーン ハリケーン",
+      "icon": "items/3085.png",
+      "gold": 2650
+    },
+    {
+      "id": 3086,
+      "name": "ジール",
+      "icon": "items/3086.png",
+      "gold": 1200
+    },
+    {
+      "id": 3087,
+      "name": "スタティック シヴ",
+      "icon": "items/3087.png",
+      "gold": 3000
+    },
+    {
+      "id": 3089,
+      "name": "ラバドン デスキャップ",
+      "icon": "items/3089.png",
+      "gold": 3500
+    },
+    {
+      "id": 3091,
+      "name": "ウィッツ エンド",
+      "icon": "items/3091.png",
+      "gold": 2800
+    },
+    {
+      "id": 3094,
+      "name": "ラピッド ファイアキャノン",
+      "icon": "items/3094.png",
+      "gold": 2650
+    },
+    {
+      "id": 3095,
+      "name": "ストームレイザー",
+      "icon": "items/3095.png",
+      "gold": 3200
+    },
+    {
+      "id": 3100,
+      "name": "リッチ ベイン",
+      "icon": "items/3100.png",
+      "gold": 2900
+    },
+    {
+      "id": 3102,
+      "name": "バンシー ヴェール",
+      "icon": "items/3102.png",
+      "gold": 3000
+    },
+    {
+      "id": 3107,
+      "name": "リデンプション",
+      "icon": "items/3107.png",
+      "gold": 2300
+    },
+    {
+      "id": 3108,
+      "name": "フィンディッシュの古書",
+      "icon": "items/3108.png",
+      "gold": 850
+    },
+    {
+      "id": 3109,
+      "name": "騎士の誓い",
+      "icon": "items/3109.png",
+      "gold": 2300
+    },
+    {
+      "id": 3110,
+      "name": "フローズン ハート",
+      "icon": "items/3110.png",
+      "gold": 2500
+    },
+    {
+      "id": 3111,
+      "name": "マーキュリー ブーツ",
+      "icon": "items/3111.png",
+      "gold": 1250
+    },
+    {
+      "id": 3112,
+      "name": "ガーディアン オーブ",
+      "icon": "items/3112.png",
+      "gold": 950
+    },
+    {
+      "id": 3113,
+      "name": "エーテル ウィスプ",
+      "icon": "items/3113.png",
+      "gold": 900
+    },
+    {
+      "id": 3114,
+      "name": "フォビドゥン アイドル",
+      "icon": "items/3114.png",
+      "gold": 600
+    },
+    {
+      "id": 3115,
+      "name": "ナッシャー トゥース",
+      "icon": "items/3115.png",
+      "gold": 2900
+    },
+    {
+      "id": 3116,
+      "name": "リーライ クリスタル セプター",
+      "icon": "items/3116.png",
+      "gold": 2600
+    },
+    {
+      "id": 3118,
+      "name": "マリグナンス",
+      "icon": "items/3118.png",
+      "gold": 2700
+    },
+    {
+      "id": 3119,
+      "name": "冬の訪れ",
+      "icon": "items/3119.png",
+      "gold": 2400
+    },
+    {
+      "id": 3123,
+      "name": "エクスキューショナー コーリング",
+      "icon": "items/3123.png",
+      "gold": 800
+    },
+    {
+      "id": 3124,
+      "name": "グインソー レイジブレード",
+      "icon": "items/3124.png",
+      "gold": 3000
+    },
+    {
+      "id": 3133,
+      "name": "コールフィールド ウォーハンマー",
+      "icon": "items/3133.png",
+      "gold": 1050
+    },
+    {
+      "id": 3134,
+      "name": "セレイテッド ダーク",
+      "icon": "items/3134.png",
+      "gold": 1000
+    },
+    {
+      "id": 3135,
+      "name": "ヴォイド スタッフ",
+      "icon": "items/3135.png",
+      "gold": 3000
+    },
+    {
+      "id": 3137,
+      "name": "クリプトブルーム",
+      "icon": "items/3137.png",
+      "gold": 3000
+    },
+    {
+      "id": 3139,
+      "name": "マーキュリアル シミター",
+      "icon": "items/3139.png",
+      "gold": 3200
+    },
+    {
+      "id": 3140,
+      "name": "クイックシルバー サッシュ",
+      "icon": "items/3140.png",
+      "gold": 1300
+    },
+    {
+      "id": 3142,
+      "name": "妖夢の霊剣",
+      "icon": "items/3142.png",
+      "gold": 2800
+    },
+    {
+      "id": 3143,
+      "name": "ランデュイン オーメン",
+      "icon": "items/3143.png",
+      "gold": 2700
+    },
+    {
+      "id": 3144,
+      "name": "偵察兵のパチンコ",
+      "icon": "items/3144.png",
+      "gold": 600
+    },
+    {
+      "id": 3145,
+      "name": "ヘクステック オルタネーター",
+      "icon": "items/3145.png",
+      "gold": 1100
+    },
+    {
+      "id": 3146,
+      "name": "ヘクステック ガンブレード",
+      "icon": "items/3146.png",
+      "gold": 3000
+    },
+    {
+      "id": 3147,
+      "name": "悲愴な仮面",
+      "icon": "items/3147.png",
+      "gold": 1300
+    },
+    {
+      "id": 3152,
+      "name": "ヘクステック ロケットベルト",
+      "icon": "items/3152.png",
+      "gold": 2650
+    },
+    {
+      "id": 3153,
+      "name": "ルインドキング ブレード",
+      "icon": "items/3153.png",
+      "gold": 3200
+    },
+    {
+      "id": 3155,
+      "name": "ヘクスドリンカー",
+      "icon": "items/3155.png",
+      "gold": 1300
+    },
+    {
+      "id": 3156,
+      "name": "マルモティウスの胃袋",
+      "icon": "items/3156.png",
+      "gold": 3100
+    },
+    {
+      "id": 3157,
+      "name": "ゾーニャの砂時計",
+      "icon": "items/3157.png",
+      "gold": 3250
+    },
+    {
+      "id": 3158,
+      "name": "アイオニア ブーツ",
+      "icon": "items/3158.png",
+      "gold": 900
+    },
+    {
+      "id": 3161,
+      "name": "ショウジンの矛",
+      "icon": "items/3161.png",
+      "gold": 3100
+    },
+    {
+      "id": 3165,
+      "name": "モレロノミコン",
+      "icon": "items/3165.png",
+      "gold": 2850
+    },
+    {
+      "id": 3168,
+      "name": "不滅の道",
+      "icon": "items/3168.png",
+      "gold": 1000
+    },
+    {
+      "id": 3170,
+      "name": "スイフトマーチ",
+      "icon": "items/3170.png",
+      "gold": 1000
+    },
+    {
+      "id": 3171,
+      "name": "真紅のアイオニア ブーツ",
+      "icon": "items/3171.png",
+      "gold": 900
+    },
+    {
+      "id": 3172,
+      "name": "ガンメタル ブーツ",
+      "icon": "items/3172.png",
+      "gold": 1100
+    },
+    {
+      "id": 3173,
+      "name": "チェインレースド クラッシャー",
+      "icon": "items/3173.png",
+      "gold": 1250
+    },
+    {
+      "id": 3174,
+      "name": "装甲強化の進撃",
+      "icon": "items/3174.png",
+      "gold": 1200
+    },
+    {
+      "id": 3175,
+      "name": "連呪使いのブーツ",
+      "icon": "items/3175.png",
+      "gold": 1100
+    },
+    {
+      "id": 3177,
+      "name": "ガーディアン ブレード",
+      "icon": "items/3177.png",
+      "gold": 950
+    },
+    {
+      "id": 3179,
+      "name": "アンブラル グレイブ",
+      "icon": "items/3179.png",
+      "gold": 2800
+    },
+    {
+      "id": 3181,
+      "name": "ハルブレイカー",
+      "icon": "items/3181.png",
+      "gold": 3000
+    },
+    {
+      "id": 3184,
+      "name": "ガーディアン ハンマー",
+      "icon": "items/3184.png",
+      "gold": 950
+    },
+    {
+      "id": 3190,
+      "name": "ソラリのロケット",
+      "icon": "items/3190.png",
+      "gold": 2200
+    },
+    {
+      "id": 3211,
+      "name": "スペクター カウル",
+      "icon": "items/3211.png",
+      "gold": 1250
+    },
+    {
+      "id": 3222,
+      "name": "ミカエルの祝福",
+      "icon": "items/3222.png",
+      "gold": 2300
+    },
+    {
+      "id": 3302,
+      "name": "テルミヌス",
+      "icon": "items/3302.png",
+      "gold": 3000
+    },
+    {
+      "id": 3330,
+      "name": "身代わり人形",
+      "icon": "items/3330.png",
+      "gold": 0
+    },
+    {
+      "id": 3340,
+      "name": "ステルス ワード",
+      "icon": "items/3340.png",
+      "gold": 0
+    },
+    {
+      "id": 3363,
+      "name": "ファーサイト オルタレーション",
+      "icon": "items/3363.png",
+      "gold": 0
+    },
+    {
+      "id": 3364,
+      "name": "オラクル レンズ",
+      "icon": "items/3364.png",
+      "gold": 0
+    },
+    {
+      "id": 3504,
+      "name": "アーデント センサー",
+      "icon": "items/3504.png",
+      "gold": 2200
+    },
+    {
+      "id": 3508,
+      "name": "エッセンス リーバー",
+      "icon": "items/3508.png",
+      "gold": 3050
+    },
+    {
+      "id": 3599,
+      "name": "カリスタの復讐の黒槍",
+      "icon": "items/3599.png",
+      "gold": 0
+    },
+    {
+      "id": 3600,
+      "name": "カリスタの復讐の黒槍",
+      "icon": "items/3600.png",
+      "gold": 0
+    },
+    {
+      "id": 3742,
+      "name": "デッド マン プレート",
+      "icon": "items/3742.png",
+      "gold": 2900
+    },
+    {
+      "id": 3748,
+      "name": "タイタン ハイドラ",
+      "icon": "items/3748.png",
+      "gold": 3300
+    },
+    {
+      "id": 3801,
+      "name": "クリスタル ブレーサー",
+      "icon": "items/3801.png",
+      "gold": 800
+    },
+    {
+      "id": 3802,
+      "name": "ロスト チャプター",
+      "icon": "items/3802.png",
+      "gold": 1200
+    },
+    {
+      "id": 3803,
+      "name": "久遠のカタリスト",
+      "icon": "items/3803.png",
+      "gold": 1300
+    },
+    {
+      "id": 3814,
+      "name": "ナイト エッジ",
+      "icon": "items/3814.png",
+      "gold": 3000
+    },
+    {
+      "id": 3865,
+      "name": "ワールド アトラス",
+      "icon": "items/3865.png",
+      "gold": 400
+    },
+    {
+      "id": 3869,
+      "name": "セレスティアル オポジション",
+      "icon": "items/3869.png",
+      "gold": 400
+    },
+    {
+      "id": 3870,
+      "name": "ドリーム メーカー",
+      "icon": "items/3870.png",
+      "gold": 400
+    },
+    {
+      "id": 3871,
+      "name": "ザズ＝ザクのレルムスパイク",
+      "icon": "items/3871.png",
+      "gold": 400
+    },
+    {
+      "id": 3876,
+      "name": "至点のソリ",
+      "icon": "items/3876.png",
+      "gold": 400
+    },
+    {
+      "id": 3877,
+      "name": "ブラッドソング",
+      "icon": "items/3877.png",
+      "gold": 400
+    },
+    {
+      "id": 3916,
+      "name": "忘却のオーブ",
+      "icon": "items/3916.png",
+      "gold": 800
+    },
+    {
+      "id": 4005,
+      "name": "帝国の指令",
+      "icon": "items/4005.png",
+      "gold": 2400
+    },
+    {
+      "id": 4401,
+      "name": "自然の力",
+      "icon": "items/4401.png",
+      "gold": 2800
+    },
+    {
+      "id": 4628,
+      "name": "ホライゾン フォーカス",
+      "icon": "items/4628.png",
+      "gold": 2700
+    },
+    {
+      "id": 4629,
+      "name": "コズミック ドライブ",
+      "icon": "items/4629.png",
+      "gold": 3000
+    },
+    {
+      "id": 4630,
+      "name": "枯死の宝石",
+      "icon": "items/4630.png",
+      "gold": 1100
+    },
+    {
+      "id": 4632,
+      "name": "ヴァーダント バリア",
+      "icon": "items/4632.png",
+      "gold": 1600
+    },
+    {
+      "id": 4633,
+      "name": "リフトメーカー",
+      "icon": "items/4633.png",
+      "gold": 3100
+    },
+    {
+      "id": 4642,
+      "name": "バンドルグラスの鏡",
+      "icon": "items/4642.png",
+      "gold": 900
+    },
+    {
+      "id": 4645,
+      "name": "シャドウフレイム",
+      "icon": "items/4645.png",
+      "gold": 3200
+    },
+    {
+      "id": 4646,
+      "name": "ストームサージ",
+      "icon": "items/4646.png",
+      "gold": 2800
+    },
+    {
+      "id": 6333,
+      "name": "デス ダンス",
+      "icon": "items/6333.png",
+      "gold": 3300
+    },
+    {
+      "id": 6609,
+      "name": "ケミパンク チェーンソード",
+      "icon": "items/6609.png",
+      "gold": 3000
+    },
+    {
+      "id": 6610,
+      "name": "サンダード スカイ",
+      "icon": "items/6610.png",
+      "gold": 3100
+    },
+    {
+      "id": 6616,
+      "name": "フロー ウォーター スタッフ",
+      "icon": "items/6616.png",
+      "gold": 2250
+    },
+    {
+      "id": 6617,
+      "name": "ムーンストーンの再生",
+      "icon": "items/6617.png",
+      "gold": 2200
+    },
+    {
+      "id": 6620,
+      "name": "ヘリアの残響",
+      "icon": "items/6620.png",
+      "gold": 2200
+    },
+    {
+      "id": 6621,
+      "name": "ドーンコア",
+      "icon": "items/6621.png",
+      "gold": 2500
+    },
+    {
+      "id": 6631,
+      "name": "ストライドブレイカー",
+      "icon": "items/6631.png",
+      "gold": 3300
+    },
+    {
+      "id": 6653,
+      "name": "ライアンドリーの仮面",
+      "icon": "items/6653.png",
+      "gold": 3000
+    },
+    {
+      "id": 6655,
+      "name": "ルーデン エコー",
+      "icon": "items/6655.png",
+      "gold": 2750
+    },
+    {
+      "id": 6657,
+      "name": "ロッド オブ エイジス",
+      "icon": "items/6657.png",
+      "gold": 2600
+    },
+    {
+      "id": 6660,
+      "name": "バミ シンダー",
+      "icon": "items/6660.png",
+      "gold": 900
+    },
+    {
+      "id": 6662,
+      "name": "アイスボーン ガントレット",
+      "icon": "items/6662.png",
+      "gold": 2900
+    },
+    {
+      "id": 6664,
+      "name": "ホロウ レディアンス",
+      "icon": "items/6664.png",
+      "gold": 2800
+    },
+    {
+      "id": 6665,
+      "name": "変幻自在のジャック＝ショー",
+      "icon": "items/6665.png",
+      "gold": 3200
+    },
+    {
+      "id": 6670,
+      "name": "ヌーンクィヴァー",
+      "icon": "items/6670.png",
+      "gold": 1300
+    },
+    {
+      "id": 6672,
+      "name": "クラーケン スレイヤー",
+      "icon": "items/6672.png",
+      "gold": 3000
+    },
+    {
+      "id": 6673,
+      "name": "イモータル シールドボウ",
+      "icon": "items/6673.png",
+      "gold": 3000
+    },
+    {
+      "id": 6675,
+      "name": "ナヴォリ フリッカーブレード",
+      "icon": "items/6675.png",
+      "gold": 2650
+    },
+    {
+      "id": 6676,
+      "name": "コレクター",
+      "icon": "items/6676.png",
+      "gold": 3000
+    },
+    {
+      "id": 6690,
+      "name": "レクトリクス",
+      "icon": "items/6690.png",
+      "gold": 775
+    },
+    {
+      "id": 6692,
+      "name": "赤月の刃",
+      "icon": "items/6692.png",
+      "gold": 2900
+    },
+    {
+      "id": 6694,
+      "name": "セリルダの怨恨",
+      "icon": "items/6694.png",
+      "gold": 3000
+    },
+    {
+      "id": 6695,
+      "name": "毒蛇の牙",
+      "icon": "items/6695.png",
+      "gold": 2500
+    },
+    {
+      "id": 6696,
+      "name": "アクシオム アーク",
+      "icon": "items/6696.png",
+      "gold": 2750
+    },
+    {
+      "id": 6697,
+      "name": "ヒュブリス",
+      "icon": "items/6697.png",
+      "gold": 2800
+    },
+    {
+      "id": 6698,
+      "name": "プロフェイン ハイドラ",
+      "icon": "items/6698.png",
+      "gold": 2850
+    },
+    {
+      "id": 6699,
+      "name": "ボルテイク サイクロソード",
+      "icon": "items/6699.png",
+      "gold": 3000
+    },
+    {
+      "id": 8010,
+      "name": "ブラッドレターの呪い",
+      "icon": "items/8010.png",
+      "gold": 2900
+    },
+    {
+      "id": 8020,
+      "name": "アビサル マスク",
+      "icon": "items/8020.png",
+      "gold": 2650
+    },
+    {
+      "id": 322065,
+      "name": "シュレリアの戦歌",
+      "icon": "items/322065.png",
+      "gold": 2600
+    },
+    {
+      "id": 322526,
+      "name": "囁きのサークレット",
+      "icon": "items/322526.png",
+      "gold": 2250
+    },
+    {
+      "id": 323003,
+      "name": "アークエンジェル スタッフ",
+      "icon": "items/323003.png",
+      "gold": 2900
+    },
+    {
+      "id": 323004,
+      "name": "マナムネ",
+      "icon": "items/323004.png",
+      "gold": 2900
+    },
+    {
+      "id": 323050,
+      "name": "ジーク コンバージェンス",
+      "icon": "items/323050.png",
+      "gold": 2300
+    },
+    {
+      "id": 323070,
+      "name": "女神の涙",
+      "icon": "items/323070.png",
+      "gold": 400
+    },
+    {
+      "id": 323075,
+      "name": "ソーンメイル",
+      "icon": "items/323075.png",
+      "gold": 2650
+    },
+    {
+      "id": 323107,
+      "name": "リデンプション",
+      "icon": "items/323107.png",
+      "gold": 2800
+    },
+    {
+      "id": 323109,
+      "name": "騎士の誓い",
+      "icon": "items/323109.png",
+      "gold": 2900
+    },
+    {
+      "id": 323110,
+      "name": "フローズン ハート",
+      "icon": "items/323110.png",
+      "gold": 2700
+    },
+    {
+      "id": 323119,
+      "name": "冬の訪れ",
+      "icon": "items/323119.png",
+      "gold": 2400
+    },
+    {
+      "id": 323190,
+      "name": "ソラリのロケット",
+      "icon": "items/323190.png",
+      "gold": 2600
+    },
+    {
+      "id": 323222,
+      "name": "ミカエルの祝福",
+      "icon": "items/323222.png",
+      "gold": 2800
+    },
+    {
+      "id": 323504,
+      "name": "アーデント センサー",
+      "icon": "items/323504.png",
+      "gold": 2600
+    },
+    {
+      "id": 324005,
+      "name": "帝国の指令",
+      "icon": "items/324005.png",
+      "gold": 2400
+    },
+    {
+      "id": 326616,
+      "name": "フロー ウォーター スタッフ",
+      "icon": "items/326616.png",
+      "gold": 2600
+    },
+    {
+      "id": 326617,
+      "name": "ムーンストーンの再生",
+      "icon": "items/326617.png",
+      "gold": 2900
+    },
+    {
+      "id": 326620,
+      "name": "ヘリアの残響",
+      "icon": "items/326620.png",
+      "gold": 2600
+    },
+    {
+      "id": 326621,
+      "name": "ドーンコア",
+      "icon": "items/326621.png",
+      "gold": 2900
+    },
+    {
+      "id": 326657,
+      "name": "ロッド オブ エイジス",
+      "icon": "items/326657.png",
+      "gold": 2600
+    },
+    {
+      "id": 328020,
+      "name": "アビサル マスク",
+      "icon": "items/328020.png",
+      "gold": 2850
+    },
+    {
+      "id": 663039,
+      "name": "アトマの報い",
+      "icon": "items/663039.png",
+      "gold": 2500
+    },
+    {
+      "id": 663056,
+      "name": "不死身の大王の王冠",
+      "icon": "items/663056.png",
+      "gold": 2500
+    },
+    {
+      "id": 663058,
+      "name": "モルテンストーン シールド",
+      "icon": "items/663058.png",
+      "gold": 2500
+    },
+    {
+      "id": 663059,
+      "name": "星空のマント",
+      "icon": "items/663059.png",
+      "gold": 2500
+    },
+    {
+      "id": 663060,
+      "name": "天帝の剣",
+      "icon": "items/663060.png",
+      "gold": 2500
+    },
+    {
+      "id": 663064,
+      "name": "ベイガーの超越のタリスマン",
+      "icon": "items/663064.png",
+      "gold": 900
+    },
+    {
+      "id": 663146,
+      "name": "ヘクステック ガンブレード",
+      "icon": "items/663146.png",
+      "gold": 2500
+    },
+    {
+      "id": 663172,
+      "name": "ゼファー",
+      "icon": "items/663172.png",
+      "gold": 2500
+    },
+    {
+      "id": 663193,
+      "name": "ガーゴイル ストーンプレート",
+      "icon": "items/663193.png",
+      "gold": 2500
+    },
+    {
+      "id": 664011,
+      "name": "花咲く夜明けの剣",
+      "icon": "items/664011.png",
+      "gold": 2500
+    },
+    {
+      "id": 664644,
+      "name": "シャッタードクイーン クラウン",
+      "icon": "items/664644.png",
+      "gold": 2500
+    },
+    {
+      "id": 667101,
+      "name": "ギャンブラーの剣",
+      "icon": "items/667101.png",
+      "gold": 2500
+    },
+    {
+      "id": 667109,
+      "name": "冷酷な一撃",
+      "icon": "items/667109.png",
+      "gold": 2500
+    },
+    {
+      "id": 667112,
+      "name": "肉喰らう者",
+      "icon": "items/667112.png",
+      "gold": 2500
+    },
+    {
+      "id": 667666,
+      "name": "コレクター",
+      "icon": "items/667666.png",
+      "gold": 3000
+    }
+  ],
+  "trees": [
+    {
+      "id": 8100,
+      "key": "Domination",
+      "icon": "runes/8100.png",
+      "name": "覇道",
+      "slots": [
+        {
+          "runes": [
+            {
+              "id": 8112,
+              "key": "Electrocute",
+              "icon": "runes/8112.png",
+              "name": "電撃",
+              "shortDesc": "3秒以内にチャンピオンを<b>個別の</b>スキルか通常攻撃で3回攻撃すると、追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'>アダプティブダメージ</lol-uikit-tooltipped-keyword>を与える。",
+              "longDesc": "3秒以内に敵チャンピオンを<b>個別の</b>スキルか通常攻撃で3回攻撃すると、追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'><font color='#48C4B7'>アダプティブダメージ</font></lol-uikit-tooltipped-keyword>を与える。<br><br>ダメージ: 70 - 240(+増加攻撃力x0.1、+魔力x0.05)<br>クールダウン: 20秒<br><br>「彼らは、雷で大惨事をもたらしたことから“雷帝”と呼ばれた」"
+            },
+            {
+              "id": 8128,
+              "key": "DarkHarvest",
+              "icon": "runes/8128.png",
+              "name": "魂の収穫",
+              "shortDesc": "体力の低下したチャンピオンにダメージを与えると<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'>アダプティブダメージ</lol-uikit-tooltipped-keyword>を与えて、犠牲者から魂を1つ収穫する。",
+              "longDesc": "体力が50%以下のチャンピオンにダメージを与えると<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'>アダプティブダメージ</lol-uikit-tooltipped-keyword>を与えて、その魂を収穫し、「魂の収穫」のダメージが恒久的に11増加する。<br><br>「魂の収穫」のダメージ: 30(+魂の数x11)(+増加攻撃力x0.1)(+魔力x0.05)<br>クールダウン: 35秒(キルまたはアシストで1.0秒にリセット)"
+            },
+            {
+              "id": 9923,
+              "key": "HailOfBlades",
+              "icon": "runes/9923.png",
+              "name": "ヘイルブレード",
+              "shortDesc": "敵チャンピオンに対する最初の3回の通常攻撃の攻撃速度が大きく増加し、<trueDamage>追加確定ダメージ</trueDamage>を獲得する。",
+              "longDesc": "敵チャンピオンに通常攻撃する際、最大3回の通常攻撃の攻撃速度が90%(遠距離チャンピオンは60%)増加し、<trueDamage>追加確定ダメージ</trueDamage>を獲得する。<br><br>通常攻撃の間隔が3秒以上開くとこの効果は終了する。<br><br>クールダウン: 10秒<br>通常攻撃時のダメージ: 2 - 20 (+増加攻撃力0.12、+魔力0.1)のダメージ<br><br><rules>攻撃のモーションをキャンセルした場合、回数制限が1増加する。<br>この効果は一時的に攻撃速度の上限を超えられる。</rules>"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8126,
+              "key": "CheapShot",
+              "icon": "runes/8126.png",
+              "name": "追い打ち",
+              "shortDesc": "<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_ImpairAct'>移動妨害か行動不能効果</lol-uikit-tooltipped-keyword>を受けているチャンピオンに追加確定ダメージを与える。 ",
+              "longDesc": "<b>移動妨害か行動不能</b>効果を受けている敵チャンピオンに対し、レベルに応じて10 - 45の追加確定ダメージを与える。<br><br>クールダウン: 4秒<br><rules>移動妨害か行動不能効果のあとに発生したダメージで発動する。</rules>"
+            },
+            {
+              "id": 8139,
+              "key": "TasteOfBlood",
+              "icon": "runes/8139.png",
+              "name": "血の味わい",
+              "shortDesc": "敵チャンピオンにダメージを与えると体力を回復する。",
+              "longDesc": "敵チャンピオンにダメージを与えると自身の体力を回復する。<br><br>回復量: レベルに応じて16 - 40(+増加攻撃力x0.1、+魔力x0.05)<br><br>クールダウン: 20秒"
+            },
+            {
+              "id": 8143,
+              "key": "SuddenImpact",
+              "icon": "runes/8143.png",
+              "name": "サドンインパクト",
+              "shortDesc": "ステルス状態が解除されるか、ダッシュ、リープ、ブリンク、テレポートを使用してから敵チャンピオンに通常攻撃かスキルでダメージを与えると、追加確定ダメージを与える。",
+              "longDesc": "ステルス状態が解除されるか、ダッシュ、リープ、ブリンク、テレポートを使用してから敵チャンピオンに通常攻撃かスキルでダメージを与えると、4秒間、チャンピオンレベルに応じて追加で<trueDamage>20 - 80の確定ダメージ</trueDamage>を与える。<br><br>クールダウン: 10秒"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8137,
+              "key": "SixthSense",
+              "icon": "runes/8137.png",
+              "name": "第六感",
+              "shortDesc": "長いクールダウンで、自動的に周囲の未追跡で未発見のワードを感知し、味方チームのために追跡する。<br><br>レベル11: さらにそのワードを10秒間可視化する。",
+              "longDesc": "自動的に周囲の未追跡かつ未発見のワードを感知し、味方チームのために追跡する。 <br><br>レベル11: さらにそのワードを10秒間可視化する。<br><br>この効果には250秒間のクールダウンがある。"
+            },
+            {
+              "id": 8140,
+              "key": "GrislyMementos",
+              "icon": "runes/8140.png",
+              "name": "グリスリー メメント",
+              "shortDesc": "チャンピオンから<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を奪うとメメントを1個獲得する(合計最大18個)。<br><br>メメントを獲得するごとに、トリンケットヘイストが6増加する。",
+              "longDesc": "チャンピオンから<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を奪うとメメントを1個獲得する(合計最大18個)。<br><br>メメントを獲得するごとに、トリンケットヘイストが6増加する。視界トリンケットが存在しないゲームモードでは、代わりにサモナースペルヘイストが3増加する。"
+            },
+            {
+              "id": 8141,
+              "key": "DeepWard",
+              "icon": "runes/8141.png",
+              "name": "ディープワード",
+              "shortDesc": "敵ジャングル内の自身のワードが<keywordMajor>ディープ</keywordMajor>状態になり、体力と効果時間が増加する。<br><br>レベル9: 川の中のワードも<keywordMajor>ディープ</keywordMajor>状態になる。",
+              "longDesc": "敵ジャングル内の自身のワードが<keywordMajor>ディープ</keywordMajor>状態になる。<keywordMajor>ディープ</keywordMajor>状態のワードは体力が+1増加し、効果時間が+[30 - 45]秒(トリンケットステルスワードは+[45 - 150]秒)増加する。<br><br>レベル9: 川の中のワードも<keywordMajor>ディープ</keywordMajor>状態になる。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8135,
+              "key": "TreasureHunter",
+              "icon": "runes/8135.png",
+              "name": "貪欲な賞金首狩り",
+              "shortDesc": "<b>異なる対象</b>から初めて<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を獲得した際に追加のゴールドを獲得する。 ",
+              "longDesc": "次に「賞金首狩り」のスタックを獲得した際、追加で<gold>50ゴールド</gold>を獲得する。「賞金首狩り」のスタックごとに獲得するゴールドが<gold>20ゴールド</gold>増加する(最大<gold>130ゴールド</gold>)。<br><br>それぞれのチャンピオンから初めてキルまたはアシストを獲得するごとに「賞金首狩り」のスタックを1つ獲得する。"
+            },
+            {
+              "id": 8105,
+              "key": "RelentlessHunter",
+              "icon": "runes/8105.png",
+              "name": "執拗な賞金首狩り",
+              "shortDesc": "<b>それぞれ異なる</b>敵チャンピオンから<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を獲得すると<b>非戦闘時の<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_MS'>移動速度</lol-uikit-tooltipped-keyword></b>が恒久的に増加する。",
+              "longDesc": "「<i>賞金首狩り</i>」のスタックごとに非戦闘時の<speed>移動速度が8</speed>増加する。「<i>賞金首狩り</i>」のスタックは、各敵チャンピオンを対象に初めてキルまたはアシストを達成する度に1つ獲得する。"
+            },
+            {
+              "id": 8106,
+              "key": "UltimateHunter",
+              "icon": "runes/8106.png",
+              "name": "至極の賞金首狩り",
+              "shortDesc": "<b>それぞれ異なる</b>敵チャンピオンから<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を獲得するたびに、アルティメットスキルのクールダウンを恒久的に短縮する。 ",
+              "longDesc": "アルティメットスキルのスキルヘイストを<attention>6</attention>獲得し、さらに「<i>賞金首狩り</i>」のスタックごとにスキルヘイストが<attention>5</attention>増加する。「<i>賞金首狩り</i>」のスタックは、各敵チャンピオンを対象に初めてキルまたはアシストを達成する度に1つ獲得する。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8300,
+      "key": "Inspiration",
+      "icon": "runes/8300.png",
+      "name": "天啓",
+      "slots": [
+        {
+          "runes": [
+            {
+              "id": 8351,
+              "key": "GlacialAugment",
+              "icon": "runes/8351.png",
+              "name": "グレイシャルオーグメント",
+              "shortDesc": "敵チャンピオンに移動不能効果を与えると、3本の冷気の光線が発射されて周囲の敵にスロウ効果を与え、その敵が味方に与えるダメージを低下させる。",
+              "longDesc": "敵チャンピオンに移動不能効果を与えると、対象から3本の冷気の光線が自身および周囲のチャンピオンに向けて発射されて、3(+その移動不能効果の効果時間)秒間、凍てつくゾーンを発生させる。ゾーンは敵に20%(+体力回復量とシールド量100%ごとに90%)(+魔力100ごとに6%)(+増加攻撃力100ごとに7%)のスロウ効果を与え、その敵が味方(自身は含まない)に与えるダメージを15%軽減させる。<br><br>クールダウン: 25秒"
+            },
+            {
+              "id": 8360,
+              "key": "UnsealedSpellbook",
+              "icon": "runes/8360.png",
+              "name": "解放の魔導書",
+              "shortDesc": "非戦闘時にサモナースペルを交換できる。新たな種類のサモナースペルに交換するたびに、次に交換可能になるまでの時間が短縮される。",
+              "longDesc": "装備中のサモナースペル1つを1回限り使用可能な別のサモナースペルに交換する。新たな種類のサモナースペルに交換するたびに次に交換可能になるまでのクールダウンが恒久的に25秒短縮される(最初のクールダウンは@f3@秒)。<br><br>試合開始から6分経過するまでは交換できない。<br><rules><br>サモナースペルを交換できるのは非戦闘時のみ。<br>交換したサモナースペルを使用したら、3回交換するまで最初のサモナースペルは選択できない。<br>サモナースペルを2回交換すると、「スマイト」のダメージが増加する。</rules>"
+            },
+            {
+              "id": 8369,
+              "key": "FirstStrike",
+              "icon": "runes/8369.png",
+              "name": "ファーストストライク",
+              "shortDesc": "チャンピオンとの戦闘を開始すると3秒間、7%の追加ダメージを与え、与ダメージに応じたゴールドを獲得する。",
+              "longDesc": "チャンピオンと戦闘状態になってから、0.25秒以内に敵チャンピオンに通常攻撃またはスキルを命中させると10ゴールドを獲得する。さらに3秒間、<b>「ファーストストライク」</b>を獲得して、チャンピオンに<truedamage>7%</truedamage>の追加<truedamage>ダメージ</truedamage>を与えるようになり、与えた追加ダメージの<gold>50%(遠隔攻撃チャンピオンは35%)</gold>にあたる<gold>ゴールド</gold>を獲得する。<br><br>クールダウン: <scaleLevel>25 - 15</scaleLevel>秒"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8306,
+              "key": "HextechFlashtraption",
+              "icon": "runes/8306.png",
+              "name": "ヘクステックフラッシュネイター",
+              "shortDesc": "フラッシュがクールダウンに入ると「へクスフラッシュ」に置き換わる。<br><br>へクスフラッシュ: 詠唱後に指定位置に瞬間移動する。",
+              "longDesc": "フラッシュはクールダウン中「へクスフラッシュ」に置き換わる。<br><br>へクスフラッシュ: 2秒間詠唱してから指定した位置に瞬間移動する。<br><br>クールダウン: 20秒。敵チャンピオンと交戦状態になると10秒のクールダウンに入る。"
+            },
+            {
+              "id": 8304,
+              "key": "MagicalFootwear",
+              "icon": "runes/8304.png",
+              "name": "魔法の靴",
+              "shortDesc": "試合開始から12分時点で無料のブーツを獲得するが、それまではブーツを購入できない。<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を獲得するたびに、ブーツ獲得までの時間が45秒短縮される。",
+              "longDesc": "試合開始から12分経過するとコスト無しで「ちょっとだけ魔法がかった靴」を獲得する。それまではブーツを購入できない。キルまたはアシストするごとにブーツ獲得までの時間が45秒短縮される。<br><br>「ちょっとだけ魔法がかった靴」は追加で<speed>移動速度10</speed>を付与する。"
+            },
+            {
+              "id": 8321,
+              "key": "CashBack",
+              "icon": "runes/8321.png",
+              "name": "キャッシュバック",
+              "shortDesc": "レジェンダリーアイテムを購入する際に、一部のゴールドが戻ってくる。",
+              "longDesc": "レジェンダリーアイテムを購入する際に、ゴールドが7.5%戻ってくる。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8313,
+              "key": "PerfectTiming",
+              "icon": "runes/8313.png",
+              "name": "トリプル トニック",
+              "shortDesc": "レベル3になると「強欲のエリクサー」を獲得する。<br>レベル6になると「力のエリクサー」を獲得する。<br>レベル9になると「スキル エリクサー」を獲得する。 ",
+              "longDesc": "レベル3になると「強欲のエリクサー」を獲得する。<br>レベル6になると「力のエリクサー」を獲得する。<br>レベル9になると「スキル エリクサー」を獲得する。 "
+            },
+            {
+              "id": 8352,
+              "key": "TimeWarpTonic",
+              "icon": "runes/8352.png",
+              "name": "タイムワープトニック",
+              "shortDesc": "ポーション使用時に一定割合を即座に回復する。",
+              "longDesc": "ポーションを使用すると、回復する体力の40%を即座に得られる。"
+            },
+            {
+              "id": 8345,
+              "key": "BiscuitDelivery",
+              "icon": "runes/8345.png",
+              "name": "ビスケットデリバリー",
+              "shortDesc": "6分経過するまで2分毎にビスケットを獲得する。消費するか売却すると最大体力が増加し、体力が回復する。",
+              "longDesc": "ビスケットデリバリー: 6分間、2分ごとに英気満点ビスケットを獲得する。<br><br>ビスケットは最大体力の20 + 2%を回復する。効果は自身の減少体力に応じて最大100%まで増加する。ビスケットを消費するか売却すると、恒久的に最大体力が30増加する。 "
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8347,
+              "key": "CosmicInsight",
+              "icon": "runes/8347.png",
+              "name": "宇宙の英知",
+              "shortDesc": "サモナースペルヘイスト +<attention>18</attention><br>アイテムヘイスト +<attention>10</attention>",
+              "longDesc": "サモナースペルヘイスト +<attention>18</attention><br>アイテムヘイスト +<attention>10</attention>"
+            },
+            {
+              "id": 8410,
+              "key": "ApproachVelocity",
+              "icon": "runes/8410.png",
+              "name": "疾駆",
+              "shortDesc": "近くにいる<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_ImpairMov'>移動妨害効果</lol-uikit-tooltipped-keyword>を受けた敵チャンピオンに向かって移動する時に<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_MS'>移動速度</lol-uikit-tooltipped-keyword>が増加する。自身が敵チャンピオンに移動妨害効果を与えた場合は効果が上昇する。",
+              "longDesc": "近くにいる移動妨害効果を受けた敵チャンピオンに向かって移動する時に<speed>7.5%の移動速度</speed>を獲得する。自身が敵チャンピオンに移動妨害効果を与えた場合は、効果が<speed>15%</speed>に上昇する。<br><br>味方の移動妨害効果による発動範囲: 1000"
+            },
+            {
+              "id": 8316,
+              "key": "JackOfAllTrades",
+              "icon": "runes/8316.png",
+              "name": "なんでも屋",
+              "shortDesc": "アイテムで増加したステータスの種類1つごとに「なんでも屋」のスタックを1つ獲得する。スタックごとに<speed>スキルヘイストが1</speed>増加する。<br><br>5スタックおよび10スタック時に追加で<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'>アダプティブフォース</lol-uikit-tooltipped-keyword>が増加する。",
+              "longDesc": "アイテムで増加したステータスの種類1つごとに「なんでも屋」のスタックを1つ獲得する。スタックごとに <speed>スキルヘイストが1</speed>増加する。<br><br><lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'>アダプティブフォース</lol-uikit-tooltipped-keyword>は、5スタック時に追加で8、10スタック時に追加で20増加する。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8000,
+      "key": "Precision",
+      "icon": "runes/8000.png",
+      "name": "栄華",
+      "slots": [
+        {
+          "runes": [
+            {
+              "id": 8005,
+              "key": "PressTheAttack",
+              "icon": "runes/8005.png",
+              "name": "プレスアタック",
+              "shortDesc": "敵チャンピオンを3回連続で攻撃すると追加ダメージを与え、チャンピオンとの戦闘から離脱するまで自身のダメージが増幅する。",
+              "longDesc": "敵チャンピオンを通常攻撃で3回連続攻撃すると40 - 160の追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'><font color='#48C4B7'>アダプティブダメージ</font></lol-uikit-tooltipped-keyword>(レベルに比例)を与え、チャンピオンとの戦闘から離脱するまで与えるダメージが8%増加する。"
+            },
+            {
+              "id": 8008,
+              "key": "LethalTempo",
+              "icon": "runes/8008.png",
+              "name": "リーサルテンポ",
+              "shortDesc": "敵チャンピオンに通常攻撃を行うと攻撃速度が増加する。この効果は最大6回までスタックする。最大スタックになると、通常攻撃時効果で<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'><font color='#48C4B7'>追加アダプティブダメージ</font></lol-uikit-tooltipped-keyword>を与えるようになる。",
+              "longDesc": "敵チャンピオンに通常攻撃を行うと、6秒間、攻撃速度が[近接 6% || 遠隔 4%]増加する。この効果は最大6回までスタックする。最大スタックになると、通常攻撃時効果で[近接 9 - 30 || 遠隔 6 - 24]の<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'>追加アダプティブダメージを与えるようになる。このダメージは増加攻撃速度1%ごとに1%増加する</lol-uikit-tooltipped-keyword>。"
+            },
+            {
+              "id": 8021,
+              "key": "FleetFootwork",
+              "icon": "runes/8021.png",
+              "name": "フリートフットワーク",
+              "shortDesc": "攻撃と移動でスタックが溜まる。100スタックで次の通常攻撃は自身を回復し、<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_MS'>移動速度</lol-uikit-tooltipped-keyword>が増加する。",
+              "longDesc": "攻撃と移動でスタックが溜まる。100スタックで次の通常攻撃がエネルギー充填状態になる。<br><br>エネルギー充填状態で攻撃を行うと自身の体力が15 - 160(+増加攻撃力x0.1、+魔力x0.05)回復して、1秒間、<speed>移動速度が20%</speed>増加する。<br><br>遠隔攻撃チャンピオンの場合は回復の効果が60%、移動速度の効果が75%になる。ミニオンの場合は回復の効果が15%になる。"
+            },
+            {
+              "id": 8010,
+              "key": "Conqueror",
+              "icon": "runes/8010.png",
+              "name": "征服者",
+              "shortDesc": "敵チャンピオンへの攻撃でアダプティブフォースのスタックを獲得する。スタック数が12になると、チャンピオンに与えたダメージの一定割合の体力を回復する。",
+              "longDesc": "敵チャンピオンにダメージを与える通常攻撃またはスキルで5秒間、「征服者」のスタックを2つ獲得する。スタック1つごとに1.8 - 4の<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>アダプティブフォース</font></lol-uikit-tooltipped-keyword>を獲得する。最大12スタック。遠隔攻撃チャンピオンは通常攻撃1回につき1スタックのみ獲得する。<br><br>最大スタック時にチャンピオンに与えたダメージの8%(遠隔攻撃チャンピオンは5%)の体力を回復する。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 9101,
+              "key": "AbsorbLife",
+              "icon": "runes/9101.png",
+              "name": "体力吸収",
+              "shortDesc": "対象をキルすると自身の体力が回復する。",
+              "longDesc": "対象をキルすると自身の体力が@HealAmount@回復する。"
+            },
+            {
+              "id": 9111,
+              "key": "Triumph",
+              "icon": "runes/9111.png",
+              "name": "凱旋",
+              "shortDesc": "<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>獲得時に減少体力の5%を回復し、20ゴールドを追加で獲得する。",
+              "longDesc": "キルまたはアシストを獲得すると減少体力の5%、最大体力の2.5%を回復して、20の追加ゴールドを獲得する。<br><br><hr><br>「危険を冒してこそ、真の勝利に到達できる。」<br>──ノクサスの清算人"
+            },
+            {
+              "id": 8009,
+              "key": "PresenceOfMind",
+              "icon": "runes/8009.png",
+              "name": "冷静沈着",
+              "shortDesc": "敵チャンピオンにダメージを与えると、マナまたは気が少し回復する。キルまたはアシストを獲得するとマナまたは気を回復する。",
+              "longDesc": "敵チャンピオンにダメージを与えると、マナが6-50(遠隔攻撃チャンピオンは80%)または気が6回復する。<br><br>キルまたはアシストを獲得すると、マナまたは気の最大値の15%を回復する。<br><br>ダメージによる回復のクールダウン: 8秒"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 9104,
+              "key": "LegendAlacrity",
+              "icon": "runes/9104.png",
+              "name": "レジェンド: 迅速",
+              "shortDesc": "敵を<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>すると恒久的に<b>攻撃速度</b>が増加する。",
+              "longDesc": "攻撃速度が3%増加し、さらに「レジェンド」のスタック1つにつき1.5%増加する(<statGood>最大10スタック</statGood>)。<br><br>敵チャンピオンからキルまたはアシストを獲得するか、エピックモンスター討伐に寄与または大型モンスターやミニオンをキルすることで「レジェンド」のスタック獲得に近づく。"
+            },
+            {
+              "id": 9105,
+              "key": "LegendHaste",
+              "icon": "runes/9105.png",
+              "name": "レジェンド: ヘイスト",
+              "shortDesc": "敵を<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>すると恒久的に通常スキル<b>ヘイスト</b>が増加する。",
+              "longDesc": "<i>「レジェンド」</i>のスタックごとに通常スキルヘイストが1.5増加する(<statGood>最大10スタック</statGood>)。<br><br>敵チャンピオンからキルまたはアシストを獲得する、エピックモンスター討伐に貢献する、または大型モンスターやミニオンをキルすることで<i>「レジェンド」</i>のスタック獲得に近づく。"
+            },
+            {
+              "id": 9103,
+              "key": "LegendBloodline",
+              "icon": "runes/9103.png",
+              "name": "レジェンド: 血脈",
+              "shortDesc": "敵から<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>キルまたはアシスト</lol-uikit-tooltipped-keyword>を獲得すると恒久的に<b>ライフスティール</b>が増加する(上限あり)。上限に達すると最大体力が増加する。序盤は他のレジェンドルーンに比べて効果が薄いが、終盤になるにつれて強力になっていく。",
+              "longDesc": "「レジェンド」のスタック1つにつき<scaleAD>ライフスティールが0.45%</scaleAD>増加する(<statGood>最大15スタック</statGood>)。最大スタックになると<scaleHealth>最大体力が85</scaleHealth>増加する。<br><br>敵チャンピオンからキルまたはアシストを獲得するか、エピックモンスター討伐に寄与または大型モンスターやミニオンをキルすることで「レジェンド」のスタック獲得に近づく。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8014,
+              "key": "CoupDeGrace",
+              "icon": "runes/8014.png",
+              "name": "最期の慈悲",
+              "shortDesc": "体力の低下した敵チャンピオンに対して与えるダメージが増加する。",
+              "longDesc": "体力が40%未満の敵チャンピオンに8%の追加ダメージを与える。"
+            },
+            {
+              "id": 8017,
+              "key": "CutDown",
+              "icon": "runes/8017.png",
+              "name": "切り崩し",
+              "shortDesc": "体力の多い敵チャンピオンに対して与えるダメージが増加する。",
+              "longDesc": "体力が60%以上の敵チャンピオンに8%の追加ダメージを与える。"
+            },
+            {
+              "id": 8299,
+              "key": "LastStand",
+              "icon": "runes/8299.png",
+              "name": "背水の陣",
+              "shortDesc": "自身の体力が低下していると敵チャンピオンに与えるダメージが増加する。",
+              "longDesc": "自身の体力が60%以下の場合、敵チャンピオンに与えるダメージが5% - 11%増加する。体力が30%以下で最大ダメージ増加率を獲得する。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8400,
+      "key": "Resolve",
+      "icon": "runes/8400.png",
+      "name": "不滅",
+      "slots": [
+        {
+          "runes": [
+            {
+              "id": 8437,
+              "key": "GraspOfTheUndying",
+              "icon": "runes/8437.png",
+              "name": "不死者の握撃",
+              "shortDesc": "4秒毎に、敵チャンピオンに対する通常攻撃が追加魔法ダメージを与え、体力を回復。さらに最大体力を恒久的に増加させる。",
+              "longDesc": "戦闘中4秒毎に、敵チャンピオンに対する通常攻撃が以下の追加効果を獲得:<li>自身の最大体力の3.5%に相当する追加魔法ダメージを与える<li>最大体力の1.3%分、体力を回復する<li>最大体力を恒久的に5増加させる<br><rules><i>遠隔攻撃チャンピオン: </i>ダメージ、体力回復量、恒久的に増加する最大体力量の効率が40%になる。</rules>"
+            },
+            {
+              "id": 8439,
+              "key": "Aftershock",
+              "icon": "runes/8439.png",
+              "name": "アフターショック",
+              "shortDesc": "敵チャンピオンに<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Immobilize'>移動不能効果</lol-uikit-tooltipped-keyword>を与えると防御力を獲得し、その後爆発して自身の周囲の敵に大きな魔法ダメージを与える。",
+              "longDesc": "敵チャンピオンに移動不能効果を与えると2.5秒間、物理防御と魔法防御が45(+増加防御力の75%)上昇し、その後爆発して周囲の敵ユニットに魔法ダメージを与える。<br><br>ダメージ: 25 - 120(+自身の増加体力の8%)<br>クールダウン: 20秒<br><br>「アフターショック」による増加防御力上限: 80 - 150(レベルに応じて)<br>"
+            },
+            {
+              "id": 8465,
+              "key": "Guardian",
+              "icon": "runes/8465.png",
+              "name": "ガーディアン",
+              "shortDesc": "自身がスキルを使用した味方と自身の近くにいる味方をガードする。ガードしている味方か自身のどちらかがレベルに応じた一定以上のダメージを受けると、両者がシールドを獲得する。",
+              "longDesc": "350ユニット以内にいる味方ユニットと自身のスキルの対象となった味方ユニットを2.5秒間ガードする。ガード中に自身とその味方のどちらかが一定量以上のダメージを受けた場合、両方が1.5秒間シールドを獲得する。<br><br>クールダウン: <scaleLevel>75 - 40</scaleLevel>秒<br>シールド: <scaleLevel>40 - 150</scaleLevel> + 自身の魔力の<scaleAP>20%</scaleAP> + 自身の増加体力の<scalehealth>6%</scalehealth><br>発動しきい値: <scaleLevel>50 - 165</scaleLevel>軽減後ダメージ"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8446,
+              "key": "Demolish",
+              "icon": "runes/8446.png",
+              "name": "打ちこわし",
+              "shortDesc": "タワーへの3回目の通常攻撃が追加ダメージを与える。",
+              "longDesc": "タワーへの3回目の通常攻撃が[近接85 (+最大体力の28%) || 遠隔50 (+最大体力の20%)]の追加物理ダメージを与える。<br><br>クールダウン: 30秒"
+            },
+            {
+              "id": 8463,
+              "key": "FontOfLife",
+              "icon": "runes/8463.png",
+              "name": "生命の泉",
+              "shortDesc": "敵チャンピオンに<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_ImpairMov'>行動妨害効果</lol-uikit-tooltipped-keyword>を付与すると、近くにいる味方チャンピオンの体力が回復する。 ",
+              "longDesc": "敵チャンピオンに行動妨害効果を付与すると、自身と近くにいる体力が最も低い味方チャンピオンの<healing>体力を@BaseHeal@</healing>回復する。<br><br>遠隔攻撃チャンピオンは効果が70%になる。<br><br>クールダウン: 20秒"
+            },
+            {
+              "id": 8401,
+              "key": "ShieldBash",
+              "icon": "runes/8401.png",
+              "name": "シールドバッシュ",
+              "shortDesc": "シールドを獲得するたびに、チャンピオンに対する次の通常攻撃が追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>アダプティブ</font></lol-uikit-tooltipped-keyword>ダメージを与える。",
+              "longDesc": "新たにシールドを獲得するたびに、チャンピオンに対する次の通常攻撃が<scaleLevel>5 - 30</scaleLevel><scaleHealth>(+増加体力の2.5%)</scaleHealth> <scaleMana>(+新たなシールド量の15.0%)</scaleMana>の追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>アダプティブ</font></lol-uikit-tooltipped-keyword>ダメージを与える。<br><br>この効果はそのシールドが消滅してから最大2秒間持続する。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8429,
+              "key": "Conditioning",
+              "icon": "runes/8429.png",
+              "name": "心身調整",
+              "shortDesc": "試合開始12分後に物理防御 +8と魔法防御 +8を獲得。物理防御と魔法防御が3%増加する。",
+              "longDesc": "試合開始12分後に物理防御 +8と魔法防御 +8を獲得。物理防御と魔法防御が3%増加する。"
+            },
+            {
+              "id": 8444,
+              "key": "SecondWind",
+              "icon": "runes/8444.png",
+              "name": "息継ぎ",
+              "shortDesc": "敵チャンピオンからダメージを受けると、減少体力の一部を時間をかけて回復する。",
+              "longDesc": "敵チャンピオンからダメージを受けると、減少体力の4%を10秒かけて回復する。"
+            },
+            {
+              "id": 8473,
+              "key": "BonePlating",
+              "icon": "runes/8473.png",
+              "name": "ボーンアーマー",
+              "shortDesc": "敵チャンピオンからダメージを受けると、そのチャンピオンから次に受ける3回のスキルまたは通常攻撃のダメージが30-60(チャンピオンレベルに応じて)軽減される。<br><br>効果時間: 1.5秒<br>クールダウン: 55秒",
+              "longDesc": "敵チャンピオンからダメージを受けると、そのチャンピオンから次に受ける3回のスキルまたは通常攻撃のダメージが30-60(チャンピオンレベルに応じて)軽減される。<br><br>効果時間: 1.5秒<br>クールダウン: 55秒"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8451,
+              "key": "Overgrowth",
+              "icon": "runes/8451.png",
+              "name": "超成長",
+              "shortDesc": "自身の周囲で敵ミニオンまたはモンスターが倒されると恒久的に最大体力が増加する。",
+              "longDesc": "自身の周囲でモンスターまたは敵ミニオンが8体倒されるごとに生命のエッセンスを吸収し、最大体力が3恒久的に増加する。<br><br>モンスターまたは敵ミニオンを120体吸収すると、最大体力が追加で3.5%増加する。"
+            },
+            {
+              "id": 8453,
+              "key": "Revitalize",
+              "icon": "runes/8453.png",
+              "name": "生気付与",
+              "shortDesc": "体力回復効果とシールド効果が5%上昇する。<br><br>自身が使用する、または付与される体力回復効果とシールド効果は、対象の体力が40%未満の場合、10%上昇する。",
+              "longDesc": "体力回復効果とシールド効果が5%上昇する。<br><br>自身が使用する、または付与される体力回復効果とシールド効果は、対象の体力が40%未満の場合、10%上昇する。"
+            },
+            {
+              "id": 8242,
+              "key": "Unflinching",
+              "icon": "runes/8242.png",
+              "name": "気迫",
+              "shortDesc": "行動妨害効果を受けると物理防御と魔法防御が増加する。",
+              "longDesc": "行動妨害効果を受けている間とその後の2秒間、物理防御と魔法防御が10増加する。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8200,
+      "key": "Sorcery",
+      "icon": "runes/8200.png",
+      "name": "魔道",
+      "slots": [
+        {
+          "runes": [
+            {
+              "id": 8214,
+              "key": "SummonAery",
+              "icon": "runes/8214.png",
+              "name": "エアリー召喚",
+              "shortDesc": "通常攻撃かスキルでエアリーを送り出し、味方にはシールド、敵にはダメージを与える。",
+              "longDesc": "通常攻撃かスキルで敵チャンピオンを攻撃すると対象に向けて「エアリー」を送り出し、レベルに応じて10 - 50(+<scaleAP>魔力x0.05</scaleAP>)(+<scaleAD>増加攻撃力x0.1</scaleAD>)のダメージを与える。<br><br>味方をスキルで強化するかスキルで守ると対象に向けて「エアリー」を送り出し、レベルに応じて20 - 100(+<scaleAP>魔力x0.05</scaleAP>)(+<scaleAD>増加攻撃力x0.1</scaleAD>)のシールドを付与する。<br><br>「エアリー」は一旦自身のもとに呼び戻さなければ、再び送り出すことはできない。"
+            },
+            {
+              "id": 8229,
+              "key": "ArcaneComet",
+              "icon": "runes/8229.png",
+              "name": "秘儀の彗星",
+              "shortDesc": "スキルでダメージを与えた敵チャンピオンの位置に彗星を飛ばす。",
+              "longDesc": "スキルでチャンピオンにダメージを与えると、その位置に向かって彗星を飛ばし、距離に応じて増加するダメージを与える。<br><br><lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'><font color='#48C4B7'>アダプティブダメージ</font></lol-uikit-tooltipped-keyword>: 15 - 100(レベルに応じて)(<scaleAP>+魔力0.05</scaleAP>および<scaleAD>+増加攻撃力0.1</scaleAD>)<br>クールダウン: 20 - 8秒<br><rules><br>ダメージ増幅率は距離750で最大100%まで増加する。<br></rules>"
+            },
+            {
+              "id": 8230,
+              "key": "PhaseRush",
+              "icon": "runes/8230.png",
+              "name": "嵐乗りの勇躍",
+              "shortDesc": "対象チャンピオンの最大体力の25%にあたるダメージを与えると、瞬間的に<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_MS'>移動速度</lol-uikit-tooltipped-keyword>が増加し、スロウ耐性を獲得する。 ",
+              "longDesc": "3秒以内に対象チャンピオンの最大体力の25%にあたるダメージを与えると、4秒間<speed>移動速度が48%</speed>、<status>スロウ耐性が50%</status>増加する。遠隔チャンピオンの場合、移動速度の増加量は75%になる。<br>クールダウン: 20秒 - 10秒"
+            },
+            {
+              "id": 8992,
+              "key": "DeathfireTouch",
+              "icon": "runes/8992.png",
+              "name": "死神の残り火",
+              "shortDesc": "スキルでチャンピオンにダメージを与えると、継続燃焼ダメージを与える。",
+              "longDesc": "スキルでチャンピオンにダメージを与えると、対象を燃焼させて毎秒3 - 12(チャンピオンレベルに応じて) (+<scaleAP>2.5魔力の%</scaleAP>) (+<scaleAD>7増加攻撃力の%</scaleAD>)の魔法ダメージを与える。燃焼効果が3秒後も続いている場合、ダメージが75%増加する。<br><rules><br>効果時間:<br>単体対象: 4秒<br>効果範囲: 2秒<br>継続ダメージ: 1秒<br></rules>"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8224,
+              "key": "NullifyingOrb",
+              "icon": "runes/8224.png",
+              "name": "アクシオム アルカニスト",
+              "shortDesc": "アルティメットスキルのダメージ、体力回復効果、シールド量が増加する。敵チャンピオンからキルまたはアシストを獲得すると、アルティメットスキルの現在のクールダウンが短縮される。",
+              "longDesc": "アルティメットスキルが与えるダメージ、体力回復効果、シールドが12%増加中。 <br>(範囲ダメージは増加率が8%に低下する)<br><br>敵チャンピオンからキルまたはアシストを奪うと、アルティメットスキルの現在のクールダウンが7%短縮される。"
+            },
+            {
+              "id": 8226,
+              "key": "ManaflowBand",
+              "icon": "runes/8226.png",
+              "name": "マナフローバンド",
+              "shortDesc": "敵チャンピオンにスキルを当てるたびに最大マナが25ずつ恒久的に増加する(増加マナ上限は250)。<br><br>増加マナが250になると5秒ごとに減少マナの1%を回復する。",
+              "longDesc": "敵チャンピオンにスキルを当てるたびに最大マナが25ずつ恒久的に増加する(増加マナ上限は250)。<br><br>増加マナが250になると5秒ごとに減少マナの1%を回復する。<br><br>クールダウン: 15秒"
+            },
+            {
+              "id": 8275,
+              "key": "NimbusCloak",
+              "icon": "runes/8275.png",
+              "name": "ニンバスクローク",
+              "shortDesc": "サモナースペル使用後、少しの間だけ<speed>移動速度</speed>が増加し、ユニットをすり抜けられるようになる。",
+              "longDesc": "サモナースペル使用後に2秒間、<speed>移動速度</speed>が増加する。この間はユニットをすり抜けられる。<br><br>増加: サモナースペルのクールダウンに応じて<speed>移動速度15% - 45%</speed>(クールダウンの長いサモナースペルほど<speed>移動速度</speed>が大きく増加)。 "
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8210,
+              "key": "Transcendence",
+              "icon": "runes/8210.png",
+              "name": "至高",
+              "shortDesc": "以下のレベルになるとボーナスを獲得:<br>レベル5: <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>スキルヘイスト</lol-uikit-tooltipped-keyword> +5<br>レベル8: <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>スキルヘイスト</lol-uikit-tooltipped-keyword> +5<br>レベル11: チャンピオンからキルまたはアシストを獲得すると、通常スキルの残りクールダウンが20%短縮される。",
+              "longDesc": "以下のレベルになるとボーナスを獲得:<br>レベル5: <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>スキルヘイスト</lol-uikit-tooltipped-keyword> +5<br>レベル8: <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>スキルヘイスト</lol-uikit-tooltipped-keyword> +5<br>レベル11: チャンピオンからキルまたはアシストを獲得すると、通常スキルの残りクールダウンが20%短縮される。"
+            },
+            {
+              "id": 8234,
+              "key": "Celerity",
+              "icon": "runes/8234.png",
+              "name": "追い風",
+              "shortDesc": "自身のあらゆる<speed>移動速度</speed>ボーナスの効果が7%上昇し、<speed>移動速度が1%</speed>増加する。",
+              "longDesc": "自身のあらゆる移動ボーナスの効果が7%上昇し、<speed>移動速度が1%</speed>増加する。"
+            },
+            {
+              "id": 8233,
+              "key": "AbsoluteFocus",
+              "icon": "runes/8233.png",
+              "name": "英気集中",
+              "shortDesc": "体力が70%以上あると追加<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_AdaptiveDmg'>アダプティブダメージ</lol-uikit-tooltipped-keyword>を獲得する。",
+              "longDesc": "体力が70%以上ある場合、最大で攻撃力18、または魔力30の<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>アダプティブ</font></lol-uikit-tooltipped-keyword>ボーナス(レベルに応じて)を獲得する。<br><br>レベル1で攻撃力1.8または魔力3を獲得する。"
+            }
+          ]
+        },
+        {
+          "runes": [
+            {
+              "id": 8237,
+              "key": "Scorch",
+              "icon": "runes/8237.png",
+              "name": "追火",
+              "shortDesc": "10秒毎に攻撃スキルが命中した対象を燃やす。",
+              "longDesc": "攻撃スキルが命中した敵チャンピオンを1秒間燃やし、レベルに応じて20 - 40の追加魔法ダメージを与える。<br><br>クールダウン: 10秒"
+            },
+            {
+              "id": 8232,
+              "key": "Waterwalking",
+              "icon": "runes/8232.png",
+              "name": "水走り",
+              "shortDesc": "川の中にいると<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_MS'>移動速度</lol-uikit-tooltipped-keyword>が増加し、魔力または攻撃力(<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'>アダプティブ</lol-uikit-tooltipped-keyword>)を獲得する。",
+              "longDesc": "川の中にいる間、<speed>移動速度が10</speed>増加し、さらにレベルに応じて<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>13 - 30のアダプティブフォース</font></lol-uikit-tooltipped-keyword>を獲得する。<br><br>速きこと流れる川の如く、敏捷なること驚いたリフトスカトルの如く。"
+            },
+            {
+              "id": 8236,
+              "key": "GatheringStorm",
+              "icon": "runes/8236.png",
+              "name": "強まる嵐",
+              "shortDesc": "試合時間の経過とともに攻撃力または魔力(<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'>アダプティブ</lol-uikit-tooltipped-keyword>)が増加する。",
+              "longDesc": "10分ごとに、魔力か攻撃力が増加する(<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>アダプティブ</font></lol-uikit-tooltipped-keyword>)。<br><br><i></i>10分: 魔力 +8、または攻撃力 +5 <br><i></i>20分: 魔力 +24、または攻撃力 +14<br><i></i>30分: 魔力 +48、または攻撃力 +29<br><i></i>40分: 魔力 +80、または攻撃力 +48<br><i></i>50分: 魔力 +120、または攻撃力 +72<br><i></i>60分: 魔力 +168、または攻撃力 +101<br>、続く…"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

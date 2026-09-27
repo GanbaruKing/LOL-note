@@ -1,3 +1,4 @@
+import LoadoutEditor from './LoadoutEditor'
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
 import MyPicks from './MyPicks'
@@ -260,7 +261,10 @@ export default function App() {
     championDetailOpen &&
     championData?.championId === championId &&
     counterBody !== championData.counterStrategy
-  const dirty = noteDirty || counterDirty || bookDirty
+  const [loadoutDirty, setLoadoutDirty] = useState(false)
+  const [loadoutSaving, setLoadoutSaving] = useState(false)
+  const [loadoutEpoch, setLoadoutEpoch] = useState(0)
+  const dirty = noteDirty || counterDirty || bookDirty || loadoutDirty
   const selectedChampion = byId.get(championId)
   const activeNotes = page === 'champions' ? championData?.notes : matchup?.notes
   const activeLoading = page === 'champions' ? championLoading : loading
@@ -365,14 +369,14 @@ export default function App() {
   }, [championId, page, reload, championDetailOpen])
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => {
-      if (dirty || busy || bookSaving) {
+      if (dirty || busy || bookSaving || loadoutSaving) {
         event.preventDefault()
         event.returnValue = ''
       }
     }
     window.addEventListener('beforeunload', beforeUnload)
     return () => window.removeEventListener('beforeunload', beforeUnload)
-  }, [dirty, busy, bookSaving])
+  }, [dirty, busy, bookSaving, loadoutSaving])
 
   function resetEditor() {
     setEditing(null)
@@ -381,7 +385,7 @@ export default function App() {
     setDeleting(null)
   }
   function navigate(action: () => void) {
-    if (busy || bookSaving) return
+    if (busy || bookSaving || loadoutSaving) return
     if (dirty) setPendingNavigation(() => action)
     else {
       resetEditor()
@@ -792,6 +796,7 @@ export default function App() {
                   setKey(next)
                   setPage('notebook')
                   setBody(draft)
+                  setCategory('振り返り')
                   setTimeout(() => {
                     editor.current?.focus()
                     editor.current?.setSelectionRange(draft.length, draft.length)
@@ -825,7 +830,7 @@ export default function App() {
               <h3>バックアップ・復元</h3>
               <p>
                 メモ・Notebookの章と記事・対策・評価・Favorite Champions・Comfort
-                PicksをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
+                Picks・ビルド・ルーンをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
               </p>
               {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
                 <button
@@ -1111,6 +1116,19 @@ export default function App() {
               </section>
               <div className="notebook-layout">
                 <aside className="matchup-picks">
+                  <CuratedCounters
+                    recommended
+                    championId={key.enemyChampionId}
+                    role={key.role}
+                    busy={busy}
+                    onSelect={(counterId, role) =>
+                      choose({
+                        myChampionId: counterId,
+                        enemyChampionId: key.enemyChampionId,
+                        role,
+                      })
+                    }
+                  />
                   <MyPicks
                     key={`${key.enemyChampionId}-${key.role}`}
                     enemyChampionId={key.enemyChampionId}
@@ -1200,16 +1218,14 @@ export default function App() {
                       </div>
                     </div>
                   )}
+                  <LoadoutEditor
+                    key={`${key.myChampionId}-${key.enemyChampionId}-${key.role}-${loadoutEpoch}`}
+                    matchupKey={key}
+                    onDirty={setLoadoutDirty}
+                    onSaving={setLoadoutSaving}
+                  />
                   {enemy && (
                     <>
-                      <CuratedCounters
-                        championId={enemy.id}
-                        role={key.role}
-                        busy={busy}
-                        onSelect={(counterId, role) =>
-                          choose({ myChampionId: counterId, enemyChampionId: enemy.id, role })
-                        }
-                      />
                       <EnemyCounter key={enemy.id} enemy={enemy} />
                     </>
                   )}
@@ -1239,10 +1255,12 @@ export default function App() {
               </button>
               <button
                 className="danger"
-                disabled={bookSaving}
+                disabled={bookSaving || loadoutSaving}
                 onClick={() => {
                   const action = pendingNavigation
                   setBookDirty(false)
+                  setLoadoutDirty(false)
+                  setLoadoutEpoch((v) => v + 1)
                   setPendingNavigation(null)
                   resetEditor()
                   setCounterBody(championData?.counterStrategy ?? '')

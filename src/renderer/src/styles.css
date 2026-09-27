@@ -1898,3 +1898,171 @@ h1 {
     transition: none !important;
   }
 }
+
+/* Matchup preparation panels */
+.collapsible > summary,
+.rune-picker > summary {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 8px 0;
+}
+.collapsible > summary .count {
+  margin-left: 8px;
+}
+.matchup-picks .curated-counter .section-title {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.matchup-picks .curated-counter .counter-use {
+  width: 100%;
+  white-space: normal;
+}
+.matchup-picks .curated-counters {
+  min-width: 0;
+}
+.matchup-picks .curated-counters p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.loadout-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.loadout-editor label {
+  display: block;
+  margin-top: 12px;
+}
+.loadout-editor textarea {
+  width: 100%;
+  min-height: 72px;
+  font-size: 16px;
+  margin-top: 6px;
+}
+.loadout-editor img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.build-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.build-path li {
+  display: grid;
+  justify-items: center;
+  width: 108px;
+  gap: 5px;
+  text-align: center;
+  font-size: 12px;
+}
+.build-path button {
+  padding: 4px 9px;
+}
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 6px;
+  max-height: 300px;
+  overflow: auto;
+  margin-top: 10px;
+}
+.item-grid button,
+.rune-row button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 8px;
+}
+.item-picker {
+  margin: 12px 0;
+}
+.rune-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.rune-row button {
+  flex: 1;
+  min-width: 80px;
+  max-width: 150px;
+}
+.rune-row button[aria-pressed='true'] {
+  border-color: #b48aff;
+  background: #443263;
+  box-shadow: 0 0 0 1px #b48aff;
+}
+.selected-runes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+.selected-runes > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 85px;
+  text-align: center;
+}
+.shard-symbol {
+  font-size: 24px;
+  color: #d8bcff;
+}
+.loadout-editor .editor-toolbar {
+  margin-top: 16px;
+}
+
+.loadout-editor {
+  padding: 24px;
+  margin-top: 20px;
+}
+.loadout-editor > .section-title {
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.loadout-editor h2 {
+  font-size: 18px;
+}
+.loadout-editor .collapsible + .collapsible {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #303642;
+}
+.loadout-editor .rune-picker {
+  margin-top: 12px;
+}
+.loadout-editor .item-grid button,
+.loadout-editor .rune-row button {
+  border: 1px solid #303642;
+  background: #151922;
+}
+.loadout-editor .rune-row button[aria-pressed='true'] {
+  border-color: #b48aff;
+  background: #443263;
+}
+.loadout-editor .build-path button,
+.loadout-editor button[aria-expanded] {
+  border: 1px solid #49415e;
+  padding: 7px 10px;
+}
+.matchup-picks .curated-counter .section-title {
+  flex-direction: row;
+  align-items: center;
+}
+.matchup-picks .curated-counter .section-title strong {
+  font-size: 13px;
+}
+.collapsible > summary .count {
+  display: inline;
+  white-space: nowrap;
+}

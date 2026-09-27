@@ -1,3 +1,4 @@
+import { parseLoadouts } from '../shared/loadout'
 import { CATEGORIES, DIFFICULTIES, ROLES } from '../shared/contracts'
 import { object, ValidationError } from '../shared/validation'
 import { emptyKnowledgeBook, parseKnowledgeBook } from '../shared/knowledge'
@@ -23,7 +24,8 @@ export const backupTables = {
 export type BackupRow = Record<string, string | number | null>
 export interface NotebookBackup {
   format: 'lol-note'
-  version: 2
+  version: 3
+  loadouts: ReturnType<typeof parseLoadouts>
   knowledgeBook: KnowledgeBook
   createdAt: string
   tables: Record<keyof typeof backupTables, BackupRow[]>
@@ -35,7 +37,7 @@ export function parseBackup(input: unknown): NotebookBackup {
   const root = object(input)
   if (
     root.format !== 'lol-note' ||
-    (root.version !== 1 && root.version !== 2) ||
+    (root.version !== 1 && root.version !== 2 && root.version !== 3) ||
     typeof root.createdAt !== 'string'
   )
     fail()
@@ -83,7 +85,8 @@ export function parseBackup(input: unknown): NotebookBackup {
   }
   return {
     format: 'lol-note',
-    version: 2,
+    version: 3,
+    loadouts: root.version === 3 ? parseLoadouts(root.loadouts) : [],
     knowledgeBook,
     createdAt: root.createdAt as string,
     tables: result,

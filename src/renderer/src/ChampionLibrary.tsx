@@ -1,3 +1,4 @@
+import Collapsible from './Collapsible'
 import { normalizeChampionSearch } from './championSearch'
 import laneData from '../../../resources/champion-lanes.json'
 import { ROLES, type Champion, type PoolEntry, type Role } from '../../shared/contracts'
@@ -39,74 +40,83 @@ export default function ChampionLibrary({
   return (
     <div className="champion-library">
       <section className="pool-panel panel" aria-label="レーン別チャンピオンプール">
-        <div className="section-title">
-          <h2>My Champion Pool</h2>
-          <span className="muted">レーンごとに、使うチャンピオンを登録</span>
-        </div>
-        <div className="lane-tabs" role="group" aria-label="プールのレーン">
-          {ROLES.map((lane) => (
-            <button
-              key={lane}
-              aria-pressed={role === lane}
-              onClick={() => setRole(lane)}
-              disabled={busy}
-            >
-              {lane}
-              <span>{pool.filter((p) => p.role === lane).length}</span>
-            </button>
-          ))}
-        </div>
-        <div className="section-title">
-          <h3>{role}のプール</h3>
-          <small>下のカードから登録できます · 複数レーンへの登録も可能</small>
-        </div>
-        {!ready ? (
-          <p className="empty">プールを読み込めません。再読み込みしてください。</p>
-        ) : lanePool.length === 0 ? (
-          <p className="pool-empty">{role}のチャンピオンはまだ登録されていません。</p>
-        ) : (
-          <div className="pool-grid">
-            {lanePool.map((entry) => {
-              const c = champions.find((c) => c.id === entry.championId)
-              if (!c) return null
-              return (
-                <article className="pool-card" key={c.id}>
-                  <button className="pool-champion" onClick={() => onOpen(c.id)} disabled={busy}>
-                    <img className="portrait" src={`./champions/${c.slug}.png`} alt="" />
-                    <span>
-                      <strong>{c.name}</strong>
-                      <small>{c.nameJa}</small>
-                    </span>
-                  </button>
-                  <div className="pool-controls">
-                    <label>
-                      自信度
-                      <select
-                        aria-label={`${c.name}の${role}自信度`}
-                        value={entry.confidence}
-                        disabled={busy}
-                        onChange={(e) => onSave({ ...entry, confidence: Number(e.target.value) })}
-                      >
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <option key={n} value={n}>
-                            {'★'.repeat(n)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <button
-                      aria-label={`${c.name}を${role}から解除`}
-                      disabled={busy}
-                      onClick={() => onRemove(entry)}
-                    >
-                      解除
-                    </button>
-                  </div>
-                </article>
-              )
-            })}
+        <Collapsible
+          id="library-favorites"
+          title={
+            <>
+              {' '}
+              Favorite Champions <span className="count">{lanePool.length}</span>
+            </>
+          }
+        >
+          <div className="section-title">
+            <span className="muted">レーンごとに、使うチャンピオンを登録</span>
           </div>
-        )}
+          <div className="lane-tabs" role="group" aria-label="プールのレーン">
+            {ROLES.map((lane) => (
+              <button
+                key={lane}
+                aria-pressed={role === lane}
+                onClick={() => setRole(lane)}
+                disabled={busy}
+              >
+                {lane}
+                <span>{pool.filter((p) => p.role === lane).length}</span>
+              </button>
+            ))}
+          </div>
+          <div className="section-title">
+            <h3>{role}のプール</h3>
+            <small>下のカードから登録できます · 複数レーンへの登録も可能</small>
+          </div>
+          {!ready ? (
+            <p className="empty">プールを読み込めません。再読み込みしてください。</p>
+          ) : lanePool.length === 0 ? (
+            <p className="pool-empty">{role}のチャンピオンはまだ登録されていません。</p>
+          ) : (
+            <div className="pool-grid">
+              {lanePool.map((entry) => {
+                const c = champions.find((c) => c.id === entry.championId)
+                if (!c) return null
+                return (
+                  <article className="pool-card" key={c.id}>
+                    <button className="pool-champion" onClick={() => onOpen(c.id)} disabled={busy}>
+                      <img className="portrait" src={`./champions/${c.slug}.png`} alt="" />
+                      <span>
+                        <strong>{c.name}</strong>
+                        <small>{c.nameJa}</small>
+                      </span>
+                    </button>
+                    <div className="pool-controls">
+                      <label>
+                        自信度
+                        <select
+                          aria-label={`${c.name}の${role}自信度`}
+                          value={entry.confidence}
+                          disabled={busy}
+                          onChange={(e) => onSave({ ...entry, confidence: Number(e.target.value) })}
+                        >
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <option key={n} value={n}>
+                              {'★'.repeat(n)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        aria-label={`${c.name}を${role}から解除`}
+                        disabled={busy}
+                        onClick={() => onRemove(entry)}
+                      >
+                        解除
+                      </button>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          )}
+        </Collapsible>
       </section>
       <div className="library-toolbar">
         <div>

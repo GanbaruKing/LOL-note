@@ -41,7 +41,7 @@ test('curated picks work offline, filter by role and never seed or replace perso
       }
     })
     const source = data.entries.find((e) => e.championId === 122)!.sources[0].url
-    await panel.locator('summary').first().click()
+    await panel.locator('.curated-counter summary').first().click()
     await panel.getByRole('button', { name: 'OP.GG（現パッチ） ↗', exact: true }).first().click()
     await expect
       .poll(() =>

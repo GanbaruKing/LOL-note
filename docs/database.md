@@ -53,3 +53,9 @@ getChampionPageはcounterStrategyを含む。getChampionCounter / saveChampionCo
 ## バックアップ形式v1
 
 DBスキーマv5を維持する。設定・カタログ以外の6テーブルを論理JSONとして保存し、復元時は既存カタログへの外部キーと値を検証する。ID・日時・Pinを維持し、全置換を1トランザクションで行う。[バックアップ仕様](backup.md)。
+
+## Schema v6: 振り返りカテゴリー
+
+両メモテーブルをトランザクション内で再作成し、カテゴリーのCHECK制約へ「振り返り」を追加。ID・本文・カテゴリー・日時・Pinを保持する。既存Generalメモのカテゴリーは変更しない。
+
+ビルド・ルーンは `settings` の `loadout:<自分ID>:<敵ID>:<Role>` にJSONで保存。購入順は最大24個、各補足は最大10000文字。MainでカタログID・系統・スロット・シャードを検証する。個人Comfort Picksの取り込みや初期データへの追加はしない。

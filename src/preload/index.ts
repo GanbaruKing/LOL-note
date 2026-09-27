@@ -2,6 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { NotebookApi } from '../shared/contracts'
 
 const api: NotebookApi = {
+  getLoadout: (key) => ipcRenderer.invoke('notebook:getLoadout', key),
+  saveLoadout: (input) => ipcRenderer.invoke('notebook:saveLoadout', input),
   getKnowledgeBook: () => ipcRenderer.invoke('notebook:getKnowledgeBook'),
   saveKnowledgeBook: (book) => ipcRenderer.invoke('notebook:saveKnowledgeBook', book),
   openCounterSource: (url) => ipcRenderer.invoke('notebook:openCounterSource', url),

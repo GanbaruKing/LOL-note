@@ -100,7 +100,7 @@ function Review({
           if (!role || !selected || !own) return
           onOpen(
             { myChampionId: own.id, enemyChampionId: selected.id, role },
-            `【試合の振り返り】${date(game)} · ${outcome(game)} · K/D/A ${kda(game)}\n${own.name} vs ${selected.name} · ${role} · 試合ID ${game.gameId}\n\n`,
+            `日付：${new Date(game.createdAt).toLocaleDateString('ja-JP')}\n試合ID：${game.gameId}\n\n`,
           )
         }}
       >

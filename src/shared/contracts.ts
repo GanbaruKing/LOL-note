@@ -2,6 +2,7 @@ export const ROLES = ['TOP', 'JUNGLE', 'MID', 'BOTTOM', 'SUPPORT'] as const
 export type Role = (typeof ROLES)[number]
 export const CATEGORIES = [
   'General',
+  '振り返り',
   'Laning',
   'Trading',
   'All-in',
@@ -118,6 +119,11 @@ export interface HistoryMatch extends HistoryGame {
   }[]
 }
 export interface NotebookApi {
+  getLoadout(key: MatchupKey): Promise<Result<import('./loadout').Loadout>>
+  saveLoadout(input: {
+    key: MatchupKey
+    loadout: import('./loadout').Loadout
+  }): Promise<Result<import('./loadout').Loadout>>
   getKnowledgeBook(): Promise<Result<KnowledgeBook>>
   saveKnowledgeBook(book: KnowledgeBook): Promise<Result<KnowledgeBook>>
   openCounterSource(url: string): Promise<Result<void>>

@@ -1,3 +1,4 @@
+import { emptyLoadout, parseLoadout } from '../shared/loadout'
 import { DatabaseSync } from 'node:sqlite'
 import { emptyKnowledgeBook, parseKnowledgeBook } from '../shared/knowledge'
 import { backupTables, parseBackup, type NotebookBackup } from './backup'
@@ -32,7 +33,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 5) throw new Error('Unsupported database version')
+      if (version > 6) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -110,6 +111,24 @@ export class NotebookRepository {
             PRAGMA user_version=5;
           `)
         }
+        if (version < 6) {
+          for (const [table, foreign, target] of [
+            ['matchup_notes', 'matchup_id', 'matchups'],
+            ['champion_notes', 'champion_id', 'champions'],
+          ]) {
+            this.db.exec(`CREATE TABLE ${table}_new (
+              id INTEGER PRIMARY KEY, ${foreign} INTEGER NOT NULL REFERENCES ${target}(id) ON DELETE CASCADE,
+              category TEXT NOT NULL CHECK(category IN (${sqlList(CATEGORIES)})),
+              body TEXT NOT NULL CHECK(length(trim(body)) BETWEEN 1 AND 10000),
+              created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+              pinned INTEGER NOT NULL DEFAULT 0 CHECK(pinned IN (0,1)));
+              INSERT INTO ${table}_new SELECT id,${foreign},category,body,created_at,updated_at,pinned FROM ${table};
+              DROP TABLE ${table}; ALTER TABLE ${table}_new RENAME TO ${table};`)
+          }
+          this.db.exec(
+            'CREATE INDEX notes_matchup ON matchup_notes(matchup_id); CREATE INDEX champion_notes_champion ON champion_notes(champion_id); PRAGMA user_version=6;',
+          )
+        }
         const insert = this.db.prepare(
           'INSERT INTO champions (id, slug, name, name_ja) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name=excluded.name, name_ja=excluded.name_ja',
         )
@@ -122,6 +141,39 @@ export class NotebookRepository {
   }
   close() {
     this.db.close()
+  }
+  private loadoutKey(input: unknown) {
+    const key = this.key(input)
+    return `loadout:${key.myChampionId}:${key.enemyChampionId}:${key.role}`
+  }
+  getLoadout(input: unknown) {
+    const row = this.db
+      .prepare('SELECT value FROM settings WHERE key=?')
+      .get(this.loadoutKey(input))
+    return row ? parseLoadout(JSON.parse(row.value as string)) : emptyLoadout()
+  }
+  saveLoadout(input: unknown) {
+    const v = object(input),
+      key = this.loadoutKey(v.key),
+      loadout = parseLoadout(v.loadout)
+    this.db
+      .prepare(
+        'INSERT INTO settings(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value',
+      )
+      .run(key, JSON.stringify(loadout))
+    return loadout
+  }
+  private exportLoadouts() {
+    return this.db
+      .prepare("SELECT key,value FROM settings WHERE key LIKE 'loadout:%' ORDER BY key")
+      .all()
+      .map((row) => {
+        const [, my, enemy, role] = (row.key as string).split(':')
+        return {
+          key: parseKey({ myChampionId: Number(my), enemyChampionId: Number(enemy), role }),
+          loadout: parseLoadout(JSON.parse(row.value as string)),
+        }
+      })
   }
   getKnowledgeBook() {
     const row = this.db.prepare("SELECT value FROM settings WHERE key='knowledge-book'").get()
@@ -139,7 +191,8 @@ export class NotebookRepository {
   exportBackup(): NotebookBackup {
     return this.transaction(() => ({
       format: 'lol-note',
-      version: 2,
+      version: 3,
+      loadouts: this.exportLoadouts(),
       knowledgeBook: this.getKnowledgeBook(),
       createdAt: new Date().toISOString(),
       tables: Object.fromEntries(
@@ -155,6 +208,8 @@ export class NotebookRepository {
     try {
       this.transaction(() => {
         this.saveKnowledgeBook(backup.knowledgeBook)
+        this.db.exec("DELETE FROM settings WHERE key LIKE 'loadout:%'")
+        for (const entry of backup.loadouts) this.saveLoadout(entry)
         for (const table of Object.keys(backupTables).reverse())
           this.db.exec(`DELETE FROM ${table}`)
         for (const [table, columns] of Object.entries(backupTables)) {

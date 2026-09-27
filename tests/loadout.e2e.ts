@@ -1,0 +1,92 @@
+import { test, expect, _electron as electron } from '@playwright/test'
+import { mkdirSync, mkdtempSync } from 'node:fs'
+import { DatabaseSync } from 'node:sqlite'
+import { resolve, join } from 'node:path'
+import data from '../resources/loadout.json'
+test('offline build and rune editing, navigation protection and collapsible picks', async () => {
+  mkdirSync('.test-data', { recursive: true })
+  const folder = mkdtempSync(resolve('.test-data', 'loadout-'))
+  const env: Record<string, string> = Object.fromEntries(
+    Object.entries({ ...process.env, NOTEBOOK_TEST_DATA_DIR: folder }).filter(
+      (x): x is [string, string] => x[1] !== undefined,
+    ),
+  )
+  delete env.ELECTRON_RUN_AS_NODE
+  let app = await electron.launch({ args: [resolve('.')], env })
+  try {
+    let page = await app.firstWindow()
+    await page.context().setOffline(true)
+    const panel = page.getByRole('region', { name: 'ビルド・ルーン', exact: true })
+    await panel.getByRole('button', { name: 'アイテムを選ぶ', exact: true }).click()
+    await panel.getByRole('button', { name: data.items[0].name, exact: true }).click()
+    await panel.getByLabel('ビルドの補足').fill('先に素材を購入')
+    await page
+      .getByRole('button', { name: /Champions/, exact: false })
+      .first()
+      .click()
+    await expect(page.getByRole('alertdialog')).toBeVisible()
+    await page.getByRole('button', { name: '編集を続ける' }).click()
+    await panel.locator('.rune-picker > summary').click()
+    await panel.getByRole('button', { name: `メイン：${data.trees[0].name}`, exact: true }).click()
+    await panel
+      .getByRole('button', { name: data.trees[0].slots[0].runes[0].name, exact: true })
+      .click()
+    await panel.getByRole('button', { name: `サブ：${data.trees[1].name}`, exact: true }).click()
+    await panel
+      .getByRole('button', { name: data.trees[1].slots[1].runes[0].name, exact: true })
+      .click()
+    const lock = new DatabaseSync(join(folder, 'notebook.sqlite'))
+    lock.exec('BEGIN IMMEDIATE')
+    try {
+      await panel.getByRole('button', { name: 'ビルド・ルーンを保存' }).click()
+      await expect(panel.getByRole('alert')).toBeVisible({ timeout: 10000 })
+      await expect(panel.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
+    } finally {
+      lock.exec('ROLLBACK')
+      lock.close()
+    }
+    await panel.getByRole('button', { name: 'ビルド・ルーンを保存' }).click()
+    await expect(panel.getByRole('status')).toHaveText('保存済み')
+    await panel.locator('.rune-picker > summary').click()
+    const recommended = page.locator('.matchup-picks .curated-counters')
+    await expect(recommended).toBeVisible()
+    await recommended.locator('.collapsible > summary').click()
+    await expect(recommended.locator('.curated-counter').first()).not.toBeVisible()
+    await page.getByRole('button', { name: 'Champions', exact: false }).first().click()
+    const favorites = page.locator('.pool-panel .collapsible')
+    await favorites.locator(':scope > summary').click()
+    await expect(favorites).not.toHaveAttribute('open', '')
+    await page.getByRole('button', { name: 'Match up', exact: false }).first().click()
+    await page.getByRole('button', { name: 'Champions', exact: false }).first().click()
+    await expect(favorites).not.toHaveAttribute('open', '')
+    await app.close()
+    app = await electron.launch({ args: [resolve('.')], env })
+    page = await app.firstWindow()
+    await expect(page.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
+    await expect(page.locator('.selected-runes img')).toHaveCount(4)
+    await page.getByLabel('ビルドの補足').fill('破棄する変更')
+    await page.getByLabel('ROLE', { exact: true }).selectOption('MID')
+    await page.getByRole('button', { name: '変更を破棄して移動' }).click()
+    await expect(page.getByLabel('ビルドの補足')).toHaveValue('')
+    await page.getByLabel('ROLE', { exact: true }).selectOption('TOP')
+    await expect(page.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
+    await page.setViewportSize({ width: 1000, height: 720 })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await page.screenshot({ path: 'test-results/loadout.png', fullPage: true })
+    await page.locator('.rune-picker > summary').click()
+    await expect(page.locator('.loadout-editor img')).not.toHaveCount(0)
+    expect(
+      await page
+        .locator('.loadout-editor img')
+        .evaluateAll((images) =>
+          images.every(
+            (img) =>
+              (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0,
+          ),
+        ),
+    ).toBe(true)
+    await page.screenshot({ path: 'test-results/rune-picker.png', fullPage: true })
+  } finally {
+    await app.close()
+  }
+})

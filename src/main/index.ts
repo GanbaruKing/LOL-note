@@ -48,6 +48,8 @@ function registerApi(databasePath: string) {
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getLoadout: (input) => repository!.getLoadout(input),
+    saveLoadout: (input) => repository!.saveLoadout(input),
     getKnowledgeBook: () => repository!.getKnowledgeBook(),
     saveKnowledgeBook: (input) => repository!.saveKnowledgeBook(input),
     openCounterSource: async (input) => {
@@ -89,9 +91,10 @@ function registerApi(databasePath: string) {
       const confirmation = await dialog.showMessageBox(mainWindow!, {
         type: 'warning',
         title: 'バックアップから復元',
-        message: '保存済みのメモ・ノートブック・対策・評価・登録ピックを置き換えます。',
+        message:
+          '保存済みのメモ・ノートブック・対策・評価・登録ピック・ビルド・ルーンを置き換えます。',
         detail:
-          '現在のデータは復元前に自動バックアップします。旧形式のバックアップにはノートブックがないため、復元するとノートブックは空になります。Leagueのフォルダー設定は変更しません。',
+          '現在のデータは復元前に自動バックアップします。旧形式のバックアップにはノートブックがないため、復元するとノートブックは空になります。ビルド・ルーンのない旧形式を復元すると、ビルド・ルーンは空になります。Leagueのフォルダー設定は変更しません。',
         buttons: ['キャンセル', '復元する'],
         defaultId: 0,
         cancelId: 0,

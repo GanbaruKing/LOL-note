@@ -29,7 +29,7 @@ test('backup round trip preserves all notebook data and failed restores roll bac
     assert.equal(repo.getLeagueFolder(), 'local-only')
     for (const breakBackup of [
       (v: typeof backup) => {
-        v.version = 99 as 2
+        v.version = 99 as 3
       },
       (v: typeof backup) => {
         v.tables.champion_notes[0].body = ''
