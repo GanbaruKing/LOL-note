@@ -188,6 +188,9 @@ async function createWindow() {
     minWidth: 1000,
     minHeight: 720,
     title: 'RiftNote',
+    icon: app.isPackaged
+      ? join(__dirname, '../renderer/icon.png')
+      : join(app.getAppPath(), 'public/icon.png'),
     backgroundColor: '#101217',
     autoHideMenuBar: true,
     show: false,

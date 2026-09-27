@@ -18,6 +18,32 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await page.context().setOffline(true)
     const panel = page.getByRole('region', { name: 'ビルド・ルーン', exact: true })
     await panel.getByRole('button', { name: 'アイテムを選ぶ', exact: true }).click()
+    const tabs = panel.getByRole('group', { name: 'アイテムの分類' })
+    const grid = panel.locator('.item-grid')
+    const trinity = data.items.find((x) => x.id === 3078)!,
+      deathcap = data.items.find((x) => x.id === 3089)!,
+      blade = data.items.find((x) => x.id === 3153)!
+    await tabs.getByRole('button', { name: 'ファイター', exact: true }).click()
+    await expect(grid.getByRole('button', { name: trinity.name, exact: true })).toBeVisible()
+    await expect(grid.getByRole('button', { name: deathcap.name, exact: true })).toHaveCount(0)
+    await expect(grid.getByRole('button', { name: blade.name, exact: true })).toBeVisible()
+    await tabs.getByRole('button', { name: 'マークスマン', exact: true }).click()
+    await expect(grid.getByRole('button', { name: blade.name, exact: true })).toBeVisible()
+    await tabs.getByRole('button', { name: 'メイジ', exact: true }).click()
+    await panel.getByLabel('アイテム検索', { exact: true }).fill(deathcap.name)
+    await expect(grid.getByRole('button')).toHaveCount(1)
+    await tabs.getByRole('button', { name: 'ファイター', exact: true }).click()
+    await expect(grid.getByRole('button')).toHaveCount(0)
+    await expect(
+      panel.getByText('該当するアイテムがありません。分類や検索を変更してください。'),
+    ).toBeVisible()
+    await panel.getByLabel('アイテム検索', { exact: true }).fill('')
+    await tabs.getByRole('button', { name: 'すべて', exact: true }).click()
+    await expect(grid.getByRole('button')).toHaveCount(data.items.length)
+    await expect(page.locator('.brand-symbol')).toHaveAttribute('src', './icon.png')
+    expect(
+      await page.locator('.brand-symbol').evaluate((img) => (img as HTMLImageElement).naturalWidth),
+    ).toBeGreaterThan(0)
     await panel.getByRole('button', { name: data.items[0].name, exact: true }).click()
     await panel.getByLabel('ビルドの補足').fill('先に素材を購入')
     await page
@@ -45,7 +71,9 @@ test('offline build and rune editing, navigation protection and collapsible pick
       lock.close()
     }
     await panel.getByRole('button', { name: 'ビルド・ルーンを保存' }).click()
-    await expect(panel.getByRole('status')).toHaveText('保存済み')
+    await expect(panel.getByRole('status', { name: 'ビルド・ルーン保存状態' })).toHaveText(
+      '保存済み',
+    )
     const fold = panel.locator(':scope > .collapsible')
     await fold.locator(':scope > summary').click()
     await expect(panel.getByLabel('ビルドの補足')).not.toBeVisible()

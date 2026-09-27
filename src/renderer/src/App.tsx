@@ -659,9 +659,7 @@ export default function App() {
     <div className={`app-shell${page === 'book' ? ' book-view' : ''}`}>
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-symbol">
-            N<span>·</span>
-          </div>
+          <img className="brand-symbol" src="./icon.png" alt="RiftNote" />
           <div>RiftNote</div>
         </div>
         <div className="workspace-label">YOUR WORKSPACE</div>

@@ -1,0 +1,933 @@
+{
+  "version": "16.18.1",
+  "source": "https://raw.communitydragon.org/16.18/game/items.cdtb.bin.json",
+  "categories": {
+    "1001": [
+      "support"
+    ],
+    "1004": [
+      "support"
+    ],
+    "1006": [
+      "tank"
+    ],
+    "1011": [
+      "tank",
+      "mage",
+      "support"
+    ],
+    "1018": [
+      "marksman"
+    ],
+    "1026": [
+      "mage"
+    ],
+    "1027": [
+      "mage",
+      "tank"
+    ],
+    "1028": [
+      "fighter",
+      "tank",
+      "assassin",
+      "support",
+      "marksman",
+      "mage"
+    ],
+    "1029": [
+      "tank",
+      "fighter",
+      "marksman",
+      "mage",
+      "support",
+      "assassin"
+    ],
+    "1031": [
+      "tank",
+      "fighter"
+    ],
+    "1033": [
+      "tank",
+      "mage",
+      "fighter",
+      "marksman",
+      "assassin",
+      "support"
+    ],
+    "1036": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "1037": [
+      "marksman",
+      "fighter",
+      "assassin"
+    ],
+    "1038": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "1042": [
+      "marksman",
+      "fighter",
+      "assassin"
+    ],
+    "1043": [
+      "marksman",
+      "fighter"
+    ],
+    "1052": [
+      "mage",
+      "support"
+    ],
+    "1053": [
+      "fighter",
+      "marksman"
+    ],
+    "1054": [
+      "tank",
+      "fighter",
+      "marksman",
+      "assassin",
+      "mage"
+    ],
+    "1055": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "1056": [
+      "mage"
+    ],
+    "1057": [
+      "tank",
+      "fighter",
+      "support"
+    ],
+    "1058": [
+      "mage"
+    ],
+    "1082": [
+      "mage"
+    ],
+    "1083": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "1086": [
+      "marksman"
+    ],
+    "1101": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1102": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1103": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1105": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1106": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1107": [
+      "tank",
+      "fighter",
+      "assassin",
+      "mage",
+      "marksman",
+      "support"
+    ],
+    "1120": [
+      "tank"
+    ],
+    "2003": [
+      "fighter"
+    ],
+    "2019": [
+      "assassin",
+      "fighter",
+      "marksman"
+    ],
+    "2020": [
+      "assassin"
+    ],
+    "2021": [
+      "assassin",
+      "fighter",
+      "tank"
+    ],
+    "2022": [
+      "assassin",
+      "fighter",
+      "marksman",
+      "tank",
+      "mage",
+      "support"
+    ],
+    "2031": [
+      "support"
+    ],
+    "2051": [
+      "tank",
+      "support",
+      "fighter"
+    ],
+    "2055": [
+      "fighter"
+    ],
+    "2065": [
+      "support"
+    ],
+    "2138": [
+      "fighter"
+    ],
+    "2139": [
+      "fighter"
+    ],
+    "2140": [
+      "fighter"
+    ],
+    "2141": [
+      "fighter"
+    ],
+    "2420": [
+      "mage"
+    ],
+    "2501": [
+      "fighter",
+      "tank"
+    ],
+    "2502": [
+      "tank"
+    ],
+    "2503": [
+      "mage"
+    ],
+    "2504": [
+      "tank"
+    ],
+    "2508": [
+      "mage"
+    ],
+    "2510": [
+      "mage"
+    ],
+    "2512": [
+      "marksman"
+    ],
+    "2517": [
+      "fighter"
+    ],
+    "2520": [
+      "assassin"
+    ],
+    "2522": [
+      "mage"
+    ],
+    "2523": [
+      "marksman"
+    ],
+    "2524": [
+      "tank",
+      "support"
+    ],
+    "2525": [
+      "tank"
+    ],
+    "2526": [
+      "support"
+    ],
+    "3003": [
+      "mage"
+    ],
+    "3004": [
+      "marksman",
+      "fighter",
+      "assassin"
+    ],
+    "3006": [
+      "fighter",
+      "marksman"
+    ],
+    "3008": [],
+    "3009": [
+      "support",
+      "marksman",
+      "fighter"
+    ],
+    "3020": [
+      "mage"
+    ],
+    "3024": [
+      "tank",
+      "support"
+    ],
+    "3026": [
+      "fighter",
+      "assassin",
+      "marksman"
+    ],
+    "3031": [
+      "marksman"
+    ],
+    "3032": [
+      "marksman"
+    ],
+    "3033": [
+      "marksman"
+    ],
+    "3035": [
+      "marksman",
+      "assassin"
+    ],
+    "3036": [
+      "marksman"
+    ],
+    "3041": [
+      "mage"
+    ],
+    "3044": [
+      "fighter"
+    ],
+    "3046": [
+      "marksman"
+    ],
+    "3047": [
+      "tank",
+      "assassin",
+      "fighter"
+    ],
+    "3050": [
+      "support",
+      "tank"
+    ],
+    "3051": [
+      "fighter",
+      "marksman"
+    ],
+    "3053": [
+      "fighter"
+    ],
+    "3057": [
+      "fighter",
+      "mage",
+      "marksman",
+      "tank"
+    ],
+    "3065": [
+      "tank"
+    ],
+    "3066": [
+      "tank",
+      "support",
+      "fighter"
+    ],
+    "3067": [
+      "fighter",
+      "tank",
+      "mage",
+      "support"
+    ],
+    "3068": [
+      "tank"
+    ],
+    "3070": [
+      "mage",
+      "marksman",
+      "fighter",
+      "assassin",
+      "tank",
+      "support"
+    ],
+    "3071": [
+      "fighter"
+    ],
+    "3072": [
+      "marksman",
+      "fighter"
+    ],
+    "3073": [
+      "fighter"
+    ],
+    "3074": [
+      "fighter"
+    ],
+    "3075": [
+      "tank",
+      "support"
+    ],
+    "3076": [
+      "tank",
+      "support"
+    ],
+    "3077": [
+      "fighter",
+      "tank",
+      "assassin"
+    ],
+    "3078": [
+      "fighter"
+    ],
+    "3082": [
+      "tank",
+      "support"
+    ],
+    "3083": [
+      "tank"
+    ],
+    "3084": [
+      "tank"
+    ],
+    "3085": [
+      "marksman"
+    ],
+    "3086": [
+      "marksman"
+    ],
+    "3087": [
+      "marksman"
+    ],
+    "3089": [
+      "mage"
+    ],
+    "3091": [
+      "fighter",
+      "marksman"
+    ],
+    "3094": [
+      "marksman"
+    ],
+    "3095": [
+      "marksman"
+    ],
+    "3100": [
+      "mage"
+    ],
+    "3102": [
+      "mage"
+    ],
+    "3107": [
+      "support"
+    ],
+    "3108": [
+      "mage",
+      "support"
+    ],
+    "3109": [
+      "support",
+      "tank"
+    ],
+    "3110": [
+      "tank",
+      "support"
+    ],
+    "3111": [
+      "tank",
+      "assassin",
+      "fighter"
+    ],
+    "3112": [
+      "mage",
+      "support",
+      "tank"
+    ],
+    "3113": [
+      "mage",
+      "support"
+    ],
+    "3114": [
+      "support"
+    ],
+    "3115": [
+      "mage",
+      "marksman"
+    ],
+    "3116": [
+      "mage"
+    ],
+    "3118": [
+      "mage"
+    ],
+    "3119": [
+      "tank"
+    ],
+    "3123": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "3124": [
+      "marksman"
+    ],
+    "3133": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "3134": [
+      "assassin",
+      "marksman"
+    ],
+    "3135": [
+      "mage"
+    ],
+    "3137": [
+      "mage"
+    ],
+    "3139": [
+      "marksman",
+      "fighter"
+    ],
+    "3140": [
+      "marksman"
+    ],
+    "3142": [
+      "assassin"
+    ],
+    "3143": [
+      "tank"
+    ],
+    "3144": [
+      "marksman"
+    ],
+    "3145": [
+      "mage"
+    ],
+    "3146": [
+      "mage",
+      "assassin"
+    ],
+    "3147": [
+      "mage"
+    ],
+    "3152": [
+      "mage"
+    ],
+    "3153": [
+      "fighter",
+      "marksman"
+    ],
+    "3155": [
+      "fighter",
+      "assassin",
+      "marksman"
+    ],
+    "3156": [
+      "fighter",
+      "assassin",
+      "marksman"
+    ],
+    "3157": [
+      "mage"
+    ],
+    "3158": [
+      "support",
+      "mage",
+      "assassin"
+    ],
+    "3161": [
+      "fighter"
+    ],
+    "3165": [
+      "mage",
+      "support"
+    ],
+    "3168": [],
+    "3170": [],
+    "3171": [],
+    "3172": [],
+    "3173": [],
+    "3174": [],
+    "3175": [],
+    "3177": [
+      "fighter",
+      "marksman",
+      "assassin",
+      "tank"
+    ],
+    "3179": [
+      "assassin"
+    ],
+    "3181": [
+      "fighter"
+    ],
+    "3184": [
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "3190": [
+      "support",
+      "tank"
+    ],
+    "3211": [
+      "tank"
+    ],
+    "3222": [
+      "support"
+    ],
+    "3302": [
+      "marksman",
+      "fighter"
+    ],
+    "3330": [
+      "fighter"
+    ],
+    "3340": [
+      "support"
+    ],
+    "3363": [
+      "support"
+    ],
+    "3364": [
+      "support"
+    ],
+    "3504": [
+      "support"
+    ],
+    "3508": [
+      "marksman"
+    ],
+    "3599": [
+      "fighter"
+    ],
+    "3600": [
+      "fighter"
+    ],
+    "3742": [
+      "tank",
+      "fighter"
+    ],
+    "3748": [
+      "fighter",
+      "tank"
+    ],
+    "3801": [
+      "tank"
+    ],
+    "3802": [
+      "mage"
+    ],
+    "3803": [
+      "tank",
+      "mage"
+    ],
+    "3814": [
+      "assassin"
+    ],
+    "3865": [
+      "support",
+      "tank"
+    ],
+    "3869": [],
+    "3870": [],
+    "3871": [],
+    "3876": [],
+    "3877": [],
+    "3916": [
+      "mage",
+      "support"
+    ],
+    "4005": [
+      "support",
+      "mage"
+    ],
+    "4401": [
+      "tank"
+    ],
+    "4628": [
+      "mage"
+    ],
+    "4629": [
+      "mage"
+    ],
+    "4630": [
+      "mage"
+    ],
+    "4632": [
+      "mage"
+    ],
+    "4633": [
+      "mage"
+    ],
+    "4642": [
+      "support"
+    ],
+    "4645": [
+      "mage"
+    ],
+    "4646": [
+      "mage"
+    ],
+    "6333": [
+      "fighter"
+    ],
+    "6609": [
+      "fighter",
+      "assassin"
+    ],
+    "6610": [
+      "fighter"
+    ],
+    "6616": [
+      "support"
+    ],
+    "6617": [
+      "support"
+    ],
+    "6620": [
+      "support"
+    ],
+    "6621": [
+      "support"
+    ],
+    "6631": [
+      "fighter"
+    ],
+    "6653": [
+      "mage"
+    ],
+    "6655": [
+      "mage"
+    ],
+    "6657": [
+      "mage"
+    ],
+    "6660": [
+      "tank"
+    ],
+    "6662": [
+      "tank",
+      "fighter"
+    ],
+    "6664": [
+      "tank"
+    ],
+    "6665": [
+      "tank"
+    ],
+    "6670": [
+      "marksman"
+    ],
+    "6672": [
+      "marksman"
+    ],
+    "6673": [
+      "marksman"
+    ],
+    "6675": [
+      "marksman"
+    ],
+    "6676": [
+      "marksman",
+      "assassin"
+    ],
+    "6690": [
+      "assassin",
+      "fighter",
+      "marksman"
+    ],
+    "6692": [
+      "fighter"
+    ],
+    "6694": [
+      "assassin"
+    ],
+    "6695": [
+      "assassin"
+    ],
+    "6696": [
+      "assassin"
+    ],
+    "6697": [
+      "assassin"
+    ],
+    "6698": [
+      "assassin"
+    ],
+    "6699": [
+      "assassin"
+    ],
+    "8010": [
+      "mage"
+    ],
+    "8020": [
+      "tank",
+      "support"
+    ],
+    "322065": [
+      "support"
+    ],
+    "322526": [
+      "support"
+    ],
+    "323003": [
+      "mage"
+    ],
+    "323004": [
+      "marksman",
+      "fighter",
+      "assassin"
+    ],
+    "323050": [
+      "support",
+      "tank"
+    ],
+    "323070": [
+      "mage",
+      "marksman",
+      "fighter",
+      "assassin",
+      "tank",
+      "support"
+    ],
+    "323075": [
+      "tank",
+      "support"
+    ],
+    "323107": [
+      "support"
+    ],
+    "323109": [
+      "support",
+      "tank"
+    ],
+    "323110": [
+      "tank",
+      "support"
+    ],
+    "323119": [
+      "tank"
+    ],
+    "323190": [
+      "support",
+      "tank"
+    ],
+    "323222": [
+      "support"
+    ],
+    "323504": [
+      "support"
+    ],
+    "324005": [
+      "support",
+      "mage"
+    ],
+    "326616": [
+      "support"
+    ],
+    "326617": [
+      "support"
+    ],
+    "326620": [
+      "support"
+    ],
+    "326621": [
+      "support"
+    ],
+    "326657": [
+      "mage"
+    ],
+    "328020": [
+      "tank",
+      "support"
+    ],
+    "663039": [
+      "fighter",
+      "tank"
+    ],
+    "663056": [
+      "marksman",
+      "fighter",
+      "tank",
+      "assassin",
+      "mage"
+    ],
+    "663058": [
+      "tank"
+    ],
+    "663059": [
+      "tank"
+    ],
+    "663060": [
+      "marksman",
+      "assassin"
+    ],
+    "663064": [
+      "mage",
+      "support",
+      "tank",
+      "fighter",
+      "marksman",
+      "assassin"
+    ],
+    "663146": [
+      "mage",
+      "assassin"
+    ],
+    "663172": [
+      "fighter",
+      "marksman"
+    ],
+    "663193": [
+      "tank"
+    ],
+    "664011": [
+      "support"
+    ],
+    "664644": [
+      "mage"
+    ],
+    "667101": [
+      "assassin",
+      "fighter",
+      "marksman"
+    ],
+    "667109": [
+      "tank",
+      "mage",
+      "support"
+    ],
+    "667112": [
+      "fighter",
+      "assassin",
+      "support",
+      "mage"
+    ],
+    "667666": [
+      "marksman",
+      "assassin"
+    ]
+  }
+}

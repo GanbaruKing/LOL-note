@@ -103,22 +103,10 @@ small {
   margin-top: 5px;
 }
 .brand-symbol {
-  width: 37px;
-  height: 40px;
-  color: #c3bbff;
-  border: 1px solid #8276c1;
-  transform: skewY(-6deg);
-  display: grid;
-  place-content: center;
-  font-size: 24px;
-  font-weight: 800;
-  position: relative;
-}
-.brand-symbol span {
-  position: absolute;
-  bottom: -3px;
-  right: 4px;
-  color: #a794ff;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .workspace-label {
   font-size: 9px;
@@ -2209,4 +2197,27 @@ h1 {
   .rune-columns {
     grid-template-columns: 1fr;
   }
+}
+
+.item-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+.item-category-tabs button {
+  border: 1px solid #484152;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.item-category-tabs button[aria-pressed='true'] {
+  background: #413152;
+  border-color: #ae90e8;
+  color: #f0e5ff;
+}
+.item-filter-count {
+  display: block;
+  color: #a9a2ba;
+  font-size: 12px;
+  margin: 8px 0;
 }

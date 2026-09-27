@@ -1,3 +1,4 @@
+import itemCategories from '../resources/item-categories.json'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtempSync } from 'node:fs'
@@ -84,4 +85,21 @@ test('v5 category migration preserves pinned notes and picks and accepts review 
   repo.addNote({ key, category: '振り返り', body: '新しい振り返り' })
   assert.equal(repo.getMatchup(key).notes.length, 2)
   repo.close()
+})
+
+test('shop classifications cover the pinned catalogue and allow multi-role items', () => {
+  assert.equal(itemCategories.version, data.version)
+  const categories: Record<string, string[]> = itemCategories.categories
+  assert.deepEqual(
+    Object.keys(categories)
+      .map(Number)
+      .sort((a, b) => a - b),
+    data.items.map((x) => x.id).sort((a, b) => a - b),
+  )
+  for (const values of Object.values(categories))
+    for (const value of values)
+      assert.ok(['fighter', 'marksman', 'assassin', 'mage', 'tank', 'support'].includes(value))
+  assert.ok(categories[3078].includes('fighter'))
+  assert.ok(categories[3089].includes('mage'))
+  assert.ok(categories[3153].includes('fighter') && categories[3153].includes('marksman'))
 })

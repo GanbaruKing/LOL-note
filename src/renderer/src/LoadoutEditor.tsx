@@ -1,3 +1,4 @@
+import itemCategories from '../../../resources/item-categories.json'
 import { useEffect, useState } from 'react'
 import data from '../../../resources/loadout.json'
 import { emptyLoadout, shardRows, shardNames, type Loadout } from '../../shared/loadout'
@@ -21,6 +22,22 @@ export default function LoadoutEditor({
     [status, setStatus] = useState('')
   const [query, setQuery] = useState(''),
     [picker, setPicker] = useState(false)
+  const [itemCategory, setItemCategory] = useState('all')
+  const categoryTabs = [
+    ['all', 'すべて'],
+    ['fighter', 'ファイター'],
+    ['marksman', 'マークスマン'],
+    ['assassin', 'アサシン'],
+    ['mage', 'メイジ'],
+    ['tank', 'タンク'],
+    ['support', 'サポート'],
+  ]
+  const categoriesById: Record<string, string[]> = itemCategories.categories
+  const filteredItems = data.items.filter(
+    (x) =>
+      (itemCategory === 'all' || categoriesById[x.id]?.includes(itemCategory)) &&
+      x.name.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase()),
+  )
   const dirty = JSON.stringify(value) !== JSON.stringify(saved)
   useEffect(() => {
     onDirty(dirty)
@@ -100,7 +117,7 @@ export default function LoadoutEditor({
         title={
           <>
             <span>ビルド・ルーン</span>
-            <span className="loadout-status" role="status">
+            <span className="loadout-status" role="status" aria-label="ビルド・ルーン保存状態">
               {saving ? '保存中…' : dirty ? '未保存' : status}
             </span>
           </>
@@ -172,25 +189,37 @@ export default function LoadoutEditor({
                     placeholder="アイテム名"
                   />
                 </label>
+                <div className="item-category-tabs" role="group" aria-label="アイテムの分類">
+                  {categoryTabs.map(([id, label]) => (
+                    <button
+                      key={id}
+                      aria-pressed={itemCategory === id}
+                      onClick={() => setItemCategory(id)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <span className="item-filter-count" role="status" aria-label="アイテム検索結果">
+                  {filteredItems.length}件
+                </span>
+                {!filteredItems.length && (
+                  <p className="muted">
+                    該当するアイテムがありません。分類や検索を変更してください。
+                  </p>
+                )}
                 <div className="item-grid">
-                  {data.items
-                    .filter((x) =>
-                      x.name
-                        .normalize('NFKC')
-                        .toLowerCase()
-                        .includes(query.normalize('NFKC').toLowerCase()),
-                    )
-                    .map((x) => (
-                      <button
-                        key={x.id}
-                        title={`${x.name} · ${x.gold}G`}
-                        disabled={value.items.length >= 24}
-                        onClick={() => update({ items: [...value.items, x.id] })}
-                      >
-                        {icon(x)}
-                        <span>{x.name}</span>
-                      </button>
-                    ))}
+                  {filteredItems.map((x) => (
+                    <button
+                      key={x.id}
+                      title={`${x.name} · ${x.gold}G`}
+                      disabled={value.items.length >= 24}
+                      onClick={() => update({ items: [...value.items, x.id] })}
+                    >
+                      {icon(x)}
+                      <span>{x.name}</span>
+                    </button>
+                  ))}
                 </div>
                 <small>購入順は最大24個</small>
               </div>
