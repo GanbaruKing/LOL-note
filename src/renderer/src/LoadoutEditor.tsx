@@ -1,3 +1,4 @@
+import { ITEM_TIERS, itemTier, compareShopItems } from '../../shared/itemShop'
 import itemCategories from '../../../resources/item-categories.json'
 import { useEffect, useState } from 'react'
 import data from '../../../resources/loadout.json'
@@ -33,11 +34,13 @@ export default function LoadoutEditor({
     ['support', 'サポート'],
   ]
   const categoriesById: Record<string, string[]> = itemCategories.categories
-  const filteredItems = data.items.filter(
-    (x) =>
-      (itemCategory === 'all' || categoriesById[x.id]?.includes(itemCategory)) &&
-      x.name.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase()),
-  )
+  const filteredItems = data.items
+    .filter(
+      (x) =>
+        (itemCategory === 'all' || categoriesById[x.id]?.includes(itemCategory)) &&
+        x.name.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase()),
+    )
+    .sort(compareShopItems)
   const dirty = JSON.stringify(value) !== JSON.stringify(saved)
   useEffect(() => {
     onDirty(dirty)
@@ -208,18 +211,35 @@ export default function LoadoutEditor({
                     該当するアイテムがありません。分類や検索を変更してください。
                   </p>
                 )}
-                <div className="item-grid">
-                  {filteredItems.map((x) => (
-                    <button
-                      key={x.id}
-                      title={`${x.name} · ${x.gold}G`}
-                      disabled={value.items.length >= 24}
-                      onClick={() => update({ items: [...value.items, x.id] })}
-                    >
-                      {icon(x)}
-                      <span>{x.name}</span>
-                    </button>
-                  ))}
+                <div className="item-shop-results">
+                  {ITEM_TIERS.map((label, tier) => {
+                    const items = filteredItems.filter((x) => itemTier(x.id) === tier)
+                    return items.length ? (
+                      <section className="item-tier" key={tier} aria-label={label} data-tier={tier}>
+                        <h4>
+                          {label}
+                          <small>価格の安い順</small>
+                        </h4>
+                        <div className="item-grid">
+                          {items.map((x) => (
+                            <button
+                              key={x.id}
+                              aria-label={x.name}
+                              data-item-id={x.id}
+                              data-gold={x.gold}
+                              title={`${x.name} · ${x.gold}G`}
+                              disabled={value.items.length >= 24}
+                              onClick={() => update({ items: [...value.items, x.id] })}
+                            >
+                              {icon(x)}
+                              <span>{x.name}</span>
+                              <small className="item-price">{x.gold.toLocaleString()} G</small>
+                            </button>
+                          ))}
+                        </div>
+                      </section>
+                    ) : null
+                  })}
                 </div>
                 <small>購入順は最大24個</small>
               </div>

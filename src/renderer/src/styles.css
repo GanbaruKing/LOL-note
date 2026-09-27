@@ -103,8 +103,8 @@ small {
   margin-top: 5px;
 }
 .brand-symbol {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -2220,4 +2220,34 @@ h1 {
   color: #a9a2ba;
   font-size: 12px;
   margin: 8px 0;
+}
+
+.item-shop-results {
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 6px;
+}
+.item-shop-results .item-grid {
+  max-height: none;
+  overflow: visible;
+  margin: 8px 0 18px;
+}
+.item-tier h4 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 8px;
+  font-size: 14px;
+  color: #d8c8f4;
+}
+.item-tier h4 small {
+  font-size: 11px;
+  color: #9da0b1;
+  font-weight: 400;
+}
+.item-grid .item-price {
+  color: #dcc285;
+  font-size: 11px;
+  margin-top: auto;
 }

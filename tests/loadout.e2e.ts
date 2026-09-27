@@ -40,6 +40,23 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await panel.getByLabel('アイテム検索', { exact: true }).fill('')
     await tabs.getByRole('button', { name: 'すべて', exact: true }).click()
     await expect(grid.getByRole('button')).toHaveCount(data.items.length)
+    await expect(panel.locator('.item-tier h4')).toHaveText([
+      '素材・初期・消耗品価格の安い順',
+      '中間アイテム価格の安い順',
+      '完成アイテム価格の安い順',
+    ])
+    const groups = await panel
+      .locator('.item-tier')
+      .evaluateAll((groups) =>
+        groups.map((group) =>
+          Array.from(group.querySelectorAll('button')).map((button) => Number(button.dataset.gold)),
+        ),
+      )
+    for (const prices of groups) expect(prices).toEqual([...prices].sort((a, b) => a - b))
+    await tabs.getByRole('button', { name: 'メイジ', exact: true }).click()
+    await panel.locator('.item-picker').screenshot({ path: 'test-results/item-shop.png' })
+    await tabs.getByRole('button', { name: 'すべて', exact: true }).click()
+
     await expect(page.locator('.brand-symbol')).toHaveAttribute('src', './icon.png')
     expect(
       await page.locator('.brand-symbol').evaluate((img) => (img as HTMLImageElement).naturalWidth),

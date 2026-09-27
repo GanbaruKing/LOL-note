@@ -9,9 +9,14 @@ if (!response.ok) throw new Error(`Shop data: ${response.status}`)
 const raw = await response.json()
 const roles = { 1: 'fighter', 2: 'marksman', 4: 'assassin', 8: 'tank', 16: 'mage', 32: 'support' }
 const categories = {}
+const tiers = {}
 for (const item of items) {
   const entry = raw[`Items/${item.id}`]
   if (!entry) throw new Error(`Missing item ${item.id}`)
+  const consumable = entry.mCategories?.some((tag) =>
+    ['Consumable', 'Trinket'].includes(tag),
+  )
+  tiers[item.id] = consumable ? 0 : (entry.epicness ?? 0) >= 5 ? 2 : entry.epicness === 4 ? 1 : 0
   categories[item.id] = [
     ...new Set(
       (entry.mItemAttributes ?? []).map((id) => {
@@ -23,6 +28,6 @@ for (const item of items) {
 }
 await writeFile(
   'resources/item-categories.json',
-  JSON.stringify({ version, source, categories }, null, 2) + '\n',
+  JSON.stringify({ version, source, categories, tiers }, null, 2) + '\n',
 )
 console.log(`Saved shop classifications for ${items.length} items (${version})`)

@@ -1,3 +1,4 @@
+import { compareShopItems, itemTier } from '../src/shared/itemShop'
 import itemCategories from '../resources/item-categories.json'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -102,4 +103,23 @@ test('shop classifications cover the pinned catalogue and allow multi-role items
   assert.ok(categories[3078].includes('fighter'))
   assert.ok(categories[3089].includes('mage'))
   assert.ok(categories[3153].includes('fighter') && categories[3153].includes('marksman'))
+})
+
+test('shop orders basic items before components and completed items, then by price', () => {
+  const sample = [3078, 1036, 3057, 1001, 3089, 1028].map((id) =>
+    data.items.find((x) => x.id === id)!,
+  )
+  assert.equal(itemTier(1036), 0)
+  assert.equal(itemTier(3057), 1)
+  assert.equal(itemTier(3078), 2)
+  assert.equal(itemTier(2138), 0)
+  assert.equal(itemTier(3179), 2)
+  const ordered = sample.sort(compareShopItems)
+  for (let i = 1; i < ordered.length; i++) {
+    const a = ordered[i - 1],
+      b = ordered[i]
+    assert.ok(itemTier(a.id) <= itemTier(b.id))
+    if (itemTier(a.id) === itemTier(b.id)) assert.ok(a.gold <= b.gold)
+  }
+  assert.equal(ordered.at(-1)?.id, 3089)
 })
