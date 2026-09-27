@@ -40,35 +40,32 @@ export default function ChampionLibrary({
   return (
     <div className="champion-library">
       <section className="pool-panel panel" aria-label="レーン別チャンピオンプール">
+        <h2>Favorite Champions</h2>
+        <div className="section-title">
+          <span className="muted">レーンごとに、使うチャンピオンを登録</span>
+        </div>
+        <div className="lane-tabs" role="group" aria-label="プールのレーン">
+          {ROLES.map((lane) => (
+            <button
+              key={lane}
+              aria-pressed={role === lane}
+              onClick={() => setRole(lane)}
+              disabled={busy}
+            >
+              {lane}
+              <span>{pool.filter((p) => p.role === lane).length}</span>
+            </button>
+          ))}
+        </div>
         <Collapsible
-          id="library-favorites"
+          id="library-pool"
           title={
             <>
-              {' '}
-              Favorite Champions <span className="count">{lanePool.length}</span>
+              {role}のプール <span className="count">{lanePool.length}</span>
             </>
           }
         >
-          <div className="section-title">
-            <span className="muted">レーンごとに、使うチャンピオンを登録</span>
-          </div>
-          <div className="lane-tabs" role="group" aria-label="プールのレーン">
-            {ROLES.map((lane) => (
-              <button
-                key={lane}
-                aria-pressed={role === lane}
-                onClick={() => setRole(lane)}
-                disabled={busy}
-              >
-                {lane}
-                <span>{pool.filter((p) => p.role === lane).length}</span>
-              </button>
-            ))}
-          </div>
-          <div className="section-title">
-            <h3>{role}のプール</h3>
-            <small>下のカードから登録できます · 複数レーンへの登録も可能</small>
-          </div>
+          <p className="muted">下のカードから登録できます · 複数レーンへの登録も可能</p>
           {!ready ? (
             <p className="empty">プールを読み込めません。再読み込みしてください。</p>
           ) : lanePool.length === 0 ? (

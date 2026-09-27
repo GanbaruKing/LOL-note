@@ -26,7 +26,6 @@ test('offline build and rune editing, navigation protection and collapsible pick
       .click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
     await page.getByRole('button', { name: '編集を続ける' }).click()
-    await panel.locator('.rune-picker > summary').click()
     await panel.getByRole('button', { name: `メイン：${data.trees[0].name}`, exact: true }).click()
     await panel
       .getByRole('button', { name: data.trees[0].slots[0].runes[0].name, exact: true })
@@ -47,7 +46,15 @@ test('offline build and rune editing, navigation protection and collapsible pick
     }
     await panel.getByRole('button', { name: 'ビルド・ルーンを保存' }).click()
     await expect(panel.getByRole('status')).toHaveText('保存済み')
-    await panel.locator('.rune-picker > summary').click()
+    const fold = panel.locator(':scope > .collapsible')
+    await fold.locator(':scope > summary').click()
+    await expect(panel.getByLabel('ビルドの補足')).not.toBeVisible()
+    await expect(panel.locator('.rune-columns')).not.toBeVisible()
+    await fold.locator(':scope > summary').click()
+    await expect(panel.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
+    const comfort = page.getByRole('region', { name: 'Comfort Picks', exact: true })
+    await comfort.locator('summary').click()
+    await expect(comfort.locator('.pool-empty')).not.toBeVisible()
     const recommended = page.locator('.matchup-picks .curated-counters')
     await expect(recommended).toBeVisible()
     await recommended.locator('.collapsible > summary').click()
@@ -56,14 +63,22 @@ test('offline build and rune editing, navigation protection and collapsible pick
     const favorites = page.locator('.pool-panel .collapsible')
     await favorites.locator(':scope > summary').click()
     await expect(favorites).not.toHaveAttribute('open', '')
+    await expect(page.getByRole('group', { name: 'プールのレーン', exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Favorite Champions', exact: true }),
+    ).toBeVisible()
     await page.getByRole('button', { name: 'Match up', exact: false }).first().click()
     await page.getByRole('button', { name: 'Champions', exact: false }).first().click()
     await expect(favorites).not.toHaveAttribute('open', '')
+    await expect(page.getByRole('group', { name: 'プールのレーン', exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Favorite Champions', exact: true }),
+    ).toBeVisible()
     await app.close()
     app = await electron.launch({ args: [resolve('.')], env })
     page = await app.firstWindow()
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
-    await expect(page.locator('.selected-runes img')).toHaveCount(4)
+    await expect(page.locator('.rune-columns button[aria-pressed=true]')).toHaveCount(4)
     await page.getByLabel('ビルドの補足').fill('破棄する変更')
     await page.getByLabel('ROLE', { exact: true }).selectOption('MID')
     await page.getByRole('button', { name: '変更を破棄して移動' }).click()
@@ -72,8 +87,11 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('先に素材を購入')
     await page.setViewportSize({ width: 1000, height: 720 })
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    const left = await page.locator('.rune-primary').boundingBox(),
+      right = await page.locator('.rune-secondary').boundingBox()
+    expect(right!.x).toBeGreaterThan(left!.x)
+    expect(Math.abs(right!.y - left!.y)).toBeLessThan(2)
     await page.screenshot({ path: 'test-results/loadout.png', fullPage: true })
-    await page.locator('.rune-picker > summary').click()
     await expect(page.locator('.loadout-editor img')).not.toHaveCount(0)
     expect(
       await page
