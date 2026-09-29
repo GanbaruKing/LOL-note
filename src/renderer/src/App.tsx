@@ -247,6 +247,7 @@ export default function App() {
   const [editing, setEditing] = useState<Note | null>(null),
     [deleting, setDeleting] = useState<number | null>(null)
   const [info, setInfo] = useState<{ databasePath: string; catalogVersion: string } | null>(null)
+  const [pendingNoteEdit, setPendingNoteEdit] = useState<Note | null>(null)
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
   const generation = useRef(0),
     editor = useRef<HTMLTextAreaElement>(null)
@@ -443,7 +444,14 @@ export default function App() {
   const pageSaveSupported = page === 'notebook' || (page === 'champions' && championDetailOpen)
   const pageDirty = noteDirty || counterDirty || (page === 'notebook' && loadoutDirty)
   async function savePage(): Promise<boolean> {
-    if (!pageSaveSupported || !ready || busy || pendingNavigation || pageSaveInFlight.current)
+    if (
+      !pageSaveSupported ||
+      !ready ||
+      busy ||
+      pendingNavigation ||
+      pendingNoteEdit ||
+      pageSaveInFlight.current
+    )
       return false
     const loadout = page === 'notebook' ? loadoutEditor.current?.draft() : undefined
     if (!noteDirty && !counterDirty && !loadout) return true
@@ -502,13 +510,17 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
+  function startNoteEdit(note: Note) {
+    setDeleting(null)
+    setEditing(note)
+    setBody(note.body)
+    setCategory(note.category)
+    setTimeout(() => editor.current?.focus({ preventScroll: true }), 0)
+  }
   function edit(note: Note) {
-    navigate(() => {
-      setEditing(note)
-      setBody(note.body)
-      setCategory(note.category)
-      setTimeout(() => editor.current?.focus(), 0)
-    })
+    if (busy || editing?.id === note.id) return
+    if (noteDirty) setPendingNoteEdit(note)
+    else startNoteEdit(note)
   }
   async function changePool(operation: () => Promise<Result<PoolEntry[]>>) {
     if (busy) return
@@ -524,6 +536,69 @@ export default function App() {
   }
   const detailMatchups =
     championData?.matchups.filter((m) => detailRole === 'ALL' || m.role === detailRole) ?? []
+
+  const noteEditor = (
+    <form
+      className="note-editor"
+      onSubmit={(e) => {
+        e.preventDefault()
+        void savePage()
+      }}
+    >
+      <div className="editor-heading">
+        <label htmlFor="note-body">{editing ? 'メモを編集' : '新しいメモ'}</label>
+        <span>{body.length.toLocaleString()} / 10,000</span>
+      </div>
+      <textarea
+        id="note-body"
+        ref={editor}
+        value={body}
+        disabled={!ready || busy}
+        maxLength={10000}
+        placeholder={
+          page === 'champions'
+            ? '例：基本コンボ、スキルの使い方、練習したい操作。'
+            : '例：相手が主要スキルを使った後にトレードする。'
+        }
+        onChange={(e) => setBody(e.target.value)}
+        onKeyDown={(e) => {
+          if (!e.nativeEvent.isComposing && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault()
+            e.currentTarget.form?.requestSubmit()
+          }
+        }}
+      />
+      <div className="editor-toolbar">
+        <select
+          aria-label="メモのカテゴリー"
+          value={category}
+          disabled={busy}
+          onChange={(e) => setCategory(e.target.value as Category)}
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
+        <span className="shortcut">Ctrl + Enter / Ctrl + S でページを保存</span>
+        {(editing || body.length > 0 || category !== 'General') && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              resetEditor()
+              setStatus('メモ入力をキャンセルしました')
+              setPageSaveStatus('')
+            }}
+          >
+            キャンセル
+          </button>
+        )}
+        <button className="primary" type="submit" disabled={!ready || busy || !body.trim()}>
+          {busy ? '保存中…' : editing ? '変更を保存' : '＋ メモを保存'}
+        </button>
+      </div>
+    </form>
+  )
 
   const notesPanel = (
     <section className="notes-panel panel" id="personal-notes">
@@ -602,7 +677,7 @@ export default function App() {
                   </button>
                 </div>
               </div>
-              <p className="note-body">{note.body}</p>
+              {editing?.id === note.id ? noteEditor : <p className="note-body">{note.body}</p>}
               {deleting === note.id && (
                 <div className="delete-confirm">
                   <span>このメモを削除しますか？</span>
@@ -631,58 +706,7 @@ export default function App() {
           ))
         )}
       </div>
-      <form
-        className="note-editor"
-        onSubmit={(e) => {
-          e.preventDefault()
-          void savePage()
-        }}
-      >
-        <div className="editor-heading">
-          <label htmlFor="note-body">{editing ? 'メモを編集' : '新しいメモ'}</label>
-          <span>{body.length.toLocaleString()} / 10,000</span>
-        </div>
-        <textarea
-          id="note-body"
-          ref={editor}
-          value={body}
-          disabled={!ready || busy}
-          maxLength={10000}
-          placeholder={
-            page === 'champions'
-              ? '例：基本コンボ、スキルの使い方、練習したい操作。'
-              : '例：相手が主要スキルを使った後にトレードする。'
-          }
-          onChange={(e) => setBody(e.target.value)}
-          onKeyDown={(e) => {
-            if (!e.nativeEvent.isComposing && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-              e.preventDefault()
-              e.currentTarget.form?.requestSubmit()
-            }
-          }}
-        />
-        <div className="editor-toolbar">
-          <select
-            aria-label="メモのカテゴリー"
-            value={category}
-            disabled={busy}
-            onChange={(e) => setCategory(e.target.value as Category)}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-          <span className="shortcut">Ctrl + Enter / Ctrl + S でページを保存</span>
-          {editing && (
-            <button type="button" disabled={busy} onClick={() => navigate(() => {})}>
-              キャンセル
-            </button>
-          )}
-          <button className="primary" type="submit" disabled={!ready || busy || !body.trim()}>
-            {busy ? '保存中…' : editing ? '変更を保存' : '＋ メモを保存'}
-          </button>
-        </div>
-      </form>
+      {!editing && noteEditor}
     </section>
   )
 
@@ -1289,6 +1313,33 @@ export default function App() {
           )}
         </main>
       </div>
+      {pendingNoteEdit && (
+        <div className="modal-backdrop">
+          <div
+            className="modal panel"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="note-switch-title"
+          >
+            <h2 id="note-switch-title">入力中のメモを破棄しますか？</h2>
+            <p>メモの入力だけを破棄して、選んだメモを編集します。</p>
+            <div>
+              <button autoFocus onClick={() => setPendingNoteEdit(null)}>
+                入力を続ける
+              </button>
+              <button
+                className="danger"
+                onClick={() => {
+                  startNoteEdit(pendingNoteEdit)
+                  setPendingNoteEdit(null)
+                }}
+              >
+                メモを破棄して編集
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {pendingNavigation && (
         <div className="modal-backdrop">
           <div

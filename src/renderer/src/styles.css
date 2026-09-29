@@ -804,6 +804,12 @@ h1 {
   background: #141820;
   border-top: 1px solid #2b303b;
 }
+.note-card > .note-editor {
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
 .editor-heading {
   display: flex;
   align-items: center;
