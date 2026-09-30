@@ -246,6 +246,9 @@ export default function App() {
   const [body, setBody] = useState(''),
     [category, setCategory] = useState<Category>('General')
   const [reviewInfo, setReviewInfo] = useState<ReviewInfo | null>(null)
+  type NoteSnapshot = { body: string; review: ReviewInfo | null; start: number; end: number }
+  const noteUndo = useRef<NoteSnapshot[]>([])
+  const noteRedo = useRef<NoteSnapshot[]>([])
   const [editing, setEditing] = useState<Note | null>(null),
     [deleting, setDeleting] = useState<number | null>(null)
   const [info, setInfo] = useState<{ databasePath: string; catalogVersion: string } | null>(null)
@@ -387,6 +390,8 @@ export default function App() {
   }, [dirty, busy, bookSaving, loadoutSaving])
 
   function resetEditor() {
+    noteUndo.current = []
+    noteRedo.current = []
     setEditing(null)
     setBody('')
     setCategory('General')
@@ -518,6 +523,8 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   })
   function startNoteEdit(note: Note) {
+    noteUndo.current = []
+    noteRedo.current = []
     setDeleting(null)
     setEditing(note)
     const draft = splitReviewNote(note)
@@ -530,6 +537,29 @@ export default function App() {
     if (busy || editing?.id === note.id) return
     if (noteDirty) setPendingNoteEdit(note)
     else startNoteEdit(note)
+  }
+  function noteSnapshot(): NoteSnapshot {
+    return {
+      body,
+      review: reviewInfo,
+      start: editor.current?.selectionStart ?? 0,
+      end: editor.current?.selectionEnd ?? 0,
+    }
+  }
+  function rememberNoteChange() {
+    noteUndo.current.push(noteSnapshot())
+    if (noteUndo.current.length > 100) noteUndo.current.shift()
+    noteRedo.current = []
+  }
+  function undoNote(redo = false) {
+    const source = redo ? noteRedo : noteUndo
+    const target = redo ? noteUndo : noteRedo
+    const snapshot = source.current.pop()
+    if (!snapshot) return
+    target.current.push(noteSnapshot())
+    setBody(snapshot.body)
+    setReviewInfo(snapshot.review)
+    requestAnimationFrame(() => editor.current?.setSelectionRange(snapshot.start, snapshot.end))
   }
   async function changePool(operation: () => Promise<Result<PoolEntry[]>>) {
     if (busy) return
@@ -571,8 +601,20 @@ export default function App() {
             ? '例：基本コンボ、スキルの使い方、練習したい操作。'
             : '例：相手が主要スキルを使った後にトレードする。'
         }
-        onChange={(e) => setBody(e.target.value)}
+        onChange={(e) => {
+          rememberNoteChange()
+          setBody(e.target.value)
+        }}
         onKeyDown={(e) => {
+          if (
+            !e.nativeEvent.isComposing &&
+            (e.ctrlKey || e.metaKey) &&
+            (e.key.toLowerCase() === 'z' || e.key.toLowerCase() === 'y')
+          ) {
+            e.preventDefault()
+            undoNote(e.shiftKey || e.key.toLowerCase() === 'y')
+            return
+          }
           if (
             !e.nativeEvent.isComposing &&
             e.key === 'Backspace' &&
@@ -581,6 +623,7 @@ export default function App() {
             e.currentTarget.selectionEnd === 0
           ) {
             e.preventDefault()
+            rememberNoteChange()
             setReviewInfo(null)
             return
           }
