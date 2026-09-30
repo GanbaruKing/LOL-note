@@ -246,7 +246,13 @@ export default function App() {
   const [body, setBody] = useState(''),
     [category, setCategory] = useState<Category>('General')
   const [reviewInfo, setReviewInfo] = useState<ReviewInfo | null>(null)
-  type NoteSnapshot = { body: string; review: ReviewInfo | null; start: number; end: number }
+  type NoteSnapshot = {
+    body: string
+    review: ReviewInfo | null
+    category: Category
+    start: number
+    end: number
+  }
   const noteUndo = useRef<NoteSnapshot[]>([])
   const noteRedo = useRef<NoteSnapshot[]>([])
   const [editing, setEditing] = useState<Note | null>(null),
@@ -542,6 +548,7 @@ export default function App() {
     return {
       body,
       review: reviewInfo,
+      category,
       start: editor.current?.selectionStart ?? 0,
       end: editor.current?.selectionEnd ?? 0,
     }
@@ -559,6 +566,7 @@ export default function App() {
     target.current.push(noteSnapshot())
     setBody(snapshot.body)
     setReviewInfo(snapshot.review)
+    setCategory(snapshot.category)
     requestAnimationFrame(() => editor.current?.setSelectionRange(snapshot.start, snapshot.end))
   }
   async function changePool(operation: () => Promise<Result<PoolEntry[]>>) {
@@ -618,13 +626,14 @@ export default function App() {
           if (
             !e.nativeEvent.isComposing &&
             e.key === 'Backspace' &&
-            reviewInfo &&
+            (reviewInfo || category === '振り返り') &&
             e.currentTarget.selectionStart === 0 &&
             e.currentTarget.selectionEnd === 0
           ) {
             e.preventDefault()
             rememberNoteChange()
             setReviewInfo(null)
+            setCategory('General')
             return
           }
           if (!e.nativeEvent.isComposing && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
