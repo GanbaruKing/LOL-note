@@ -1,3 +1,5 @@
+import NoteContent, { ReviewDetails, ReviewTag } from './NoteContent'
+import { splitReviewNote, joinReviewNote, type ReviewInfo } from '../../shared/reviewNote'
 import LoadoutEditor, { type LoadoutEditorHandle } from './LoadoutEditor'
 import { useEffect, useRef, useState } from 'react'
 import ChampionLibrary from './ChampionLibrary'
@@ -13,7 +15,6 @@ import SkillCooldowns from './SkillCooldowns'
 import { normalizeChampionSearch } from './championSearch'
 import laneData from '../../../resources/champion-lanes.json'
 import {
-  CATEGORIES,
   ROLES,
   type Category,
   type Champion,
@@ -244,6 +245,7 @@ export default function App() {
     [busy, setBusy] = useState(false)
   const [body, setBody] = useState(''),
     [category, setCategory] = useState<Category>('General')
+  const [reviewInfo, setReviewInfo] = useState<ReviewInfo | null>(null)
   const [editing, setEditing] = useState<Note | null>(null),
     [deleting, setDeleting] = useState<number | null>(null)
   const [info, setInfo] = useState<{ databasePath: string; catalogVersion: string } | null>(null)
@@ -255,8 +257,10 @@ export default function App() {
   const mine = byId.get(key.myChampionId),
     enemy = byId.get(key.enemyChampionId)
   const noteDirty = editing
-    ? body !== editing.body || category !== editing.category
-    : body.trim().length > 0
+    ? joinReviewNote(body, reviewInfo) !==
+        joinReviewNote(splitReviewNote(editing).body, splitReviewNote(editing).review) ||
+      category !== editing.category
+    : body.trim().length > 0 || reviewInfo !== null
   const counterDirty =
     page === 'champions' &&
     championDetailOpen &&
@@ -386,6 +390,7 @@ export default function App() {
     setEditing(null)
     setBody('')
     setCategory('General')
+    setReviewInfo(null)
     setDeleting(null)
   }
   function navigate(action: () => void) {
@@ -455,7 +460,9 @@ export default function App() {
       return false
     const loadout = page === 'notebook' ? loadoutEditor.current?.draft() : undefined
     if (!noteDirty && !counterDirty && !loadout) return true
-    const note = noteDirty ? { ...(editing ? { id: editing.id } : {}), category, body } : undefined
+    const note = noteDirty
+      ? { ...(editing ? { id: editing.id } : {}), category, body: joinReviewNote(body, reviewInfo) }
+      : undefined
     pageSaveInFlight.current = true
     setBusy(true)
     setError('')
@@ -513,7 +520,9 @@ export default function App() {
   function startNoteEdit(note: Note) {
     setDeleting(null)
     setEditing(note)
-    setBody(note.body)
+    const draft = splitReviewNote(note)
+    setBody(draft.body)
+    setReviewInfo(draft.review)
     setCategory(note.category)
     setTimeout(() => editor.current?.focus({ preventScroll: true }), 0)
   }
@@ -549,12 +558,14 @@ export default function App() {
         <label htmlFor="note-body">{editing ? 'メモを編集' : '新しいメモ'}</label>
         <span>{body.length.toLocaleString()} / 10,000</span>
       </div>
+      {category === '振り返り' && <span className="category-badge">振り返り</span>}
+      {reviewInfo && <ReviewDetails review={reviewInfo} />}
       <textarea
         id="note-body"
         ref={editor}
         value={body}
         disabled={!ready || busy}
-        maxLength={10000}
+        maxLength={10000 - joinReviewNote('', reviewInfo).length}
         placeholder={
           page === 'champions'
             ? '例：基本コンボ、スキルの使い方、練習したい操作。'
@@ -562,6 +573,17 @@ export default function App() {
         }
         onChange={(e) => setBody(e.target.value)}
         onKeyDown={(e) => {
+          if (
+            !e.nativeEvent.isComposing &&
+            e.key === 'Backspace' &&
+            reviewInfo &&
+            e.currentTarget.selectionStart === 0 &&
+            e.currentTarget.selectionEnd === 0
+          ) {
+            e.preventDefault()
+            setReviewInfo(null)
+            return
+          }
           if (!e.nativeEvent.isComposing && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             e.preventDefault()
             e.currentTarget.form?.requestSubmit()
@@ -569,16 +591,6 @@ export default function App() {
         }}
       />
       <div className="editor-toolbar">
-        <select
-          aria-label="メモのカテゴリー"
-          value={category}
-          disabled={busy}
-          onChange={(e) => setCategory(e.target.value as Category)}
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
         <span className="shortcut">Ctrl + Enter / Ctrl + S でページを保存</span>
         {(editing || body.length > 0 || category !== 'General') && (
           <button
@@ -633,7 +645,7 @@ export default function App() {
               key={note.id}
             >
               <div className="note-meta">
-                <span className="category-badge">{note.category}</span>
+                <ReviewTag note={note} />
                 <time dateTime={note.updatedAt}>
                   {new Date(note.updatedAt).toLocaleDateString('ja-JP')}
                 </time>
@@ -677,7 +689,7 @@ export default function App() {
                   </button>
                 </div>
               </div>
-              {editing?.id === note.id ? noteEditor : <p className="note-body">{note.body}</p>}
+              {editing?.id === note.id ? noteEditor : <NoteContent note={note} />}
               {deleting === note.id && (
                 <div className="delete-confirm">
                   <span>このメモを削除しますか？</span>
@@ -748,7 +760,7 @@ export default function App() {
               })
             }
           >
-            <span>◈</span>Champions
+            <span>◈</span>Library
           </button>
           <button
             className={page === 'history' ? 'active' : ''}
@@ -826,7 +838,7 @@ export default function App() {
                   {page === 'notebook'
                     ? 'チャンピオン・対面・レーンごとのメモと評価を管理します。'
                     : page === 'search'
-                      ? 'チャンピオン名・本文・レーン・カテゴリーで探す。'
+                      ? 'チャンピオン名・本文・レーンで探す。'
                       : page === 'history'
                         ? '最近の試合から対面を選び、気づきをメモに残します。'
                         : 'このNotebookについて。'}
@@ -866,11 +878,12 @@ export default function App() {
                 navigate(() => {
                   setKey(next)
                   setPage('notebook')
-                  setBody(draft)
+                  setBody('')
+                  setReviewInfo(draft)
                   setCategory('振り返り')
                   setTimeout(() => {
                     editor.current?.focus()
-                    editor.current?.setSelectionRange(draft.length, draft.length)
+                    editor.current?.setSelectionRange(0, 0)
                   }, 0)
                 })
               }
@@ -900,7 +913,7 @@ export default function App() {
               <h2>ローカルデータ</h2>
               <h3>バックアップ・復元</h3>
               <p>
-                メモ・Notebookの章と記事・対策・評価・Favorite Champions・Comfort
+                メモ・Notebookの章と記事・対策・評価・Favorite Picks・Comfort
                 Picks・ビルド・ルーンをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
               </p>
               {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
@@ -1122,8 +1135,8 @@ export default function App() {
                           {m.notes.length ? (
                             m.notes.map((note) => (
                               <div className="matchup-note-preview" key={note.id}>
-                                <span className="category-badge">{note.category}</span>
-                                <p>{note.body}</p>
+                                <ReviewTag note={note} />
+                                <NoteContent note={note} />
                               </div>
                             ))
                           ) : (

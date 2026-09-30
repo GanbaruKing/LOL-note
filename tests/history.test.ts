@@ -1,3 +1,4 @@
+import { splitReviewNote, joinReviewNote } from '../src/shared/reviewNote'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
@@ -122,7 +123,7 @@ test('history service handles disconnect, account switches, optional timeline er
   assert.equal((await service.detail(raw.gameId)).role, 'TOP')
   const before = paths.length
   for (const value of ['../', -1, 0, 1.5, Number.MAX_SAFE_INTEGER + 1])
-    await assert.rejects(service.detail(value), /試合ID/)
+    await assert.rejects(service.detail(value), /ゲームID/)
   assert.equal(paths.length, before)
   account = 'test-stranger'
   await assert.rejects(service.detail(raw.gameId), /自分の情報/)
@@ -136,4 +137,26 @@ test('history service handles disconnect, account switches, optional timeline er
     },
   )
   await assert.rejects(switched.list(), /アカウントが変わりました/)
+})
+
+test('review headers display separately without changing unrelated prose or legacy categories', () => {
+  const legacy = {
+    category: '振り返り' as const,
+    body: '日付：2026/9/30\n試合ID：12345\n\n相手のQを避ける\n次の行',
+  }
+  const draft = splitReviewNote(legacy)
+  assert.deepEqual(draft, {
+    review: { date: '2026/9/30', gameId: '12345' },
+    body: '相手のQを避ける\n次の行',
+  })
+  const stored = joinReviewNote(draft.body, draft.review)
+  assert.match(stored, /ゲームID：12345/)
+  assert.deepEqual(splitReviewNote({ category: '振り返り', body: stored }), draft)
+  assert.equal(joinReviewNote(draft.body, null), draft.body)
+  for (const note of [
+    { ...legacy, category: 'General' as const },
+    { ...legacy, body: '本文\n' + legacy.body },
+    { ...legacy, body: '日付：2026/9/30\n試合ID：12345\n本文' },
+  ])
+    assert.deepEqual(splitReviewNote(note), { review: null, body: note.body })
 })

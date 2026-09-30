@@ -31,7 +31,7 @@ test('search, return navigation and counter shortcuts preserve the writing flow'
     await expect(page.getByRole('button', { name: '自分のチャンピオンを選択' })).toContainText(
       second.split('\n')[0],
     )
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByLabel('チャンピオン一覧を検索').fill('だりうす')
     await page
       .getByRole('group', { name: '一覧のレーン' })

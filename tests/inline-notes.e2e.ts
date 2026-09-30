@@ -18,7 +18,7 @@ test('notes edit in place and cancel only their own draft on matchup and champio
     await page.context().setOffline(true)
     for (const scope of ['matchup', 'champion']) {
       if (scope === 'champion') {
-        await page.getByRole('button', { name: /Champions/ }).click()
+        await page.getByRole('button', { name: /Library/ }).click()
         await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
       }
       const notes = page.locator('#personal-notes')

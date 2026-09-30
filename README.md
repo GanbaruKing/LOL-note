@@ -13,18 +13,18 @@ League of Legendsの対面知識を蓄積する、Windows向けの個人用Noteb
 
 - 173体のチャンピオンを日本語・英語で検索して選択
 - 自分 × 相手 × RoleごとのMatchupページ
-- メモの追加・編集・削除、任意カテゴリー
+- メモの追加・編集・削除、履歴メモの振り返りタグ
 - 5段階評価
 - 保存済みMatchup一覧とChampion / Role検索
 - SQLite永続化。League Clientもネット接続も不要
 - 未保存変更の確認、保存失敗時の入力保持
-- Championsでチャンピオン単体のメモを追加・編集・削除
-- Championsの「チャンピオン名＋対策」に敵としての対策を記入し、Match upでその敵を選ぶと自動表示
+- Libraryでチャンピオン単体のメモを追加・編集・削除
+- Libraryの「チャンピオン名＋対策」に敵としての対策を記入し、Match upでその敵を選ぶと自動表示
 - 出典付き初期カウンターメモ：5レーンに対応、167体・197組の候補と短い理由を同梱。[選定基準・未収録範囲](docs/curated-counters.md)
 - チャンピオン詳細に、保存済みの対面メモを本文付きで一覧表示
 - カード形式のChampion一覧から詳細を開く
 - レーン別Champion Poolへの登録・解除、自信度1〜5の保存
-- Championsからチャンピオンごとの対面メモをレーンで絞り込み
+- Libraryからチャンピオンごとの対面メモをレーンで絞り込み
 - Comfort Picks：敵チャンピオン・レーンごとの候補をマッチアップの「自分の評価」順に表示
 - メモ横断検索：日英Champion名・本文・Role・Category、スペース区切りAND検索
 - 単体メモ・対面メモのPinと上位表示
@@ -62,20 +62,20 @@ npm start
 
 ## 使用方法
 
-Match up左側の「おすすめピック」は折りたたみ可能で、Comfort Picksの上に表示します。中央にはビルド・ルーン、共通対策、対面メモを配置しています。Comfort Picksも折りたためます。Libraryは見出しとレーン選択を残し、「TOPのプール」などの登録一覧だけを折りたためます。開閉状態はアプリのセッション中保持します。
+Match up左側の「Recommended Picks」は折りたたみ可能で、Comfort Picksの上に表示します。中央にはビルド・ルーン、共通対策、対面メモを配置しています。Comfort Picksも折りたためます。Libraryは見出しとレーン選択を残し、「TOPのプール」などの登録一覧だけを折りたためます。開閉状態はアプリのセッション中保持します。
 
 チャンピオン検索はひらがな・カタカナ・全角英字に対応。Match upの選択欄では↑↓で候補を選び、Enterで決定、Escで閉じられます。Libraryの検索・レーン・スクロール位置は詳細から戻っても保持します（アプリ終了まで）。カウンター候補の「このピックでメモを開く」から、その候補×相手×レーンの対面ページへ移動できます。
 
 1. Match up上部で自分のチャンピオン・相手・Roleを選択する。
 2. メモやビルド・ルーンを編集し、上部の「ページの変更を保存」でまとめて保存する。Ctrl + S、メモ欄のCtrl + Enterでもページ全体を保存できる。既存メモは「編集」でそのカード内を直接編集する。「キャンセル」は新規入力・既存メモの編集だけを取り消し、他の欄の入力を残す。Champion詳細も同じ操作。
 3. ノートの「編集」「削除」から管理する。
-4. 保存したメモはSearchやChampionsの対面メモ一覧からも開けます。
+4. 保存したメモはSearchやLibraryの対面メモ一覧からも開けます。
 
-Championsではカード一覧からチャンピオンを選ぶと、そのチャンピオン自身のメモを直接編集できます。対面やRoleを選ぶ必要はありません。下のMatchup Notesには、そのチャンピオンを自分のPickとして記録した対面メモが並びます。「チャンピオン一覧に戻る」でカード一覧へ戻れます。
+Libraryではカード一覧からチャンピオンを選ぶと、そのチャンピオン自身のメモを直接編集できます。対面やRoleを選ぶ必要はありません。下のMatchup Notesには、そのチャンピオンを自分のPickとして記録した対面メモが並びます。「チャンピオン一覧に戻る」でカード一覧へ戻れます。
 
-一覧上部のFavorite Championsでレーンを選び、カードの「レーンに登録」からプールへ追加します。同じチャンピオンを複数レーンへ登録でき、自信度はレーンごとに1〜5で保存します。初期値は3です。「解除」は該当レーンのプールから外す操作で、メモは削除しません。レーンは自分の登録を表し、ゲーム全体での推奨レーンを自動分類するものではありません。
+一覧上部のFavorite Picksでレーンを選び、カードの「レーンに登録」からプールへ追加します。同じチャンピオンを複数レーンへ登録でき、自信度はレーンごとに1〜5で保存します。初期値は3です。「解除」は該当レーンのプールから外す操作で、メモは削除しません。レーンは自分の登録を表し、ゲーム全体での推奨レーンを自動分類するものではありません。
 
-Match up左側のFavorite Championsには、選択中のRoleに登録したチャンピオンを自信度順に表示します。クリックすると相手とRoleを保ったまま自分のチャンピオンを切り替えます。「プールを編集」から同じRoleの登録画面へ移動できます。
+Match up左側のFavorite Picksには、選択中のRoleに登録したチャンピオンを自信度順に表示します。クリックすると相手とRoleを保ったまま自分のチャンピオンを切り替えます。「プールを編集」から同じRoleの登録画面へ移動できます。
 
 ![カード一覧とレーン別プール](docs/screenshots/champion-library.png)
 
@@ -85,7 +85,7 @@ Match up左側のFavorite Championsには、選択中のRoleに登録したチ�
 
 ### バックアップ・復元
 
-Settingsの「バックアップを保存」で、ノートブックの章と記事・対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Champions・Comfort PicksをJSONへ保存できます。
+Settingsの「バックアップを保存」で、ノートブックの章と記事・対面メモ・Champion Notes・チャンピオン対策・評価・Pin・Favorite Picks・Comfort PicksをJSONへ保存できます。
 
 「バックアップから復元」は現在の内容を置き換えます。確認後、復元前のデータを保存先フォルダー内の `backups/` に自動退避します。不正なファイルや書き込み失敗時は既存データを保持します。Leagueのフォルダー設定、履歴、認証情報は対象外です。[形式と復元の詳細](docs/backup.md)。
 
@@ -101,7 +101,7 @@ Match upの「ビルド・ルーン」でアイテムをアイコンから選び
 
 ### チャンピオン対策
 
-Championsでチャンピオンを選び、Champion Notesの下にある「Darius対策」などの欄に対策を記入して保存します。自分がAatroxでもGarenでも、Dariusが敵に選ばれるとMatch upのMy Notesの上に「Darius対策」として表示されます。Roleにも依存しません。
+Libraryでチャンピオンを選び、Champion Notesの下にある「Darius対策」などの欄に対策を記入して保存します。自分がAatroxでもGarenでも、Dariusが敵に選ばれるとMatch upのMy Notesの上に「Darius対策」として表示されます。Roleにも依存しません。
 
 最大10,000文字で、Ctrl + Enterでも保存できます。空欄で保存すると共通対策を削除します。Champion Notesとは別に保存され、両方を編集中でも片方の保存で他方の入力は消えません。
 
@@ -125,7 +125,7 @@ Champion Select Activeの通知から画面を開き、対面だと思う敵Cham
 
 ### Match History
 
-League ClientへログインしてMatch Historyを開き、最近の試合を選択します。履歴と序盤の位置・CS・サモナースペルからRoleと対戦相手を自動判定します。必要なら修正し、「この対面のメモを書く」から気づきを追記して保存します。新規メモは「振り返り」カテゴリーで、日付（時刻なし）と試合IDだけを自動入力します。
+League ClientへログインしてMatch Historyを開き、最近の試合を選択します。履歴と序盤の位置・CS・サモナースペルからRoleと対戦相手を自動判定します。必要なら修正し、「この対面のメモを書く」から気づきを追記して保存します。新規メモには「振り返り」タグを付け、日付（時刻なし）とゲームIDを本文とは別の情報欄に表示します。
 
 直近20試合のうちサモナーズリフトの試合が対象です。履歴取得にはLeague Clientが必要ですが、保存したメモはオフラインでも読めます。判定できない場合はRoleと相手を選べます。[判定の詳細と検証範囲](docs/match-history.md)。
 
@@ -187,3 +187,9 @@ Champion名・画像は [Riot Games Data Dragon](https://developer.riotgames.com
 RiftNote is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
 
 All Championsはレーンタブと名前検索を組み合わせて絞り込めます。レーン分類は同梱データを使用し、分類未収録のチャンピオンはAllに表示します。分類元：[Meraki Analytics](https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json)。
+
+### メモとMatch Historyの振り返り
+
+メモのカテゴリー選択・カテゴリー検索は廃止し、履歴から作成したメモにだけ「振り返り」タグを表示します。日付とゲームIDは本文から分けて一つの小さな情報欄に表示します。本文の先頭でBackspaceを1回押すと、この情報欄をまとめて削除できます。削除ボタンはありません。本文と振り返りタグは残り、変更はページ保存で確定します。
+
+以前の自動入力形式（日付と試合IDの2行）も、振り返りメモであれば読み出し時に分離して表示します。一般の本文を自動で削除・書き換えたり、個人データを一括移行したりしません。既存バックアップとの互換性のため、内部のカテゴリー値と保存形式は維持しています。

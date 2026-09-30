@@ -39,7 +39,7 @@ export default function EnemyCounter({ enemy }: { enemy: Champion }) {
         <p className="counter-body">{body}</p>
       ) : (
         <p className="muted">
-          対策はまだありません。Championsで{enemy.name}を開くと記入できます。
+          対策はまだありません。Libraryで{enemy.name}を開くと記入できます。
         </p>
       )}
     </section>

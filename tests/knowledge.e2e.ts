@@ -16,7 +16,7 @@ test('notebook creates chapters, autosaves articles, protects failed writes and 
     let page = await app.firstWindow()
     await page.context().setOffline(true)
     await page.getByRole('button', { name: /Notebook/, exact: false }).click()
-    await expect(page.getByText('自分だけの、LoLの教科書。')).toBeVisible()
+    await expect(page.getByText('自分だけの、LoLの教科書。')).toHaveCount(0)
     await page.getByRole('button', { name: '＋ 章を作成' }).click()
     await page.getByLabel('章の名前').fill('レーン戦の基礎')
     await page.getByRole('button', { name: '決定', exact: true }).click()

@@ -64,7 +64,7 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await panel.getByRole('button', { name: data.items[0].name, exact: true }).click()
     await panel.getByLabel('ビルドの補足').fill('先に素材を購入')
     await page
-      .getByRole('button', { name: /Champions/, exact: false })
+      .getByRole('button', { name: /Library/, exact: false })
       .first()
       .click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
@@ -120,20 +120,20 @@ test('offline build and rune editing, navigation protection and collapsible pick
     await expect(recommended).toBeVisible()
     await recommended.locator('.collapsible > summary').click()
     await expect(recommended.locator('.curated-counter').first()).not.toBeVisible()
-    await page.getByRole('button', { name: 'Champions', exact: false }).first().click()
+    await page.getByRole('button', { name: 'Library', exact: false }).first().click()
     const favorites = page.locator('.pool-panel .collapsible')
     await favorites.locator(':scope > summary').click()
     await expect(favorites).not.toHaveAttribute('open', '')
     await expect(page.getByRole('group', { name: 'プールのレーン', exact: true })).toBeVisible()
     await expect(
-      page.getByRole('heading', { name: 'Favorite Champions', exact: true }),
+      page.getByRole('heading', { name: 'Favorite Picks', exact: true }),
     ).toBeVisible()
     await page.getByRole('button', { name: 'Match up', exact: false }).first().click()
-    await page.getByRole('button', { name: 'Champions', exact: false }).first().click()
+    await page.getByRole('button', { name: 'Library', exact: false }).first().click()
     await expect(favorites).not.toHaveAttribute('open', '')
     await expect(page.getByRole('group', { name: 'プールのレーン', exact: true })).toBeVisible()
     await expect(
-      page.getByRole('heading', { name: 'Favorite Champions', exact: true }),
+      page.getByRole('heading', { name: 'Favorite Picks', exact: true }),
     ).toBeVisible()
     await app.close()
     app = await electron.launch({ args: [resolve('.')], env })

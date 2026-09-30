@@ -799,6 +799,21 @@ h1 {
   color: #e0e4ec;
   margin-top: 12px;
 }
+.review-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 10px 0;
+  padding: 6px 10px;
+  border: 1px solid #343b49;
+  border-radius: 7px;
+  color: #a6afbe;
+  background: #11151c;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
 .note-editor {
   padding: 19px 23px 21px;
   background: #141820;

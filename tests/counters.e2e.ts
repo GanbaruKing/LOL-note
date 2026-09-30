@@ -15,7 +15,7 @@ test('champion page saves notes and counters together and shares counters across
   try {
     let page = await app.firstWindow()
     await page.context().setOffline(true)
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
     const counter = page.getByLabel('Darius対策の内容', { exact: true })
     await counter.fill('Qの外側に当たらない。\nパッシブが溜まったら離れる。')
@@ -79,7 +79,7 @@ test('champion page saves notes and counters together and shares counters across
     app = await electron.launch({ args: [resolve('.')], env })
     page = await app.firstWindow()
     await expect(page.getByLabel('敵チャンピオンの対策')).toContainText('5スタック')
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
     await page.getByLabel('Darius対策の内容').fill('')
     await page.getByRole('button', { name: '対策を保存', exact: true }).click()

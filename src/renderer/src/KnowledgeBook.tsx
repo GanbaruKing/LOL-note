@@ -541,7 +541,6 @@ export default function KnowledgeBook({
             <div className="book-welcome">
               <span className="book-kicker">A PLACE FOR YOUR KNOWLEDGE</span>
               <div className="book-monogram">N</div>
-              <h2>自分だけの、LoLの教科書。</h2>
               <p>
                 ウェーブ管理、視界、マクロ、試合での気づき。
                 <br />

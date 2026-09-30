@@ -25,13 +25,13 @@ export default function MatchupPool({
     .filter((p) => p.role === role && byId.has(p.championId))
     .sort((a, b) => b.confidence - a.confidence || a.championId - b.championId)
   return (
-    <section className="matchup-pool panel" aria-label="Match upのFavorite Champions">
+    <section className="matchup-pool panel" aria-label="Match upのFavorite Picks">
       <Collapsible
         id="matchup-favorites"
         title={
           <>
             {' '}
-            Favorite Champions <span className="count">{entries.length}</span>
+            Favorite Picks <span className="count">{entries.length}</span>
           </>
         }
       >

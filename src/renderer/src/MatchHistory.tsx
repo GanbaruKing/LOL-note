@@ -1,3 +1,4 @@
+import type { ReviewInfo } from '../../shared/reviewNote'
 import { useEffect, useRef, useState } from 'react'
 import {
   ROLES,
@@ -33,7 +34,7 @@ function Review({
 }: {
   game: HistoryMatch
   champions: Champion[]
-  onOpen: (key: MatchupKey, draft: string) => void
+  onOpen: (key: MatchupKey, draft: ReviewInfo) => void
 }) {
   const [role, setRole] = useState<Role | ''>(game.role ?? '')
   const [enemy, setEnemy] = useState<number | ''>(opponent(game, game.role ?? ''))
@@ -100,14 +101,17 @@ function Review({
           if (!role || !selected || !own) return
           onOpen(
             { myChampionId: own.id, enemyChampionId: selected.id, role },
-            `日付：${new Date(game.createdAt).toLocaleDateString('ja-JP')}\n試合ID：${game.gameId}\n\n`,
+            {
+              date: new Date(game.createdAt).toLocaleDateString('ja-JP'),
+              gameId: String(game.gameId),
+            },
           )
         }}
       >
         この対面のメモを書く →
       </button>
       <p className="muted">
-        試合情報を入力欄に入れてMatch upを開きます。気づきを追記して保存してください。
+        日付とゲームIDを添えてMatch upを開きます。本文に気づきを書いて保存してください。
       </p>
     </section>
   )
@@ -118,7 +122,7 @@ export default function MatchHistory({
   onOpen,
 }: {
   champions: Champion[]
-  onOpen: (key: MatchupKey, draft: string) => void
+  onOpen: (key: MatchupKey, draft: ReviewInfo) => void
 }) {
   const [list, setList] = useState<HistoryList | null>(null)
   const [detail, setDetail] = useState<HistoryMatch | null>(null)

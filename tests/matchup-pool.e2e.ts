@@ -22,7 +22,7 @@ test('matchup pool replaces statistics and selects own picks by lane without los
     const page = await app.firstWindow()
     await expect(page).toHaveTitle('RiftNote')
     expect(await app.evaluate(({ app }) => app.getName())).toBe('RiftNote')
-    const panel = page.getByRole('region', { name: 'Match upのFavorite Champions' })
+    const panel = page.getByRole('region', { name: 'Match upのFavorite Picks' })
     await expect(panel.locator('.matchup-pool-pick')).toHaveCount(2)
     await expect(panel.locator('.matchup-pool-pick').first()).toContainText('Garen')
     await expect(page.getByRole('heading', { name: 'Top Matchup Picks' })).toHaveCount(0)

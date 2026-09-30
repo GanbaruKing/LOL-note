@@ -25,7 +25,7 @@ test('gallery opens details and lane pools persist with independent confidence',
       })),
     ).toEqual({ data: env.NOTEBOOK_TEST_DATA_DIR, session: env.NOTEBOOK_TEST_DATA_DIR })
     await page.context().setOffline(true)
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await expect(page.locator('.library-card')).toHaveCount(173)
     const lanes = page.getByRole('group', { name: '一覧のレーン', exact: true })
     await lanes.getByRole('button', { name: 'TOP', exact: true }).click()
@@ -64,7 +64,7 @@ test('gallery opens details and lane pools persist with independent confidence',
     await app.close()
     app = await launch()
     page = await app.firstWindow()
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await expect(page.getByLabel('AatroxのTOP自信度')).toHaveValue('5')
     await page.getByRole('button', { name: 'AatroxをTOPから解除', exact: true }).click()
     await expect(page.getByLabel('AatroxのTOP自信度')).toHaveCount(0)
@@ -97,12 +97,12 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await expect(page.getByText('前の試合の気づきを。', { exact: true })).toHaveCount(0)
     await page.getByLabel('新しいメモ', { exact: true }).fill('ダリウス対面のメモ')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText('ダリウス対面のメモ')
     await expect(page.getByText('RECENTLY UPDATED', { exact: true })).toHaveCount(0)
     await expect(
       page.locator('.matchup-picks').getByRole('heading', { name: 'Comfort Picks' }),
     ).toBeVisible()
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Champion Notes', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: '相手のチャンピオンを選択' })).toHaveCount(0)
@@ -119,11 +119,13 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await expect(page.locator('.champion-matchup-card')).toHaveCount(1)
     await page.getByLabel('新しいメモ', { exact: true }).fill('QとEのコンボを練習する')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveText('QとEのコンボを練習する')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText('QとEのコンボを練習する')
     await page.getByRole('button', { name: /メモ\d+を編集/ }).click()
     await page.getByLabel('メモを編集', { exact: true }).fill('基本コンボとパッシブを意識する')
     await page.getByRole('button', { name: '変更を保存', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText(
+      '基本コンボとパッシブを意識する',
+    )
     await page.getByLabel('新しいメモ', { exact: true }).fill('未保存の単体メモ')
     await page.getByRole('button', { name: '← チャンピオン一覧に戻る' }).click()
     await expect(page.getByRole('alertdialog')).toBeVisible()
@@ -134,7 +136,7 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await page.getByLabel('チャンピオン一覧を検索').fill('ガレン')
     await page.getByRole('button', { name: 'Garenの詳細を開く', exact: true }).click()
     await expect(page.locator('.champion-header')).toContainText('Garen')
-    await expect(page.locator('.note-body')).toHaveCount(0)
+    await expect(page.locator('#personal-notes .note-body')).toHaveCount(0)
     await expect(page.getByLabel('チャンピオンの対面メモ一覧')).not.toContainText(
       'ダリウス対面のメモ',
     )
@@ -142,21 +144,25 @@ test('Champions focuses on standalone notes and lists its existing matchup notes
     await expect(page.getByLabel('チャンピオン一覧を検索')).toHaveValue('ガレン')
     await page.getByRole('button', { name: '検索・絞り込みをクリア' }).click()
     await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText(
+      '基本コンボとパッシブを意識する',
+    )
     await page.evaluate(() => window.scrollTo(0, 0))
     await page.screenshot({ path: 'docs/screenshots/champions.png', fullPage: true })
     await page.getByRole('button', { name: '対面ページを開く →' }).click()
     await expect(page.getByRole('heading', { name: 'Match up', exact: true })).toBeVisible()
-    await expect(page.locator('.note-body')).toHaveText('ダリウス対面のメモ')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText('ダリウス対面のメモ')
     await app.close()
     app = await launch()
     page = await app.firstWindow()
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByRole('button', { name: 'Aatroxの詳細を開く', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveText('基本コンボとパッシブを意識する')
+    await expect(page.locator('#personal-notes .note-body')).toHaveText(
+      '基本コンボとパッシブを意識する',
+    )
     await page.getByRole('button', { name: /メモ\d+を削除/ }).click()
     await page.getByRole('button', { name: '削除する', exact: true }).click()
-    await expect(page.locator('.note-body')).toHaveCount(0)
+    await expect(page.locator('#personal-notes .note-body')).toHaveCount(0)
     await expect(page.getByLabel('チャンピオンの対面メモ一覧')).toContainText('ダリウス対面のメモ')
   } finally {
     await app.close()
@@ -186,7 +192,6 @@ test('offline Electron notebook: CRUD, isolation, validation and restart persist
       await page.evaluate(() => typeof (window as unknown as { require?: unknown }).require),
     ).toBe('undefined')
     await page.getByLabel('新しいメモ', { exact: true }).fill('DariusのQを見てから距離を調整する。')
-    await page.getByLabel('メモのカテゴリー').selectOption('Trading')
     await page.getByRole('button', { name: '＋ メモを保存', exact: true }).click()
     await expect(page.locator('.note-body')).toHaveText('DariusのQを見てから距離を調整する。')
     await page.getByRole('button', { name: '評価4', exact: true }).click()

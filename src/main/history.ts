@@ -146,7 +146,8 @@ export class HistoryService {
     )
   }
   detail(gameId: unknown): Promise<HistoryMatch> {
-    if (!positive(gameId)) return Promise.reject(new ValidationError('試合IDが正しくありません。'))
+    if (!positive(gameId))
+      return Promise.reject(new ValidationError('ゲームIDが正しくありません。'))
     return this.read(
       `/lol-match-history/v1/games/${gameId}`,
       (raw, puuid, timeline) => parseHistoryMatch(raw, puuid, gameId, timeline),

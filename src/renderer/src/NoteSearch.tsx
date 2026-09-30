@@ -1,11 +1,6 @@
+import NoteContent, { ReviewTag } from './NoteContent'
 import { useEffect, useState } from 'react'
-import {
-  CATEGORIES,
-  ROLES,
-  type Champion,
-  type SearchInput,
-  type SearchHit,
-} from '../../shared/contracts'
+import { ROLES, type Champion, type SearchInput, type SearchHit } from '../../shared/contracts'
 
 export default function NoteSearch({
   champions,
@@ -70,18 +65,7 @@ export default function NoteSearch({
             <option key={r}>{r}</option>
           ))}
         </select>
-        <select
-          aria-label="検索カテゴリー"
-          value={filters.category}
-          onChange={(e) =>
-            setFilters({ ...filters, category: e.target.value as SearchInput['category'] })
-          }
-        >
-          <option value="ALL">全カテゴリー</option>
-          {CATEGORIES.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
+
         <label>
           <input
             type="checkbox"
@@ -112,8 +96,8 @@ export default function NoteSearch({
               </h2>
               <button onClick={() => onOpen(hit)}>ノートを開く →</button>
             </div>
-            <span className="category-badge">{hit.category}</span>
-            <p className="note-body">{hit.body}</p>
+            <ReviewTag note={hit} />
+            <NoteContent note={hit} />
           </article>
         ))}
       {!loading && !hits.length && <p className="empty">一致するメモはありません。</p>}

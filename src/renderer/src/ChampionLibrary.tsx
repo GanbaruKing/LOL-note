@@ -40,7 +40,7 @@ export default function ChampionLibrary({
   return (
     <div className="champion-library">
       <section className="pool-panel panel" aria-label="レーン別チャンピオンプール">
-        <h2>Favorite Champions</h2>
+        <h2>Favorite Picks</h2>
         <div className="section-title">
           <span className="muted">レーンごとに、使うチャンピオンを登録</span>
         </div>

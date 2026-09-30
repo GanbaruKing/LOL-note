@@ -26,7 +26,7 @@ test('curated picks work offline, filter by role and never seed or replace perso
     await page.getByLabel('ROLE', { exact: true }).selectOption('MID')
     await expect(panel).toContainText('まだ登録されていません')
     await expect(panel).not.toContainText('Dr. Mundo')
-    await page.getByRole('button', { name: /Champions/ }).click()
+    await page.getByRole('button', { name: /Library/ }).click()
     await page.getByRole('button', { name: 'Dariusの詳細を開く', exact: true }).click()
     await expect(panel).toHaveCount(0)
     await expect(page.getByLabel('Darius対策の内容', { exact: true })).toHaveValue(

@@ -1,3 +1,4 @@
+import NoteContent, { ReviewTag } from './NoteContent'
 import { useEffect, useState } from 'react'
 import {
   ROLES,
@@ -186,22 +187,18 @@ export default function ChampSelect({
           {!matchup.notes.length && <p className="empty">この対面のメモはまだありません。</p>}
           {matchup.notes.map((n) => (
             <article className="note-card" key={n.id}>
-              <span className="category-badge">
-                {n.pinned ? '★ PIN · ' : ''}
-                {n.category}
-              </span>
-              <p className="note-body">{n.body}</p>
+              {n.pinned ? <span className="category-badge">★ PIN</span> : null}
+              <ReviewTag note={n} />
+              <NoteContent note={n} />
             </article>
           ))}
           <h3>Champion Notes</h3>
           {!general.length && <p className="pool-empty">単体メモはまだありません。</p>}
           {general.map((n) => (
             <article className="note-card" key={n.id}>
-              <span className="category-badge">
-                {n.pinned ? '★ PIN · ' : ''}
-                {n.category}
-              </span>
-              <p className="note-body">{n.body}</p>
+              {n.pinned ? <span className="category-badge">★ PIN</span> : null}
+              <ReviewTag note={n} />
+              <NoteContent note={n} />
             </article>
           ))}
         </section>

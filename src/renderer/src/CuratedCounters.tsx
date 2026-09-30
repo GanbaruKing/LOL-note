@@ -27,7 +27,7 @@ export default function CuratedCounters({
         id={recommended ? 'recommended-picks' : 'curated-counters'}
         title={
           recommended
-            ? 'おすすめピック'
+            ? 'Recommended Picks'
             : `${catalog.champions.find((c) => c.id === championId)?.name}へのカウンターピック`
         }
       >
