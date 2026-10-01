@@ -8,7 +8,13 @@ export default function Collapsible({
   title: ReactNode
   children: ReactNode
 }) {
-  const [open, setOpen] = useState(() => sessionStorage.getItem(`collapse:${id}`) !== 'closed')
+  const [open, setOpen] = useState(() => {
+    try {
+      return localStorage.getItem(`collapse:${id}`) !== 'closed'
+    } catch {
+      return true
+    }
+  })
   return (
     <details
       className="collapsible"
@@ -16,7 +22,11 @@ export default function Collapsible({
       onToggle={(e) => {
         const value = e.currentTarget.open
         setOpen(value)
-        sessionStorage.setItem(`collapse:${id}`, value ? 'open' : 'closed')
+        try {
+          localStorage.setItem(`collapse:${id}`, value ? 'open' : 'closed')
+        } catch {
+          // Keep folding usable even when persistent storage is unavailable.
+        }
       }}
     >
       <summary>{title}</summary>
