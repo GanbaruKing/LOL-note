@@ -814,6 +814,10 @@ h1 {
   font-size: 12px;
   overflow-wrap: anywhere;
 }
+.champion-matchups > input {
+  width: 100%;
+  margin: 12px 0;
+}
 .note-editor {
   padding: 19px 23px 21px;
   background: #141820;

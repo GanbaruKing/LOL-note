@@ -85,7 +85,7 @@ export interface SearchHit extends Note {
   key: MatchupKey | null
 }
 export interface LcuState {
-  status: 'disconnected' | 'connected' | 'champ-select' | 'error'
+  status: 'disconnected' | 'connected' | 'champ-select' | 'in-game' | 'error'
   phase: string | null
   sessionId: string | null
   role: Role | null

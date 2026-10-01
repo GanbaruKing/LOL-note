@@ -230,6 +230,18 @@ export class LcuService {
       const phase = await this.get(credentials, '/lol-gameflow/v1/gameflow-phase')
       if (typeof phase !== 'string') throw new Error('Invalid game phase')
       if (phase !== 'ChampSelect') {
+        if (
+          ['GameStart', 'InProgress', 'Reconnect'].includes(phase) &&
+          (this.state.status === 'champ-select' || this.state.status === 'in-game')
+        ) {
+          this.state = {
+            ...this.state,
+            status: 'in-game',
+            phase,
+            message: '試合中 · 最後に取得したPick情報を表示しています。',
+          }
+          return
+        }
         this.state = {
           ...disconnected(),
           status: 'connected',

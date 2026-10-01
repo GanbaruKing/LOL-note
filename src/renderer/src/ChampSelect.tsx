@@ -32,7 +32,7 @@ export default function ChampSelect({
     role = manualRole ?? state.role
   const ownChampion = champions.find((c) => c.id === own)
   const currentEnemy = enemy && state.enemyChampionIds.includes(enemy) ? enemy : null
-  const current = state.status === 'champ-select'
+  const current = state.status === 'champ-select' || state.status === 'in-game'
   useEffect(() => {
     let cancelled = false
     setMatchup(null)
@@ -81,7 +81,9 @@ export default function ChampSelect({
   return (
     <div className="select-page">
       <div className="panel select-context">
-        <strong>Champion Select Active</strong>
+        <strong>
+          {state.status === 'in-game' ? '試合中 · Pick情報を保持' : 'Champion Select Active'}
+        </strong>
         <span>Role取得：{state.role ?? '未確定'}</span>
         <label>
           表示レーン

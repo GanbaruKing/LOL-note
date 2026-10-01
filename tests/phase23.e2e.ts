@@ -103,6 +103,31 @@ test('Phase 2 knowledge flows into a read-only live Champ Select session', async
       ),
     ).toBe(false)
     await page.screenshot({ path: 'docs/screenshots/champ-select.png', fullPage: true })
+    mock.scenario.phase = 'GameStart'
+    await expect(page.locator('.select-context')).toContainText('試合中', { timeout: 10000 })
+    await expect(page.locator('.select-notes')).toContainText('Ghost中は距離を取る')
+    mock.scenario.phase = 'InProgress'
+    await expect
+      .poll(
+        async () =>
+          (await page.evaluate(() => window.notebook.getLcuState())).ok &&
+          (await page.evaluate(async () => {
+            const result = await window.notebook.getLcuState()
+            return result.ok ? result.data.phase : null
+          })),
+        { timeout: 10000 },
+      )
+      .toBe('InProgress')
+    await expect(
+      page.locator('.enemy-picks').getByRole('button', { name: 'Darius', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('.select-notes')).toContainText('Ghost中は距離を取る')
+    mock.scenario.phase = 'Lobby'
+    await expect(page.locator('.enemy-picks')).toHaveCount(0, { timeout: 10000 })
+    mock.scenario.phase = 'ChampSelect'
+    await expect(page.locator('.enemy-picks')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.select-notes')).toHaveCount(0)
+    await page.locator('.enemy-picks').getByRole('button', { name: 'Darius', exact: true }).click()
     mock.scenario.own = 0
     mock.scenario.intent = 86
     await expect(page.getByLabel('Champ Selectの自分Pick')).toHaveValue('86', { timeout: 10000 })

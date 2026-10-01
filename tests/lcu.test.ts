@@ -127,3 +127,36 @@ test('polling clears stale data on disconnect/errors and renews selection sessio
   assert.equal(service.snapshot().status, 'disconnected')
   assert.equal(service.snapshot().role, null)
 })
+
+test('game launch keeps the captured picks and session until leaving the game', async () => {
+  let phase = 'InProgress'
+  const paths: string[] = []
+  const service = new LcuService(
+    async () => ({ port: 1234, password: 'test-only' }),
+    async (_credentials, path) => {
+      paths.push(path)
+      return path.includes('gameflow') ? phase : session
+    },
+  )
+  await service.poll()
+  assert.deepEqual(service.snapshot().enemyChampionIds, [])
+  phase = 'ChampSelect'
+  await service.poll()
+  const selected = service.snapshot()
+  for (const next of ['GameStart', 'InProgress', 'Reconnect', 'InProgress']) {
+    phase = next
+    const previousRequests = paths.length
+    await service.poll()
+    assert.equal(service.snapshot().status, 'in-game')
+    assert.equal(service.snapshot().sessionId, selected.sessionId)
+    assert.equal(service.snapshot().ownChampionId, selected.ownChampionId)
+    assert.deepEqual(service.snapshot().enemyChampionIds, selected.enemyChampionIds)
+    assert.equal(paths.length, previousRequests + 1)
+  }
+  phase = 'Lobby'
+  await service.poll()
+  assert.deepEqual(service.snapshot().enemyChampionIds, [])
+  phase = 'ChampSelect'
+  await service.poll()
+  assert.notEqual(service.snapshot().sessionId, selected.sessionId)
+})

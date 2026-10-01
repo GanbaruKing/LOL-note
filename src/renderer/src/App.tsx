@@ -209,6 +209,7 @@ export default function App() {
     laneFilter: Role | 'ALL'
   }>({ role: 'TOP', query: '', laneFilter: 'ALL' })
   const libraryScroll = useRef(0)
+  const [detailQuery, setDetailQuery] = useState('')
   const [detailRole, setDetailRole] = useState<Role | 'ALL'>('ALL')
   const [championData, setChampionData] = useState<ChampionPage | null>(null)
   const [counterBody, setCounterBody] = useState('')
@@ -581,8 +582,25 @@ export default function App() {
       setBusy(false)
     }
   }
-  const detailMatchups =
-    championData?.matchups.filter((m) => detailRole === 'ALL' || m.role === detailRole) ?? []
+  const detailMatchups = (championData?.matchups ?? [])
+    .filter((m) => {
+      if (!m.notes.length || (detailRole !== 'ALL' && m.role !== detailRole)) return false
+      const opponent = byId.get(m.enemyChampionId)
+      const haystack = normalizeChampionSearch(
+        `${opponent?.name ?? ''} ${opponent?.nameJa ?? ''} ${opponent?.slug ?? ''} ${m.notes.map((n) => splitReviewNote(n).body).join(' ')}`,
+      )
+      return detailQuery
+        .trim()
+        .split(/\s+/)
+        .every((word) => haystack.includes(normalizeChampionSearch(word)))
+    })
+    .sort(
+      (a, b) =>
+        (byId.get(a.enemyChampionId)?.name ?? '').localeCompare(
+          byId.get(b.enemyChampionId)?.name ?? '',
+          'en',
+        ) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role),
+    )
 
   const noteEditor = (
     <form
@@ -825,7 +843,9 @@ export default function App() {
             onClick={() => navigate(() => setPage('select'))}
           >
             <span>◇</span>Champ Select
-            {lcu.status === 'champ-select' && <span className="connection-dot" />}
+            {(lcu.status === 'champ-select' || lcu.status === 'in-game') && (
+              <span className="connection-dot" />
+            )}
           </button>
           <button
             className={page === 'settings' ? 'active' : ''}
@@ -876,7 +896,7 @@ export default function App() {
         <main>
           <div className={`lcu-banner ${lcu.status}`} role="status">
             <span>{lcu.message}</span>
-            {lcu.status === 'champ-select' && page !== 'select' && (
+            {(lcu.status === 'champ-select' || lcu.status === 'in-game') && page !== 'select' && (
               <button onClick={() => navigate(() => setPage('select'))}>
                 Champ Selectを開く →
               </button>
@@ -948,6 +968,8 @@ export default function App() {
                   ? choose(hit.key)
                   : navigate(() => {
                       setChampionId(hit.championId)
+                      setDetailQuery('')
+                      setDetailRole('ALL')
                       setChampionDetailOpen(true)
                       setPage('champions')
                     })
@@ -955,7 +977,7 @@ export default function App() {
             />
           ) : page === 'select' ? (
             <ChampSelect
-              key={`${lcu.status}-${lcu.sessionId}`}
+              key={lcu.sessionId ?? lcu.status}
               state={lcu}
               champions={champions}
               onOpen={choose}
@@ -1063,6 +1085,7 @@ export default function App() {
                   setChampionId(id)
                   setChampionDetailOpen(true)
                   setDetailRole('ALL')
+                  setDetailQuery('')
                 })
               }
               onSave={(entry) => void changePool(() => window.notebook.savePool(entry))}
@@ -1155,7 +1178,16 @@ export default function App() {
                     <h2>Matchup Notes</h2>
                     <span className="count">{detailMatchups.length}</span>
                   </div>
-                  <p className="muted">{selectedChampion?.name}で記録した対面ごとのメモ</p>
+                  <p className="muted">
+                    {selectedChampion?.name}で記録した対面ごとのメモ · 相手の名前 A–Z順
+                  </p>
+                  <input
+                    aria-label="対面メモを検索"
+                    placeholder="相手のチャンピオン名・メモ本文で検索"
+                    value={detailQuery}
+                    maxLength={200}
+                    onChange={(e) => setDetailQuery(e.target.value)}
+                  />
                   <div className="lane-tabs" role="group" aria-label="対面メモのレーン">
                     {(['ALL', ...ROLES] as const).map((lane) => (
                       <button
@@ -1184,21 +1216,17 @@ export default function App() {
                               対面ページを開く →
                             </button>
                           </div>
-                          {m.notes.length ? (
-                            m.notes.map((note) => (
-                              <div className="matchup-note-preview" key={note.id}>
-                                <ReviewTag note={note} />
-                                <NoteContent note={note} />
-                              </div>
-                            ))
-                          ) : (
-                            <p className="muted">まだ対面メモはありません。</p>
-                          )}
+                          {m.notes.map((note) => (
+                            <div className="matchup-note-preview" key={note.id}>
+                              <ReviewTag note={note} />
+                              <NoteContent note={note} />
+                            </div>
+                          ))}
                         </article>
                       )
                     })
                   ) : (
-                    <p className="empty">選択したレーンの対面メモはまだありません。</p>
+                    <p className="empty">条件に一致する対面メモはありません。</p>
                   )}
                 </section>
               </div>
