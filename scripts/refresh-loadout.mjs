@@ -1,8 +1,9 @@
+import { fetchData } from './data-http.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 const { version } = JSON.parse(await readFile('resources/champions.json', 'utf8'))
 const base = `https://ddragon.leagueoflegends.com/cdn/${version}`
 async function get(url) {
-  const r = await fetch(url, { signal: AbortSignal.timeout(30000) })
+  const r = await fetchData(url, { signal: AbortSignal.timeout(30000) })
   if (!r.ok) throw new Error(`${r.status}: ${url}`)
   return r
 }

@@ -1,5 +1,12 @@
 import { test, expect, _electron as electron } from '@playwright/test'
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs'
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  unlinkSync,
+  renameSync,
+} from 'node:fs'
 import { resolve, join } from 'node:path'
 import { NotebookRepository } from '../src/main/repository'
 import catalog from '../resources/champions.json'
@@ -52,6 +59,7 @@ test('settings exports, cancels, rejects invalid backups and restores with a saf
       dialog.showMessageBox = async () => ({ response: 1, checkboxChecked: false })
     })
     // A safety-copy failure must prevent replacement of the current notebook.
+    renameSync(join(folder, 'backups'), join(folder, 'backups-held'))
     writeFileSync(join(folder, 'backups'), 'blocked directory')
     await page.getByRole('button', { name: 'バックアップから復元', exact: true }).click()
     await expect(page.getByRole('alert')).toContainText('データを読み書きできませんでした')
@@ -60,6 +68,7 @@ test('settings exports, cancels, rejects invalid backups and restores with a saf
       data: '復元前の対策',
     })
     unlinkSync(join(folder, 'backups'))
+    renameSync(join(folder, 'backups-held'), join(folder, 'backups'))
     await page.getByRole('button', { name: 'バックアップから復元', exact: true }).click()
     await expect(page.getByRole('status', { name: 'バックアップ処理結果' })).toContainText(
       '復元しました',

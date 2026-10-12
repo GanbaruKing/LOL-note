@@ -1,3 +1,4 @@
+import { fetchData } from './data-http.mjs'
 import { readFile, writeFile } from 'node:fs/promises'
 
 const catalog = JSON.parse(await readFile('resources/champions.json', 'utf8'))
@@ -6,7 +7,7 @@ const champions = {}
 for (let i = 0; i < catalog.champions.length; i += 8) {
   await Promise.all(
     catalog.champions.slice(i, i + 8).map(async (champion) => {
-      const response = await fetch(`${base}/${champion.slug}.json`, {
+      const response = await fetchData(`${base}/${champion.slug}.json`, {
         signal: AbortSignal.timeout(30000),
       })
       if (!response.ok) throw new Error(`${champion.slug}: ${response.status}`)
@@ -20,7 +21,13 @@ for (let i = 0; i < catalog.champions.length; i += 8) {
         ) {
           throw new Error(`Invalid cooldown: ${champion.slug} ${spell.id}`)
         }
-        return { key: ['Q', 'W', 'E', 'R'][index], name: spell.name, cooldown: spell.cooldown }
+        return {
+          key: ['Q', 'W', 'E', 'R'][index],
+          id: spell.id,
+          name: spell.name,
+          cooldown: spell.cooldown,
+          description: spell.description.replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, ''),
+        }
       })
     }),
   )

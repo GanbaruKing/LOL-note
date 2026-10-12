@@ -1,4 +1,5 @@
-import NoteContent, { ReviewTag } from './NoteContent'
+import SearchExcerpt from './SearchExcerpt'
+import { ReviewTag } from './NoteContent'
 import { useEffect, useState } from 'react'
 import { ROLES, type Champion, type SearchInput, type SearchHit } from '../../shared/contracts'
 
@@ -60,7 +61,7 @@ export default function NoteSearch({
           value={filters.role}
           onChange={(e) => setFilters({ ...filters, role: e.target.value as SearchInput['role'] })}
         >
-          <option value="ALL">全レーン・単体メモ</option>
+          <option value="ALL">すべての保存場所</option>
           {ROLES.map((r) => (
             <option key={r}>{r}</option>
           ))}
@@ -89,15 +90,20 @@ export default function NoteSearch({
             <div className="section-title">
               <h2>
                 {hit.pinned ? '★ ' : ''}
-                {name(hit.championId)}
+                {hit.scope === 'book' ? '' : name(hit.championId)}
                 {hit.key
                   ? ` vs ${name(hit.key.enemyChampionId)} · ${hit.key.role}`
-                  : ' · Champion Notes'}
+                  : hit.scope === 'book'
+                    ? ''
+                    : hit.scope === 'counter'
+                      ? ' · 共通対策'
+                      : ' · Champion Notes'}
+                {hit.title && <small className="search-location">{hit.title}</small>}
               </h2>
               <button onClick={() => onOpen(hit)}>ノートを開く →</button>
             </div>
             <ReviewTag note={hit} />
-            <NoteContent note={hit} />
+            <SearchExcerpt body={hit.body} query={filters.query} />
           </article>
         ))}
       {!loading && !hits.length && <p className="empty">一致するメモはありません。</p>}

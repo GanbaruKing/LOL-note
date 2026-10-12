@@ -1,3 +1,4 @@
+import { BackupProtection } from './protection'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import counterNotes from '../../resources/counter-notes.json'
 import { join, extname } from 'node:path'
@@ -15,6 +16,8 @@ import { HistoryService } from './history'
 let repository: NotebookRepository | undefined
 let mainWindow: BrowserWindow | null = null
 let lcu: LcuService | undefined
+let protection: BackupProtection | undefined
+let backupTimer: ReturnType<typeof setInterval> | undefined
 app.setName('RiftNote')
 // Keep the existing storage identity when renaming the product, including Chromium data.
 // Only explicit test launches can redirect storage; the renderer cannot choose a path.
@@ -48,6 +51,17 @@ function registerApi(databasePath: string) {
     createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
   )
   const handlers: Record<string, (input: unknown) => unknown> = {
+    getDeletedArticles: () => repository!.getDeletedArticles(),
+    restoreDeletedArticle: (input) => repository!.restoreDeletedArticle(input),
+    listTrash: () => repository!.listTrash(),
+    restoreTrash: (input) => repository!.restoreTrash(input),
+    getTemplate: (input) => repository!.getTemplate(input),
+    saveTemplate: (input) => repository!.saveTemplate(input),
+    getProtectionStatus: () => protection!.status(),
+    openBackupFolder: async () => {
+      const error = await shell.openPath(protection!.status().directory)
+      if (error) throw new ValidationError('バックアップフォルダーを開けませんでした。')
+    },
     savePage: (input) => repository!.savePage(input),
     getLoadout: (input) => repository!.getLoadout(input),
     saveLoadout: (input) => repository!.saveLoadout(input),
@@ -56,6 +70,7 @@ function registerApi(databasePath: string) {
     openCounterSource: async (input) => {
       if (
         typeof input !== 'string' ||
+        !input.startsWith('https://') ||
         !counterNotes.entries.some((entry) => entry.sources.some((source) => source.url === input))
       )
         throw new ValidationError('この出典は開けません。')
@@ -106,6 +121,7 @@ function registerApi(databasePath: string) {
       const safetyPath = join(directory, `before-restore-${Date.now()}-${randomUUID()}.json`)
       writeBackup(safetyPath)
       repository!.restoreBackup(backup)
+      protection!.snapshot()
       return safetyPath
     },
     getChampionCounter: (input) => repository!.getChampionCounter(input),
@@ -204,15 +220,19 @@ async function createWindow() {
   })
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
   mainWindow.webContents.on('will-navigate', (event) => event.preventDefault())
+  mainWindow.webContents.on('will-frame-navigate', (event) => event.preventDefault())
+  mainWindow.webContents.on('will-attach-webview', (event) => event.preventDefault())
+  mainWindow.webContents.session.setPermissionCheckHandler(() => false)
   mainWindow.webContents.on('will-prevent-unload', (event) => {
     const response = dialog.showMessageBoxSync(mainWindow!, {
       type: 'question',
-      buttons: ['編集を続ける', '変更を破棄して閉じる'],
+      buttons: ['編集を続ける', '下書きを残して閉じる'],
       defaultId: 0,
       cancelId: 0,
       title: '未保存のメモ',
       message: '未保存の変更があります。閉じますか？',
-      detail: '保存済みのメモは残ります。保存処理中の場合は、完了を待ってください。',
+      detail:
+        '退避済みの下書きは次回起動時に復元できます。保存処理中の場合は、完了を待ってください。',
     })
     if (response === 1) event.preventDefault()
   })
@@ -240,6 +260,10 @@ else {
       mkdirSync(directory, { recursive: true })
       const databasePath = join(directory, 'notebook.sqlite')
       repository = new NotebookRepository(databasePath, catalog.champions)
+      protection = new BackupProtection(join(directory, 'backups'), repository)
+      protection.snapshot()
+      backupTimer = setInterval(() => protection?.snapshot(), 5 * 60 * 1000)
+      backupTimer.unref()
       lcu = new LcuService(
         createDiscovery(() => repository!.getLeagueFolder(), !process.env.NOTEBOOK_TEST_DATA_DIR),
       )
@@ -262,6 +286,8 @@ else {
   })
   app.on('will-quit', () => {
     lcu?.stop()
+    if (backupTimer) clearInterval(backupTimer)
+    protection?.snapshot()
     repository?.close()
   })
 }

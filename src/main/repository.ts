@@ -1,3 +1,7 @@
+import { randomUUID } from 'node:crypto'
+import { matchesSearch } from '../shared/search'
+import { parsePatch } from '../shared/validation'
+import type { TrashNote, LoadoutTemplate } from '../shared/contracts'
 import { emptyLoadout, parseLoadout } from '../shared/loadout'
 import { DatabaseSync } from 'node:sqlite'
 import { emptyKnowledgeBook, parseKnowledgeBook } from '../shared/knowledge'
@@ -34,7 +38,7 @@ export class NotebookRepository {
     try {
       this.db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000;')
       const version = this.db.prepare('PRAGMA user_version').get()!.user_version as number
-      if (version > 6) throw new Error('Unsupported database version')
+      if (version > 7) throw new Error('Unsupported database version')
       this.transaction(() => {
         if (version === 0) {
           this.db.exec(`
@@ -130,6 +134,16 @@ export class NotebookRepository {
             'CREATE INDEX notes_matchup ON matchup_notes(matchup_id); CREATE INDEX champion_notes_champion ON champion_notes(champion_id); PRAGMA user_version=6;',
           )
         }
+        if (version < 7) {
+          for (const table of ['champion_notes', 'matchup_notes']) {
+            const columns = this.db.prepare(`PRAGMA table_info(${table})`).all()
+            if (!columns.some((c) => c.name === 'verified_patch'))
+              this.db.exec(
+                `ALTER TABLE ${table} ADD COLUMN verified_patch TEXT NOT NULL DEFAULT ''`,
+              )
+          }
+          this.db.exec('PRAGMA user_version=7')
+        }
         const insert = this.db.prepare(
           'INSERT INTO champions (id, slug, name, name_ja) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name=excluded.name, name_ja=excluded.name_ja',
         )
@@ -207,19 +221,63 @@ export class NotebookRepository {
     const row = this.db.prepare("SELECT value FROM settings WHERE key='knowledge-book'").get()
     return row ? parseKnowledgeBook(JSON.parse(row.value as string)) : emptyKnowledgeBook()
   }
-  saveKnowledgeBook(input: unknown) {
+  getDeletedArticles() {
+    const row = this.db.prepare("SELECT value FROM settings WHERE key='deleted-articles'").get()
+    return row ? parseKnowledgeBook(JSON.parse(row.value as string)) : emptyKnowledgeBook()
+  }
+  restoreDeletedArticle(input: unknown) {
+    if (typeof input !== 'string') throw new ValidationError('記事IDが正しくありません。')
+    return this.transaction(() => {
+      const deleted = this.getDeletedArticles(),
+        book = this.getKnowledgeBook()
+      const article = deleted.articles.find((a) => a.id === input)
+      if (!article || book.articles.some((a) => a.id === input))
+        throw new ValidationError('復元する記事が見つからないか、同じ記事が存在します。')
+      const chapter = deleted.chapters.find((c) => c.id === article.chapterId)
+      if (chapter && !book.chapters.some((c) => c.id === chapter.id)) book.chapters.push(chapter)
+      book.articles.push(article)
+      const restored = this.saveKnowledgeBook(book, false)
+      const articles = deleted.articles.filter((a) => a.id !== input)
+      this.setSetting('deleted-articles', {
+        articles,
+        chapters: deleted.chapters.filter((c) => articles.some((a) => a.chapterId === c.id)),
+      })
+      return restored
+    })
+  }
+  saveKnowledgeBook(input: unknown, retainDeleted = true) {
     const book = parseKnowledgeBook(input)
-    this.db
-      .prepare(
-        "INSERT INTO settings(key,value) VALUES('knowledge-book',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-      )
-      .run(JSON.stringify(book))
-    return book
+    return this.transaction(() => {
+      if (retainDeleted) {
+        const old = this.getKnowledgeBook(),
+          deleted = this.getDeletedArticles()
+        const removed = old.articles.filter((a) => !book.articles.some((b) => a.id === b.id))
+        if (removed.length) {
+          const articles = [
+            ...deleted.articles.filter((a) => !removed.some((r) => r.id === a.id)),
+            ...removed,
+          ]
+          const chapters = [...deleted.chapters]
+          for (const chapter of old.chapters)
+            if (
+              removed.some((a) => a.chapterId === chapter.id) &&
+              !chapters.some((c) => c.id === chapter.id)
+            )
+              chapters.push(chapter)
+          this.setSetting('deleted-articles', parseKnowledgeBook({ articles, chapters }))
+        }
+      }
+      this.setSetting('knowledge-book', book)
+      return book
+    })
   }
   exportBackup(): NotebookBackup {
     return this.transaction(() => ({
       format: 'lol-note',
-      version: 3,
+      version: 4,
+      templates: this.listTemplates(),
+      trash: this.listTrash(),
+      deletedArticles: this.getDeletedArticles(),
       loadouts: this.exportLoadouts(),
       knowledgeBook: this.getKnowledgeBook(),
       createdAt: new Date().toISOString(),
@@ -235,7 +293,11 @@ export class NotebookRepository {
     const backup = parseBackup(input)
     try {
       this.transaction(() => {
-        this.saveKnowledgeBook(backup.knowledgeBook)
+        this.db.exec("DELETE FROM settings WHERE key LIKE 'template:%' OR key LIKE 'trash:%'")
+        for (const entry of backup.templates) this.saveTemplate(entry)
+        for (const entry of backup.trash) this.setSetting(`trash:${entry.id}`, entry)
+        this.setSetting('deleted-articles', backup.deletedArticles)
+        this.saveKnowledgeBook(backup.knowledgeBook, false)
         this.db.exec("DELETE FROM settings WHERE key LIKE 'loadout:%'")
         for (const entry of backup.loadouts) this.saveLoadout(entry)
         for (const table of Object.keys(backupTables).reverse())
@@ -323,39 +385,165 @@ export class NotebookRepository {
       UNION ALL SELECT n.*, 'champion' AS scope, n.champion_id AS championId, NULL AS enemyId, NULL AS role, a.name, a.name_ja, '' AS enemyName, '' AS enemyNameJa FROM champion_notes n JOIN champions a ON a.id=n.champion_id`,
       )
       .all()
-    const tokens = v.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean)
-    return rows
+    const hits: SearchHit[] = rows.map((r) => ({
+      id: r.id as number,
+      body: r.body as string,
+      category: r.category as Note['category'],
+      pinned: r.pinned as number,
+      createdAt: r.created_at as string,
+      updatedAt: r.updated_at as string,
+      verifiedPatch: r.verified_patch as string,
+      scope: r.scope as SearchHit['scope'],
+      championId: r.championId as number,
+      key:
+        r.scope === 'matchup'
+          ? {
+              myChampionId: r.championId as number,
+              enemyChampionId: r.enemyId as number,
+              role: r.role as MatchupKey['role'],
+            }
+          : null,
+    }))
+    for (const row of this.db.prepare('SELECT * FROM champion_counters').all()) {
+      hits.push({
+        id: row.champion_id as number,
+        championId: row.champion_id as number,
+        scope: 'counter',
+        key: null,
+        category: 'General',
+        pinned: 0,
+        body: row.body as string,
+        title: '共通対策',
+        createdAt: row.updated_at as string,
+        updatedAt: row.updated_at as string,
+      })
+    }
+    const book = this.getKnowledgeBook()
+    for (const [index, article] of book.articles.entries()) {
+      const chapter = book.chapters.find((c) => c.id === article.chapterId)?.title ?? '未分類'
+      hits.push({
+        id: index,
+        articleId: article.id,
+        championId: 0,
+        scope: 'book',
+        key: null,
+        category: 'General',
+        pinned: article.favorite ? 1 : 0,
+        body: article.body,
+        title: `Notebook / ${chapter} / ${article.title}`,
+        createdAt: article.updatedAt,
+        updatedAt: article.updatedAt,
+      })
+    }
+    for (const [index, entry] of this.exportLoadouts().entries()) {
+      if (!entry.loadout.buildNotes && !entry.loadout.runeNotes) continue
+      hits.push({
+        id: index,
+        championId: entry.key.myChampionId,
+        scope: 'loadout',
+        key: entry.key,
+        title: 'ビルド・ルーンの補足',
+        body: `ビルド：${entry.loadout.buildNotes}\nルーン：${entry.loadout.runeNotes}`,
+        category: 'General',
+        pinned: 0,
+        createdAt: '',
+        updatedAt: '',
+      })
+    }
+    const names = new Map(
+      this.db
+        .prepare('SELECT id,name,name_ja,slug FROM champions')
+        .all()
+        .map((c) => [c.id, `${c.name} ${c.name_ja} ${c.slug}`]),
+    )
+    return hits
       .filter(
-        (r) =>
-          (v.role === 'ALL' || r.role === v.role) &&
-          (v.category === 'ALL' || r.category === v.category) &&
-          (!v.pinnedOnly || r.pinned === 1) &&
-          tokens.every((t) =>
-            `${r.name} ${r.name_ja} ${r.enemyName} ${r.enemyNameJa} ${r.role ?? ''} ${r.category} ${r.body}`
-              .toLocaleLowerCase()
-              .includes(t),
+        (h) =>
+          (v.role === 'ALL' || h.key?.role === v.role) &&
+          (v.category === 'ALL' || h.category === v.category) &&
+          (!v.pinnedOnly || h.pinned === 1) &&
+          matchesSearch(
+            `${names.get(h.championId) ?? ''} ${h.key ? names.get(h.key.enemyChampionId) : ''} ${h.key?.role ?? ''} ${h.category} ${h.title ?? ''} ${h.body}`,
+            v.query as string,
           ),
       )
-      .map((r) => ({
-        id: r.id as number,
-        body: r.body as string,
-        category: r.category as Note['category'],
-        pinned: r.pinned as number,
-        createdAt: r.created_at as string,
-        updatedAt: r.updated_at as string,
-        scope: r.scope as SearchHit['scope'],
-        championId: r.championId as number,
-        key:
-          r.scope === 'matchup'
-            ? {
-                myChampionId: r.championId as number,
-                enemyChampionId: r.enemyId as number,
-                role: r.role as MatchupKey['role'],
-              }
-            : null,
-      }))
       .sort((a, b) => b.pinned - a.pinned || b.updatedAt.localeCompare(a.updatedAt) || b.id - a.id)
   }
+  private setSetting(key: string, value: unknown) {
+    this.db
+      .prepare(
+        'INSERT INTO settings(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value',
+      )
+      .run(key, JSON.stringify(value))
+  }
+  private templateKey(input: unknown) {
+    const v = object(input)
+    const championId = this.championId(v.championId)
+    if (!ROLES.includes(v.role as never)) throw new ValidationError('レーンを選択してください。')
+    return `template:${championId}:${v.role}`
+  }
+  getTemplate(input: unknown) {
+    const row = this.db
+      .prepare('SELECT value FROM settings WHERE key=?')
+      .get(this.templateKey(input))
+    return row ? parseLoadout(JSON.parse(row.value as string).loadout) : null
+  }
+  saveTemplate(input: unknown) {
+    const v = object(input),
+      key = this.templateKey(v)
+    this.setSetting(key, {
+      championId: v.championId,
+      role: v.role,
+      loadout: parseLoadout(v.loadout),
+    })
+  }
+  private listTemplates(): LoadoutTemplate[] {
+    return this.db
+      .prepare("SELECT value FROM settings WHERE key LIKE 'template:%' ORDER BY key")
+      .all()
+      .map((r) => JSON.parse(r.value as string))
+  }
+  listTrash(): TrashNote[] {
+    return this.db
+      .prepare("SELECT value FROM settings WHERE key LIKE 'trash:%' ORDER BY key")
+      .all()
+      .map((r) => JSON.parse(r.value as string))
+      .sort((a, b) => b.deletedAt.localeCompare(a.deletedAt))
+  }
+  private trashNote(entry: Omit<TrashNote, 'id' | 'deletedAt'>) {
+    const id = randomUUID()
+    this.setSetting(`trash:${id}`, { ...entry, id, deletedAt: new Date().toISOString() })
+  }
+  restoreTrash(input: unknown) {
+    if (typeof input !== 'string' || !/^[a-f0-9-]{36}$/.test(input))
+      throw new ValidationError('復元対象が正しくありません。')
+    this.transaction(() => {
+      const entry = this.listTrash().find((n) => n.id === input)
+      if (!entry) throw new ValidationError('削除済みメモが見つかりません。')
+      const note = parseNoteContent(entry.note)
+      const table = entry.scope === 'champion' ? 'champion_notes' : 'matchup_notes'
+      const foreign = entry.scope === 'champion' ? 'champion_id' : 'matchup_id'
+      const parent =
+        entry.scope === 'champion'
+          ? this.championId(entry.championId)
+          : this.ensure(this.key(entry.key))
+      this.db
+        .prepare(
+          `INSERT INTO ${table} (${foreign},category,body,pinned,created_at,updated_at,verified_patch) VALUES (?,?,?,?,?,?,?)`,
+        )
+        .run(
+          parent,
+          note.category,
+          note.body,
+          entry.note.pinned,
+          entry.note.createdAt,
+          entry.note.updatedAt,
+          parsePatch(entry.note.verifiedPatch),
+        )
+      this.db.prepare('DELETE FROM settings WHERE key=?').run(`trash:${input}`)
+    })
+  }
+
   listPool(): PoolEntry[] {
     return this.db
       .prepare(
@@ -411,7 +599,7 @@ export class NotebookRepository {
     const championId = this.championId(input)
     const notes = this.db
       .prepare(
-        'SELECT id, category, body, pinned, created_at AS createdAt, updated_at AS updatedAt FROM champion_notes WHERE champion_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
+        'SELECT id, category, body, pinned, verified_patch AS verifiedPatch, created_at AS createdAt, updated_at AS updatedAt FROM champion_notes WHERE champion_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
       )
       .all(championId) as unknown as Note[]
     const matchups = this.listMatchups()
@@ -452,9 +640,9 @@ export class NotebookRepository {
       const now = new Date().toISOString()
       this.db
         .prepare(
-          'INSERT INTO champion_notes (champion_id, category, body, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO champion_notes (champion_id, category, body, created_at, updated_at, verified_patch) VALUES (?, ?, ?, ?, ?, ?)',
         )
-        .run(championId, note.category, note.body, now, now)
+        .run(championId, note.category, note.body, now, now, note.verifiedPatch ?? '')
       return this.getChampionPage(championId)
     })
   }
@@ -466,9 +654,16 @@ export class NotebookRepository {
     return this.transaction(() => {
       const changed = this.db
         .prepare(
-          'UPDATE champion_notes SET category=?, body=?, updated_at=? WHERE id=? AND champion_id=?',
+          'UPDATE champion_notes SET category=?, body=?, updated_at=?, verified_patch=? WHERE id=? AND champion_id=?',
         )
-        .run(note.category, note.body, new Date().toISOString(), id, championId)
+        .run(
+          note.category,
+          note.body,
+          new Date().toISOString(),
+          note.verifiedPatch ?? '',
+          id,
+          championId,
+        )
       if (!changed.changes) throw new ValidationError('編集対象のメモが見つかりません。')
       return this.getChampionPage(championId)
     })
@@ -478,6 +673,8 @@ export class NotebookRepository {
       championId = this.championId(v.championId),
       id = positiveId(v.id)
     return this.transaction(() => {
+      const note = this.getChampionPage(championId).notes.find((n) => n.id === id)
+      if (note) this.trashNote({ scope: 'champion', championId, key: null, note })
       const changed = this.db
         .prepare('DELETE FROM champion_notes WHERE id=? AND champion_id=?')
         .run(id, championId)
@@ -527,7 +724,7 @@ export class NotebookRepository {
     if (!row) return { ...key, id: null, difficulty: 'Unset', rating: null, notes: [] }
     const notes = this.db
       .prepare(
-        'SELECT id, category, body, pinned, created_at AS createdAt, updated_at AS updatedAt FROM matchup_notes WHERE matchup_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
+        'SELECT id, category, body, pinned, verified_patch AS verifiedPatch, created_at AS createdAt, updated_at AS updatedAt FROM matchup_notes WHERE matchup_id=? ORDER BY pinned DESC, created_at DESC, id DESC',
       )
       .all(row.id) as unknown as Note[]
     return {
@@ -568,9 +765,9 @@ export class NotebookRepository {
         now = new Date().toISOString()
       this.db
         .prepare(
-          'INSERT INTO matchup_notes (matchup_id, category, body, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO matchup_notes (matchup_id, category, body, created_at, updated_at, verified_patch) VALUES (?, ?, ?, ?, ?, ?)',
         )
-        .run(id, v.category, v.body, now, now)
+        .run(id, v.category, v.body, now, now, v.verifiedPatch ?? '')
       return this.getMatchup(key)
     })
   }
@@ -582,9 +779,9 @@ export class NotebookRepository {
       const matchup = this.getMatchup(key)
       const changed = this.db
         .prepare(
-          'UPDATE matchup_notes SET category=?, body=?, updated_at=? WHERE id=? AND matchup_id=?',
+          'UPDATE matchup_notes SET category=?, body=?, updated_at=?, verified_patch=? WHERE id=? AND matchup_id=?',
         )
-        .run(v.category, v.body, new Date().toISOString(), id, matchup.id)
+        .run(v.category, v.body, new Date().toISOString(), v.verifiedPatch ?? '', id, matchup.id)
       if (!changed.changes)
         throw new ValidationError('編集対象のメモが見つかりません。再読み込みしてください。')
       this.ensure(key)
@@ -597,6 +794,8 @@ export class NotebookRepository {
       id = positiveId(v.id)
     return this.transaction(() => {
       const matchup = this.getMatchup(key)
+      const note = matchup.notes.find((n) => n.id === id)
+      if (note) this.trashNote({ scope: 'matchup', championId: key.myChampionId, key, note })
       const changed = this.db
         .prepare('DELETE FROM matchup_notes WHERE id=? AND matchup_id=?')
         .run(id, matchup.id)

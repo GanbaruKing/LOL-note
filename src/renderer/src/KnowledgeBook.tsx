@@ -1,3 +1,5 @@
+import { useDurableDraft } from './drafts'
+import { matchesSearch } from '../../shared/search'
 import { useEffect, useRef, useState } from 'react'
 import type { KnowledgeBook as Book } from '../../shared/contracts'
 import { emptyKnowledgeBook } from '../../shared/knowledge'
@@ -37,9 +39,11 @@ export default function KnowledgeBook({
   onDirtyChange,
   onSavingChange,
   paused,
+  initialArticleId,
 }: {
   onDirtyChange: (dirty: boolean) => void
   onSavingChange: (saving: boolean) => void
+  initialArticleId?: string
   paused: boolean
 }) {
   const [book, setBook] = useState<Book>(emptyKnowledgeBook)
@@ -59,6 +63,12 @@ export default function KnowledgeBook({
   const mounted = useRef(true)
   const serialized = JSON.stringify(book)
   const dirty = ready && serialized !== saved
+  const recovery = useDurableDraft('book', book, dirty, ready)
+  const [deletedArticles, setDeletedArticles] = useState<Book['articles']>([])
+  async function refreshDeleted() {
+    const r = await window.notebook.getDeletedArticles()
+    if (r.ok && mounted.current) setDeletedArticles(r.data.articles)
+  }
   const article = book.articles.find((a) => a.id === activeId)
   const activeChapter = book.chapters.find((c) => c.id === chapter)
   const filtered = book.articles.filter(
@@ -69,7 +79,7 @@ export default function KnowledgeBook({
           : chapter === 'unfiled'
             ? a.chapterId === null
             : a.chapterId === chapter)) &&
-      `${a.title} ${a.body}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+      matchesSearch(`${a.title} ${a.body}`, query),
   )
 
   async function load() {
@@ -81,7 +91,12 @@ export default function KnowledgeBook({
       setBook(result.data)
       setSaved(JSON.stringify(result.data))
       setReady(true)
-      setActiveId(result.data.articles[0]?.id ?? null)
+      await refreshDeleted()
+      setActiveId(
+        result.data.articles.find((a) => a.id === initialArticleId)?.id ??
+          result.data.articles[0]?.id ??
+          null,
+      )
     } catch (e) {
       if (mounted.current) setError(e instanceof Error ? e.message : '読み込めませんでした。')
     }
@@ -98,7 +113,7 @@ export default function KnowledgeBook({
   }, [dirty, onDirtyChange])
 
   async function save() {
-    if (inFlight.current || !ready || !dirty) return
+    if (inFlight.current || !ready || !dirty || recovery.candidate) return
     const snapshot = serialized
     inFlight.current = true
     setSaving(true)
@@ -108,6 +123,7 @@ export default function KnowledgeBook({
       const result = await window.notebook.saveKnowledgeBook(JSON.parse(snapshot))
       if (!result.ok) throw new Error(result.error)
       if (mounted.current) setSaved(snapshot)
+      await refreshDeleted()
     } catch (e) {
       if (mounted.current) setError(e instanceof Error ? e.message : '保存できませんでした。')
     } finally {
@@ -117,11 +133,11 @@ export default function KnowledgeBook({
     }
   }
   useEffect(() => {
-    if (!dirty || saving || error || paused) return
+    if (!dirty || saving || error || paused || recovery.candidate) return
     const timer = setTimeout(() => void save(), 900)
     return () => clearTimeout(timer)
     // A save captures the current document. Edits made during that save get a new timer.
-  }, [serialized, saved, saving, ready, error, paused])
+  }, [serialized, saved, saving, ready, error, paused, recovery.candidate])
 
   function update(next: Book) {
     onDirtyChange(true)
@@ -227,6 +243,53 @@ export default function KnowledgeBook({
     )
   return (
     <section className="knowledge-book" aria-label="Notebook">
+      {recovery.error && <p role="alert">{recovery.error}</p>}
+      {recovery.candidate && (
+        <div className="recovery-banner">
+          <p>Notebookに未保存の下書きがあります。</p>
+          <button
+            onClick={() =>
+              recovery.restore((value) => {
+                setBook(value)
+                setActiveId(value.articles[0]?.id ?? null)
+              })
+            }
+          >
+            Notebookの下書きを復元
+          </button>
+          <button onClick={recovery.clear}>Notebookの下書きを破棄</button>
+        </div>
+      )}
+      <details className="book-trash">
+        <summary>削除済みの記事（{deletedArticles.length}件）</summary>
+        {deletedArticles.map((a) => (
+          <p key={a.id}>
+            {a.title}{' '}
+            <button
+              disabled={dirty || saving || !!recovery.candidate}
+              onClick={async () => {
+                setSaving(true)
+                onSavingChange(true)
+                try {
+                  const r = await window.notebook.restoreDeletedArticle(a.id)
+                  if (!r.ok) throw new Error(r.error)
+                  setBook(r.data)
+                  setSaved(JSON.stringify(r.data))
+                  setActiveId(a.id)
+                  await refreshDeleted()
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : '復元できませんでした。')
+                } finally {
+                  setSaving(false)
+                  onSavingChange(false)
+                }
+              }}
+            >
+              記事を復元
+            </button>
+          </p>
+        ))}
+      </details>
       <header className="book-heading">
         <div>
           <h1>Notebook</h1>
@@ -251,7 +314,7 @@ export default function KnowledgeBook({
           {error} 入力はこの画面に残っています。
         </p>
       )}
-      <div className="book-layout">
+      <div className="book-layout" inert={!!recovery.candidate}>
         <aside className="book-index">
           <div className="book-index-heading">
             <span>CONTENTS</span>

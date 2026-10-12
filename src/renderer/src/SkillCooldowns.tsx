@@ -1,7 +1,8 @@
+import { cooldownHint, cooldownValue } from '../../shared/cooldowns'
 import data from '../../../resources/champion-cooldowns.json'
 import type { Champion } from '../../shared/contracts'
 
-type Spell = { key: string; name: string; cooldown: number[] }
+type Spell = { key: string; name: string; cooldown: number[]; description?: string }
 const champions: Record<string, Spell[]> = data.champions
 
 export default function SkillCooldowns({ champion }: { champion: Champion }) {
@@ -22,16 +23,17 @@ export default function SkillCooldowns({ champion }: { champion: Champion }) {
           </thead>
           <tbody>
             {spells.map((spell) => {
-              const special = spell.cooldown.some((value) => value < 1)
-              const values =
-                new Set(spell.cooldown).size === 1 ? [spell.cooldown[0]] : spell.cooldown
+              const hint = cooldownHint(champion.id, spell.key)
               return (
                 <tr key={spell.key}>
                   <th scope="row">
                     <kbd>{spell.key}</kbd>
                     <span title={spell.name}>{spell.name}</span>
                   </th>
-                  <td>{special ? '特殊' : values.join(' / ')}</td>
+                  <td>
+                    {cooldownValue(spell.cooldown)}
+                    {hint && <small className="cooldown-condition">{hint}</small>}
+                  </td>
                 </tr>
               )
             })}
@@ -44,6 +46,20 @@ export default function SkillCooldowns({ champion }: { champion: Champion }) {
         スキルヘイスト適用前。再使用・チャージ・変身などで変化します。
       </p>
       <small>Data Dragon {data.version}</small>
+      {spells?.some((s) => s.description) && (
+        <details className="spell-descriptions">
+          <summary>スキルの説明を確認</summary>
+          {spells.map((s) => (
+            <p key={s.key}>
+              <strong>
+                {s.key} · {s.name}
+              </strong>
+              <br />
+              {s.description}
+            </p>
+          ))}
+        </details>
+      )}
     </section>
   )
 }

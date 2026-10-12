@@ -1,3 +1,17 @@
+# 0.2.0 完了記録（2026-10-12）
+
+- 配布物：`dist/RiftNote-Setup-0.2.0-x64.exe`。SHA256は`dist/SHA256SUMS.txt`。
+- SHA256：`02affe0f9fff3e8285bc4484e716ad3ab86be6b45c6a479dfae354f48ec438c4`。
+- 型チェック、Build、Lint、39件の単体/統合テスト成功。
+- セキュリティテストを含む25件のE2Eを実行。24件成功、1件はスクリーンショット保存時の一時ファイルエラーで失敗し、そのテストを再実行して成功。
+- Electron 44.7.0、依存監査0件。CSP・権限・Fusesを強化し、梱包済みexeのFusesとASARを確認。[監査範囲と制限](../SECURITY.md)。
+- データ一括更新を16.18.1指定で実行し、173 Champion / 253 items / 5 rune trees / CD / ショップ分類の整合を確認。版は意図的に16.18.1を維持。
+- インストーラー生成成功。app.asar 605エントリーのversion、新API同梱を確認。個人DB、個人Comfort Picks、.env、テストコードの混入なし。
+- 個人DB/個人取り込みファイルへのアクセスなし。実クライアント中の変更は疑似LCUで検証。既存アプリへのインストール、クリーンWindowsでの更新/アンインストールは未検証。署名なし。公開先はGitHub Releasesのv0.2.0 Pre-release。
+- 機能・互換性・操作方法：[改善仕様](improvements.md)。DB v7 / backup v4、旧v1〜v3の読込対応。
+
+---
+
 # Windows配布
 
 ## ビルド
@@ -9,7 +23,7 @@ npm ci
 npm run dist
 ```
 
-`dist/RiftNote-Setup-0.1.0-x64.exe` がインストーラー、`dist/win-unpacked/RiftNote.exe` が展開済みアプリ。初回はElectron・NSISのダウンロードが必要。利用者のPCにはNode.js不要。
+`dist/RiftNote-Setup-0.2.0-x64.exe` がインストーラー、`dist/win-unpacked/RiftNote.exe` が展開済みアプリ。初回はElectron・NSISのダウンロードが必要。利用者のPCにはNode.js不要。
 
 electron-builder 26.15.3 + NSISの案内付きインストーラーを使用。ユーザー単位でインストールし、インストール先を選べる。デスクトップ・スタートメニューにRiftNoteのショートカットを作る。アプリの保存先は旧名の `lol-matchup-companion` を維持し、アンインストールでも消さない。
 

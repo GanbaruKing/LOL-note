@@ -1513,6 +1513,9 @@ h1 {
   color: #b5a1eb;
   padding: 8px;
 }
+.select-context button.primary {
+  color: #17131f;
+}
 .enemy-picks {
   margin-top: 20px;
   padding: 22px;
@@ -2305,4 +2308,79 @@ h1 {
   .page-save {
     gap: 8px;
   }
+}
+
+.recovery-banner {
+  padding: 14px;
+  margin: 12px 0;
+  border: 1px solid #8170b8;
+  border-radius: 8px;
+  background: #252135;
+}
+.recovery-banner button,
+.template-toolbar button {
+  margin: 4px 8px 4px 0;
+}
+.template-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.patch-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.patch-field input {
+  width: 140px;
+}
+.verified-patch,
+.search-location {
+  display: block;
+  color: #bbb0df;
+  margin: 6px 0;
+}
+.search-excerpt mark {
+  color: #17131f;
+  background: #cfbbff;
+}
+.summary-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+.summary-icons img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.summary-icons li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.loadout-summary {
+  margin: 20px 0;
+  border-block: 1px solid #343842;
+  padding: 12px 0;
+}
+
+.cooldown-condition {
+  display: block;
+  max-width: 260px;
+  white-space: normal;
+  color: #c3b5e3;
+  font-size: 12px;
+}
+.spell-descriptions {
+  margin-top: 10px;
+  font-size: 13px;
+}
+.spell-descriptions p {
+  white-space: pre-wrap;
 }

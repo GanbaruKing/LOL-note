@@ -1,10 +1,11 @@
+import { fetchData } from './data-http.mjs'
 import { readFile, writeFile } from 'node:fs/promises'
 
 // Keep shop classification on the same patch as the bundled item catalogue.
 const { version, items } = JSON.parse(await readFile('resources/loadout.json', 'utf8'))
 const patch = version.split('.').slice(0, 2).join('.')
 const source = `https://raw.communitydragon.org/${patch}/game/items.cdtb.bin.json`
-const response = await fetch(source, { signal: AbortSignal.timeout(60000) })
+const response = await fetchData(source, { signal: AbortSignal.timeout(60000) })
 if (!response.ok) throw new Error(`Shop data: ${response.status}`)
 const raw = await response.json()
 const roles = { 1: 'fighter', 2: 'marksman', 4: 'assassin', 8: 'tank', 16: 'mage', 32: 'support' }
@@ -13,9 +14,7 @@ const tiers = {}
 for (const item of items) {
   const entry = raw[`Items/${item.id}`]
   if (!entry) throw new Error(`Missing item ${item.id}`)
-  const consumable = entry.mCategories?.some((tag) =>
-    ['Consumable', 'Trinket'].includes(tag),
-  )
+  const consumable = entry.mCategories?.some((tag) => ['Consumable', 'Trinket'].includes(tag))
   tiers[item.id] = consumable ? 0 : (entry.epicness ?? 0) >= 5 ? 2 : entry.epicness === 4 ? 1 : 0
   categories[item.id] = [
     ...new Set(

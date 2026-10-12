@@ -33,6 +33,7 @@ export interface Overview {
   rating: number | null
 }
 export interface Note {
+  verifiedPatch?: string
   pinned: number
   id: number
   category: Category
@@ -50,11 +51,13 @@ export interface MatchupSummary extends MatchupKey, Overview {
   updatedAt: string
 }
 export interface NoteInput {
+  verifiedPatch?: string
   key: MatchupKey
   category: Category
   body: string
 }
 export interface ChampionNoteInput {
+  verifiedPatch?: string
   championId: number
   category: Category
   body: string
@@ -80,7 +83,9 @@ export interface SearchInput {
   pinnedOnly: boolean
 }
 export interface SearchHit extends Note {
-  scope: 'champion' | 'matchup'
+  scope: 'champion' | 'matchup' | 'counter' | 'book' | 'loadout'
+  title?: string
+  articleId?: string
   championId: number
   key: MatchupKey | null
 }
@@ -118,7 +123,34 @@ export interface HistoryMatch extends HistoryGame {
     roleSource: 'history' | 'timeline' | 'unknown'
   }[]
 }
+export interface TrashNote {
+  id: string
+  deletedAt: string
+  scope: 'champion' | 'matchup'
+  championId: number
+  key: MatchupKey | null
+  note: Note
+}
+export interface LoadoutTemplate {
+  championId: number
+  role: Role
+  loadout: import('./loadout').Loadout
+}
 export interface NotebookApi {
+  getDeletedArticles(): Promise<Result<KnowledgeBook>>
+  restoreDeletedArticle(id: string): Promise<Result<KnowledgeBook>>
+  listTrash(): Promise<Result<TrashNote[]>>
+  restoreTrash(id: string): Promise<Result<void>>
+  getTemplate(input: {
+    championId: number
+    role: Role
+  }): Promise<Result<import('./loadout').Loadout | null>>
+  saveTemplate(input: LoadoutTemplate): Promise<Result<void>>
+  getProtectionStatus(): Promise<
+    Result<{ directory: string; lastBackup: string | null; error: string }>
+  >
+  openBackupFolder(): Promise<Result<void>>
+
   savePage(input: PageSaveInput): Promise<Result<PageSaveResult>>
   getLoadout(key: MatchupKey): Promise<Result<import('./loadout').Loadout>>
   saveLoadout(input: {
@@ -163,7 +195,12 @@ export interface NotebookApi {
   getInfo(): Promise<Result<{ databasePath: string; catalogVersion: string }>>
 }
 
-export type PageNoteDraft = { id?: number; category: Category; body: string }
+export type PageNoteDraft = {
+  id?: number
+  category: Category
+  body: string
+  verifiedPatch?: string
+}
 export type PageSaveInput =
   | {
       scope: 'matchup'

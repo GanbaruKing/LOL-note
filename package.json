@@ -1,7 +1,7 @@
 {
   "name": "riftnote",
   "productName": "RiftNote",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "An offline-first personal League of Legends matchup notebook",
   "main": "out/main/index.js",
@@ -10,7 +10,7 @@
     "build": "npm run typecheck && electron-vite build",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/repository.test.ts tests/lcu.test.ts tests/history.test.ts tests/curated-counters.test.ts tests/knowledge.test.ts tests/loadout.test.ts",
+    "test": "tsx --test tests/repository.test.ts tests/lcu.test.ts tests/history.test.ts tests/curated-counters.test.ts tests/knowledge.test.ts tests/loadout.test.ts tests/improvements.test.ts",
     "test:e2e": "npm run build && playwright test",
     "data:refresh": "node scripts/refresh-champions.mjs",
     "lint": "eslint .",
@@ -18,7 +18,8 @@
     "dist": "npm run build && electron-builder --win --x64 --publish never",
     "data:cooldowns": "node scripts/refresh-cooldowns.mjs",
     "data:loadout": "node scripts/refresh-loadout.mjs",
-    "data:item-categories": "node scripts/refresh-item-categories.mjs"
+    "data:item-categories": "node scripts/refresh-item-categories.mjs",
+    "data:update": "node scripts/refresh-all.mjs"
   },
   "engines": {
     "node": ">=24.0.0"
@@ -34,7 +35,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "5.2.0",
-    "electron": "44.3.0",
+    "electron": "44.7.0",
     "electron-builder": "26.15.3",
     "electron-vite": "5.0.0",
     "eslint": "10.10.0",
@@ -49,5 +50,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/GanbaruKing/LOL-note.git"
+  },
+  "overrides": {
+    "global-agent": "4.1.3"
   }
 }

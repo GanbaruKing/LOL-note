@@ -2,6 +2,14 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { NotebookApi } from '../shared/contracts'
 
 const api: NotebookApi = {
+  getDeletedArticles: () => ipcRenderer.invoke('notebook:getDeletedArticles'),
+  restoreDeletedArticle: (id) => ipcRenderer.invoke('notebook:restoreDeletedArticle', id),
+  listTrash: () => ipcRenderer.invoke('notebook:listTrash'),
+  restoreTrash: (id) => ipcRenderer.invoke('notebook:restoreTrash', id),
+  getTemplate: (input) => ipcRenderer.invoke('notebook:getTemplate', input),
+  saveTemplate: (input) => ipcRenderer.invoke('notebook:saveTemplate', input),
+  getProtectionStatus: () => ipcRenderer.invoke('notebook:getProtectionStatus'),
+  openBackupFolder: () => ipcRenderer.invoke('notebook:openBackupFolder'),
   savePage: (input) => ipcRenderer.invoke('notebook:savePage', input),
   getLoadout: (key) => ipcRenderer.invoke('notebook:getLoadout', key),
   saveLoadout: (input) => ipcRenderer.invoke('notebook:saveLoadout', input),

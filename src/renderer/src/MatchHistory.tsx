@@ -1,4 +1,4 @@
-import type { ReviewInfo } from '../../shared/reviewNote'
+import { splitReviewNote, type ReviewInfo } from '../../shared/reviewNote'
 import { useEffect, useRef, useState } from 'react'
 import {
   ROLES,
@@ -8,6 +8,7 @@ import {
   type HistoryMatch,
   type MatchupKey,
   type Role,
+  type SearchHit,
 } from '../../shared/contracts'
 
 const date = (game: HistoryGame) => new Date(game.createdAt).toLocaleString('ja-JP')
@@ -120,7 +121,9 @@ function Review({
 export default function MatchHistory({
   champions,
   onOpen,
+  onOpenExisting,
 }: {
+  onOpenExisting: (hit: SearchHit) => void
   champions: Champion[]
   onOpen: (key: MatchupKey, draft: ReviewInfo) => void
 }) {
@@ -129,6 +132,7 @@ export default function MatchHistory({
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [error, setError] = useState('')
+  const [reviews, setReviews] = useState<SearchHit[]>([])
   const generation = useRef(0)
   async function refresh() {
     const id = ++generation.current
@@ -138,7 +142,18 @@ export default function MatchHistory({
     setSelectedId(null)
     setError('')
     try {
-      const result = await window.notebook.getMatchHistory()
+      const [result, notes] = await Promise.all([
+        window.notebook.getMatchHistory(),
+        window.notebook.searchNotes({
+          query: '',
+          role: 'ALL',
+          category: '振り返り',
+          pinnedOnly: false,
+        }),
+      ])
+      if (!notes.ok) throw new Error(notes.error)
+      if (id === generation.current)
+        setReviews(notes.data.filter((n) => n.key && splitReviewNote(n).review))
       if (id !== generation.current) return
       if (!result.ok) throw new Error(result.error)
       setList(result.data)
@@ -223,6 +238,9 @@ export default function MatchHistory({
                     <strong>{c?.name ?? `Champion ${game.championId}`}</strong>
                     <small>{date(game)}</small>
                     <small>{queue(game.queueId)}</small>
+                    {reviews.some(
+                      (n) => splitReviewNote(n).review?.gameId === String(game.gameId),
+                    ) && <small className="category-badge">記入済み</small>}
                   </span>
                   <span className="history-result">
                     <strong
@@ -241,7 +259,17 @@ export default function MatchHistory({
           </section>
         )}
         {detail ? (
-          <Review key={detail.gameId} game={detail} champions={champions} onOpen={onOpen} />
+          <div>
+            {reviews
+              .filter((n) => splitReviewNote(n).review?.gameId === String(detail.gameId))
+              .map((n) => (
+                <div className="panel" key={n.id}>
+                  <p>記入済み：{splitReviewNote(n).body.slice(0, 100)}</p>
+                  <button onClick={() => onOpenExisting(n)}>この試合の既存メモを開く</button>
+                </div>
+              ))}
+            <Review key={detail.gameId} game={detail} champions={champions} onOpen={onOpen} />
+          </div>
         ) : (
           !!list?.games.length && (
             <section className="history-review panel empty" role="status">

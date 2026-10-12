@@ -1,3 +1,4 @@
+import { useDurableDraft } from './drafts'
 import { ITEM_TIERS, itemTier, compareShopItems } from '../../shared/itemShop'
 import itemCategories from '../../../resources/item-categories.json'
 import { useEffect, useState, useImperativeHandle, type Ref } from 'react'
@@ -7,6 +8,7 @@ import type { MatchupKey } from '../../shared/contracts'
 import Collapsible from './Collapsible'
 
 export interface LoadoutEditorHandle {
+  discard: () => void
   draft: () => Loadout | undefined
   saved: (value: Loadout) => void
 }
@@ -47,23 +49,50 @@ export default function LoadoutEditor({
   const filteredItems = data.items
     .filter(
       (x) =>
+        !('retired' in x && x.retired) &&
         (itemCategory === 'all' || categoriesById[x.id]?.includes(itemCategory)) &&
         x.name.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase()),
     )
     .sort(compareShopItems)
   const dirty = JSON.stringify(value) !== JSON.stringify(saved)
+  const recovery = useDurableDraft(
+    `loadout:${matchupKey.myChampionId}:${matchupKey.enemyChampionId}:${matchupKey.role}`,
+    value,
+    dirty,
+    ready && !pageBusy,
+  )
+  const [template, setTemplate] = useState<Loadout | null>(null)
+  const [templateAction, setTemplateAction] = useState<'save' | 'copy' | null>(null)
+  useEffect(() => {
+    let active = true
+    window.notebook
+      .getTemplate({ championId: matchupKey.myChampionId, role: matchupKey.role })
+      .then((r) => {
+        if (!active) return
+        if (r.ok) setTemplate(r.data)
+        else setError(r.error)
+      })
+      .catch(() => {
+        if (active) setError('雛形を読み込めませんでした。')
+      })
+    return () => {
+      active = false
+    }
+  }, [matchupKey])
   useImperativeHandle(
     ref,
     () => ({
+      discard: recovery.clear,
       draft: () => (ready && dirty ? value : undefined),
       saved: (next) => {
+        recovery.clear()
         setSaved(next)
         setValue(next)
         setStatus('保存済み')
         setError('')
       },
     }),
-    [ready, dirty, value],
+    [ready, dirty, value, recovery.clear],
   )
   useEffect(() => {
     onDirty(dirty)
@@ -153,7 +182,61 @@ export default function LoadoutEditor({
           </p>
         )}
         {!ready && <p>ビルド・ルーンを読み込んでいます。</p>}
-        <fieldset disabled={!ready || saving || pageBusy}>
+        {recovery.error && <p role="alert">{recovery.error}</p>}
+        {recovery.candidate && (
+          <div className="recovery-banner">
+            <p>ビルド・ルーンの下書きがあります。</p>
+            <button onClick={() => recovery.restore(setValue)}>ビルドの下書きを復元</button>
+            <button onClick={recovery.clear}>ビルドの下書きを破棄</button>
+          </div>
+        )}
+        <fieldset disabled={!ready || saving || pageBusy || !!recovery.candidate}>
+          <div className="template-toolbar">
+            <button onClick={() => setTemplateAction('save')}>現在の内容を共通の雛形に保存</button>
+            <button disabled={!template} onClick={() => setTemplateAction('copy')}>
+              共通の雛形からコピー
+            </button>
+            <small>自分のチャンピオン・レーンごとに保存</small>
+          </div>
+          {templateAction && (
+            <div className="recovery-banner">
+              <p>
+                {templateAction === 'save'
+                  ? 'このチャンピオン・レーンの雛形を現在の内容で保存します。'
+                  : '編集中のビルド・ルーンを雛形の内容で置き換えます。対面への保存はページ保存で確定します。'}
+              </p>
+              <button
+                onClick={async () => {
+                  if (templateAction === 'copy') {
+                    if (template) setValue(structuredClone(template))
+                    setTemplateAction(null)
+                    return
+                  }
+                  setSaving(true)
+                  onSaving(true)
+                  try {
+                    const r = await window.notebook.saveTemplate({
+                      championId: matchupKey.myChampionId,
+                      role: matchupKey.role,
+                      loadout: value,
+                    })
+                    if (!r.ok) throw new Error(r.error)
+                    setTemplate(structuredClone(value))
+                    setStatus('雛形を保存しました')
+                    setTemplateAction(null)
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : '雛形を保存できませんでした。')
+                  } finally {
+                    setSaving(false)
+                    onSaving(false)
+                  }
+                }}
+              >
+                実行する
+              </button>
+              <button onClick={() => setTemplateAction(null)}>キャンセル</button>
+            </div>
+          )}
           <section className="build-section" aria-label="ビルド">
             <h3>ビルド</h3>
             <p className="muted">購入順に追加してください。素材・消耗品も記録できます。</p>

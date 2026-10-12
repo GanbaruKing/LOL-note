@@ -1,3 +1,6 @@
+import { unwrap } from './apiResult'
+import SettingsPage from './SettingsPage'
+import { discardDraft, listDraftKeys, useDurableDraft } from './drafts'
 import NoteContent, { ReviewDetails, ReviewTag } from './NoteContent'
 import { splitReviewNote, joinReviewNote, type ReviewInfo } from '../../shared/reviewNote'
 import LoadoutEditor, { type LoadoutEditorHandle } from './LoadoutEditor'
@@ -13,7 +16,7 @@ import CuratedCounters from './CuratedCounters'
 import KnowledgeBook from './KnowledgeBook'
 import SkillCooldowns from './SkillCooldowns'
 import { normalizeChampionSearch } from './championSearch'
-import laneData from '../../../resources/champion-lanes.json'
+import ChampionPicker, { Portrait } from './ChampionPicker'
 import {
   ROLES,
   type Category,
@@ -27,169 +30,11 @@ import {
   type PoolEntry,
   type Role,
   type LcuState,
+  type SearchHit,
 } from '../../shared/contracts'
 
-async function unwrap<T>(promise: Promise<Result<T>>): Promise<T> {
-  const result = await promise
-  if (!result.ok) throw new Error(result.error)
-  return result.data
-}
 const sameKey = (a: MatchupKey, b: MatchupKey) =>
   a.myChampionId === b.myChampionId && a.enemyChampionId === b.enemyChampionId && a.role === b.role
-function Portrait({ champion, large = false }: { champion: Champion; large?: boolean }) {
-  return (
-    <img
-      className={`portrait ${large ? 'large' : ''}`}
-      src={`./champions/${champion.slug}.png`}
-      alt=""
-    />
-  )
-}
-function ChampionPicker({
-  label,
-  selected,
-  champions,
-  disabled,
-  onChange,
-}: {
-  label: string
-  selected?: Champion
-  champions: Champion[]
-  disabled: boolean
-  onChange: (id: number) => void
-}) {
-  const [open, setOpen] = useState(false),
-    [query, setQuery] = useState('')
-  const root = useRef<HTMLDivElement>(null)
-  const trigger = useRef<HTMLButtonElement>(null)
-  const [active, setActive] = useState(0)
-  const [laneFilter, setLaneFilter] = useState<Role | 'ALL'>('ALL')
-  const lanesById: Record<string, string[]> = laneData.lanes
-  useEffect(() => {
-    const close = (event: PointerEvent) => {
-      if (!root.current?.contains(event.target as Node)) setOpen(false)
-    }
-    document.addEventListener('pointerdown', close)
-    return () => document.removeEventListener('pointerdown', close)
-  }, [])
-  const filtered = champions.filter(
-    (c) =>
-      (laneFilter === 'ALL' || lanesById[c.id]?.includes(laneFilter)) &&
-      normalizeChampionSearch(`${c.name} ${c.nameJa} ${c.slug}`).includes(
-        normalizeChampionSearch(query),
-      ),
-  )
-  return (
-    <div
-      className="picker"
-      ref={root}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') {
-          setOpen(false)
-          trigger.current?.focus()
-        }
-      }}
-    >
-      <span className="eyebrow">{label}</span>
-      <button
-        className="picker-button"
-        ref={trigger}
-        disabled={disabled}
-        aria-label={`${label}を選択`}
-        aria-expanded={open}
-        onClick={() => {
-          setQuery('')
-          setActive(0)
-          setOpen(!open)
-        }}
-      >
-        {selected && <Portrait champion={selected} />}
-        <span>
-          <strong>{selected?.name ?? '選択してください'}</strong>
-          <small>{selected?.nameJa}</small>
-        </span>
-        <span className="chevron">⌄</span>
-      </button>
-      {open && (
-        <div className="picker-menu">
-          <div className="picker-lanes" role="group" aria-label={`${label}のレーン絞り込み`}>
-            {(['ALL', ...ROLES] as const).map((lane) => (
-              <button
-                key={lane}
-                type="button"
-                aria-pressed={laneFilter === lane}
-                onClick={() => {
-                  setLaneFilter(lane)
-                  setActive(0)
-                  root.current?.querySelector('input')?.focus()
-                  root.current?.querySelector('.picker-results')?.scrollTo(0, 0)
-                }}
-              >
-                {lane === 'ALL' ? 'All' : lane}
-              </button>
-            ))}
-          </div>
-          <input
-            autoFocus
-            aria-label={`${label}を検索`}
-            placeholder="日本語・英語で検索…"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value)
-              setActive(0)
-            }}
-            onKeyDown={(e) => {
-              if (e.nativeEvent.isComposing) return
-              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                e.preventDefault()
-                const next = Math.max(
-                  0,
-                  Math.min(filtered.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)),
-                )
-                setActive(next)
-                const candidate = root.current
-                  ?.querySelectorAll('.picker-results button')
-                  .item(next)
-                candidate?.scrollIntoView({ block: 'nearest' })
-              }
-              if (e.key === 'Enter' && filtered[active]) {
-                e.preventDefault()
-                onChange(filtered[active].id)
-                setOpen(false)
-                trigger.current?.focus()
-              }
-            }}
-          />
-          <p className="picker-help" role="status">
-            {filtered[active]?.name ?? '候補なし'} · ↑ ↓ で選択 · Enterで決定
-          </p>
-          <div className="picker-results">
-            {filtered.map((c, index) => (
-              <button
-                key={c.id}
-                className={active === index ? 'keyboard-active' : ''}
-                onClick={() => {
-                  onChange(c.id)
-                  setOpen(false)
-                  trigger.current?.focus()
-                }}
-              >
-                <Portrait champion={c} />
-                <span>
-                  {c.name}
-                  <small>{c.nameJa}</small>
-                </span>
-                {c.id === selected?.id && <span className="selected-mark">✓</span>}
-              </button>
-            ))}
-            {!filtered.length && <p className="muted">該当するチャンピオンがいません。</p>}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export default function App() {
   const [champions, setChampions] = useState<Champion[]>([])
   const [summaries, setSummaries] = useState<MatchupSummary[]>([])
@@ -216,7 +61,9 @@ export default function App() {
   const [counterStatus, setCounterStatus] = useState('')
   const [championLoading, setChampionLoading] = useState(false)
   const [reload, setReload] = useState(0)
-  const [backupStatus, setBackupStatus] = useState('')
+  const [protectionError, setProtectionError] = useState('')
+  const [bookArticleId, setBookArticleId] = useState<string | undefined>()
+  const [searchTarget, setSearchTarget] = useState<string | null>(null)
   const [bookDirty, setBookDirty] = useState(false)
   const [bookSaving, setBookSaving] = useState(false)
   const [page, setPage] = useState<
@@ -246,6 +93,7 @@ export default function App() {
     [busy, setBusy] = useState(false)
   const [body, setBody] = useState(''),
     [category, setCategory] = useState<Category>('General')
+  const [verifiedPatch, setVerifiedPatch] = useState('')
   const [reviewInfo, setReviewInfo] = useState<ReviewInfo | null>(null)
   type NoteSnapshot = {
     body: string
@@ -269,8 +117,9 @@ export default function App() {
   const noteDirty = editing
     ? joinReviewNote(body, reviewInfo) !==
         joinReviewNote(splitReviewNote(editing).body, splitReviewNote(editing).review) ||
-      category !== editing.category
-    : body.trim().length > 0 || reviewInfo !== null
+      category !== editing.category ||
+      verifiedPatch !== (editing.verifiedPatch ?? '')
+    : body.trim().length > 0 || reviewInfo !== null || verifiedPatch !== ''
   const counterDirty =
     page === 'champions' &&
     championDetailOpen &&
@@ -291,6 +140,43 @@ export default function App() {
       ? !championLoading && championData?.championId === championId
       : !loading && !!matchup && sameKey(key, matchup)
 
+  const draftKey =
+    page === 'notebook'
+      ? `note:${key.myChampionId}:${key.enemyChampionId}:${key.role}`
+      : page === 'champions' && championDetailOpen
+        ? `champion:${championId}`
+        : ''
+  const noteDraft = useDurableDraft(
+    draftKey,
+    {
+      body,
+      category,
+      reviewInfo,
+      verifiedPatch,
+      editingId: editing?.id ?? null,
+      editingUpdatedAt: editing?.updatedAt,
+      editingBody: editing?.body,
+      counterBody: counterDirty ? counterBody : undefined,
+    },
+    noteDirty || !!counterDirty,
+    ready && !busy,
+  )
+  const [initialDrafts, setInitialDrafts] = useState(listDraftKeys)
+  function openDraft(id: string) {
+    const [scope, own, enemy, role] = id.split(':')
+    navigate(() => {
+      if (scope === 'champion') {
+        setChampionId(Number(own))
+        setChampionDetailOpen(true)
+        setPage('champions')
+      } else if (scope === 'book') setPage('book')
+      else {
+        setKey({ myChampionId: Number(own), enemyChampionId: Number(enemy), role: role as Role })
+        setPage('notebook')
+      }
+      setInitialDrafts([])
+    })
+  }
   useEffect(() => {
     window.scrollTo(0, page === 'champions' && !championDetailOpen ? libraryScroll.current : 0)
   }, [page, championDetailOpen, championId])
@@ -315,6 +201,23 @@ export default function App() {
   }
   useEffect(() => {
     void initialize()
+  }, [])
+  useEffect(() => {
+    let active = true
+    const refresh = async () => {
+      try {
+        const result = await window.notebook.getProtectionStatus()
+        if (active) setProtectionError(result.ok ? result.data.error : result.error)
+      } catch {
+        if (active) setProtectionError('自動バックアップの状態を確認できませんでした。')
+      }
+    }
+    void refresh()
+    const timer = setInterval(() => void refresh(), 60000)
+    return () => {
+      active = false
+      clearInterval(timer)
+    }
   }, [])
   useEffect(() => {
     let cancelled = false
@@ -402,6 +305,7 @@ export default function App() {
     setEditing(null)
     setBody('')
     setCategory('General')
+    setVerifiedPatch('')
     setReviewInfo(null)
     setDeleting(null)
   }
@@ -415,6 +319,45 @@ export default function App() {
       action()
     }
   }
+  function openSearchHit(hit: SearchHit) {
+    navigate(() => {
+      if (hit.scope === 'book') {
+        setBookArticleId(hit.articleId)
+        setPage('book')
+        return
+      }
+      if (hit.key) {
+        setKey(hit.key)
+        setPage('notebook')
+      } else {
+        setChampionId(hit.championId)
+        setDetailQuery('')
+        setDetailRole('ALL')
+        setChampionDetailOpen(true)
+        setPage('champions')
+      }
+      setSearchTarget(
+        hit.scope === 'counter'
+          ? '#counter-body'
+          : hit.scope === 'loadout'
+            ? '.loadout-editor'
+            : `[data-note-id="${hit.id}"]`,
+      )
+    })
+  }
+  useEffect(() => {
+    if (!searchTarget || !ready) return
+    const timer = setTimeout(() => {
+      const element = document.querySelector(searchTarget)
+      if (!element) return
+      element.querySelectorAll('details').forEach((d) => {
+        d.open = true
+      })
+      element.scrollIntoView({ block: 'center' })
+      setSearchTarget(null)
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [searchTarget, ready, page, matchup, championData])
   function choose(next: MatchupKey) {
     if (sameKey(next, key) && page === 'notebook') return
     navigate(() => {
@@ -463,6 +406,7 @@ export default function App() {
   async function savePage(): Promise<boolean> {
     if (
       !pageSaveSupported ||
+      !!noteDraft.candidate ||
       !ready ||
       busy ||
       pendingNavigation ||
@@ -473,7 +417,12 @@ export default function App() {
     const loadout = page === 'notebook' ? loadoutEditor.current?.draft() : undefined
     if (!noteDirty && !counterDirty && !loadout) return true
     const note = noteDirty
-      ? { ...(editing ? { id: editing.id } : {}), category, body: joinReviewNote(body, reviewInfo) }
+      ? {
+          ...(editing ? { id: editing.id } : {}),
+          category,
+          body: joinReviewNote(body, reviewInfo),
+          verifiedPatch,
+        }
       : undefined
     pageSaveInFlight.current = true
     setBusy(true)
@@ -494,6 +443,8 @@ export default function App() {
         setCounterStatus('保存済み')
       }
       if (result.loadout) loadoutEditor.current?.saved(result.loadout)
+      noteDraft.clear()
+      setInitialDrafts(listDraftKeys())
       if (note) resetEditor()
       setLoadoutDirty(false)
       setPageSaveStatus('ページの変更を保存しました')
@@ -538,6 +489,7 @@ export default function App() {
     setBody(draft.body)
     setReviewInfo(draft.review)
     setCategory(note.category)
+    setVerifiedPatch(note.verifiedPatch ?? '')
     setTimeout(() => editor.current?.focus({ preventScroll: true }), 0)
   }
   function edit(note: Note) {
@@ -616,11 +568,22 @@ export default function App() {
       </div>
       {category === '振り返り' && <span className="category-badge">振り返り</span>}
       {reviewInfo && <ReviewDetails review={reviewInfo} />}
+      <label className="patch-field">
+        確認パッチ（任意）
+        <input
+          aria-label="確認パッチ"
+          placeholder="例：16.18"
+          maxLength={8}
+          value={verifiedPatch}
+          disabled={!ready || busy || !!noteDraft.candidate}
+          onChange={(e) => setVerifiedPatch(e.target.value)}
+        />
+      </label>
       <textarea
         id="note-body"
         ref={editor}
         value={body}
-        disabled={!ready || busy}
+        disabled={!ready || busy || !!noteDraft.candidate}
         maxLength={10000 - joinReviewNote('', reviewInfo).length}
         placeholder={
           page === 'champions'
@@ -667,6 +630,7 @@ export default function App() {
             type="button"
             disabled={busy}
             onClick={() => {
+              noteDraft.clear()
               resetEditor()
               setStatus('メモ入力をキャンセルしました')
               setPageSaveStatus('')
@@ -697,6 +661,72 @@ export default function App() {
           {busy ? '保存中…' : noteDirty ? '未保存の変更があります' : status || 'この端末に保存'}
         </span>
       </div>
+      {noteDraft.error && (
+        <p role="alert" className="error-banner">
+          {noteDraft.error}
+        </p>
+      )}
+      {noteDraft.candidate && (
+        <div className="recovery-banner" role="status">
+          <p>このページに未保存の下書きがあります。</p>
+          <button
+            disabled={!ready || busy}
+            onClick={() =>
+              noteDraft.restore((draft) => {
+                const target =
+                  activeNotes?.find(
+                    (n) =>
+                      n.id === draft.editingId &&
+                      n.updatedAt === draft.editingUpdatedAt &&
+                      n.body === draft.editingBody,
+                  ) ?? null
+                setEditing(target)
+                setBody(draft.body)
+                setCategory(draft.category)
+                setReviewInfo(draft.reviewInfo)
+                setVerifiedPatch(draft.verifiedPatch ?? '')
+                if (draft.counterBody !== undefined) setCounterBody(draft.counterBody)
+                if (draft.editingId && !target)
+                  setStatus(
+                    '元のメモが変更または削除されているため、新しいメモとして復元しました。',
+                  )
+              })
+            }
+          >
+            下書きを復元
+          </button>
+          <button onClick={noteDraft.clear}>下書きを破棄</button>
+        </div>
+      )}
+      {status === 'メモを削除しました' && (
+        <button
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true)
+            try {
+              const r = await unwrap(window.notebook.listTrash())
+              const latest = r.find((t) =>
+                page === 'champions'
+                  ? t.scope === 'champion' && t.championId === championId
+                  : t.key && sameKey(t.key, key),
+              )
+              if (!latest) throw new Error('復元対象が見つかりません。')
+              await unwrap(window.notebook.restoreTrash(latest.id))
+              if (page === 'champions')
+                setChampionData(await unwrap(window.notebook.getChampionPage(championId)))
+              else setMatchup(await unwrap(window.notebook.getMatchup(key)))
+              setSummaries(await unwrap(window.notebook.listMatchups()))
+              setStatus('メモを復元しました')
+            } catch (e) {
+              setError(e instanceof Error ? e.message : '復元できませんでした。')
+            } finally {
+              setBusy(false)
+            }
+          }}
+        >
+          削除を取り消す
+        </button>
+      )}
       <div className="notes-content">
         {activeLoading ? (
           <p className="empty">ノートを読み込み中…</p>
@@ -713,6 +743,7 @@ export default function App() {
             <article
               className={`note-card ${editing?.id === note.id ? 'editing' : ''}`}
               key={note.id}
+              data-note-id={note.id}
             >
               <div className="note-meta">
                 <ReviewTag note={note} />
@@ -859,7 +890,7 @@ export default function App() {
           <div>
             Local notebook<small>League Clientなしで利用可能</small>
           </div>
-          <span className="version">v0.1</span>
+          <span className="version">v0.2</span>
         </div>
       </aside>
 
@@ -923,6 +954,25 @@ export default function App() {
                 : `${champions.length} CHAMPIONS`}
             </span>
           </div>
+          {protectionError && (
+            <p className="error-banner" role="alert">
+              {protectionError}
+            </p>
+          )}
+          {initialDrafts.length > 0 && (
+            <div className="recovery-banner">
+              <span>前回の未保存の下書きがあります。</span>
+              {initialDrafts.map((id) => (
+                <button key={id} onClick={() => openDraft(id)}>
+                  {id.startsWith('book')
+                    ? 'Notebook'
+                    : (byId.get(Number(id.split(':')[1]))?.name ?? 'メモ')}
+                  の下書きを開く
+                </button>
+              ))}
+              <button onClick={() => setInitialDrafts([])}>閉じる</button>
+            </div>
+          )}
           {error && (
             <div className="error-banner" role="alert">
               {error}
@@ -942,10 +992,12 @@ export default function App() {
               onDirtyChange={setBookDirty}
               onSavingChange={setBookSaving}
               paused={!!pendingNavigation}
+              initialArticleId={bookArticleId}
             />
           ) : page === 'history' ? (
             <MatchHistory
               champions={champions}
+              onOpenExisting={openSearchHit}
               onOpen={(next, draft) =>
                 navigate(() => {
                   setKey(next)
@@ -961,20 +1013,7 @@ export default function App() {
               }
             />
           ) : page === 'search' ? (
-            <NoteSearch
-              champions={champions}
-              onOpen={(hit) =>
-                hit.key
-                  ? choose(hit.key)
-                  : navigate(() => {
-                      setChampionId(hit.championId)
-                      setDetailQuery('')
-                      setDetailRole('ALL')
-                      setChampionDetailOpen(true)
-                      setPage('champions')
-                    })
-              }
-            />
+            <NoteSearch champions={champions} onOpen={openSearchHit} />
           ) : page === 'select' ? (
             <ChampSelect
               key={lcu.sessionId ?? lcu.status}
@@ -983,94 +1022,19 @@ export default function App() {
               onOpen={choose}
             />
           ) : page === 'settings' ? (
-            <section className="settings-panel panel">
-              <h2>ローカルデータ</h2>
-              <h3>バックアップ・復元</h3>
-              <p>
-                メモ・Notebookの章と記事・対策・評価・Favorite Picks・Comfort
-                Picks・ビルド・ルーンをJSONに保存します。復元は現在の内容を置き換え、復元前のデータは自動退避します。
-              </p>
-              {(['exportBackup', 'restoreBackup'] as const).map((operation) => (
-                <button
-                  key={operation}
-                  className="primary"
-                  style={{ marginRight: 12, marginBottom: 8 }}
-                  disabled={busy}
-                  onClick={async () => {
-                    setBusy(true)
-                    setError('')
-                    setBackupStatus('')
-                    try {
-                      const path = await unwrap(window.notebook[operation]())
-                      if (path) {
-                        if (operation === 'restoreBackup') {
-                          await initialize()
-                          setKey({ ...key })
-                          setReload((value) => value + 1)
-                        }
-                        setBackupStatus(
-                          operation === 'exportBackup'
-                            ? `保存しました：${path}`
-                            : `復元しました。復元前のバックアップ：${path}`,
-                        )
-                      }
-                    } catch (e) {
-                      setError((e as Error).message)
-                    } finally {
-                      setBusy(false)
-                    }
-                  }}
-                >
-                  {operation === 'exportBackup' ? 'バックアップを保存' : 'バックアップから復元'}
-                </button>
-              ))}
-              <p
-                role="status"
-                aria-label="バックアップ処理結果"
-                style={{ overflowWrap: 'anywhere' }}
-              >
-                {busy ? '処理中…' : backupStatus}
-              </p>
-              <hr />
-              <p>メモはこのPCのSQLiteデータベースへ保存されます。</p>
-              <label>保存先</label>
-              <code>{info?.databasePath ?? '読み込み中…'}</code>
-              <label>Champion Data</label>
-              <p>
-                Data Dragon {info?.catalogVersion} · {champions.length} champions
-              </p>
-              <p>
-                チャンピオン名とアイコンは同梱済みです。Notebookはインターネットなしで利用できます。
-              </p>
-              <h2>League Client連携</h2>
-              <p>{lcu.message}</p>
-              <p>
-                自動接続できない場合はLeagueClient.exeがあるフォルダーを選択してください。クライアント起動中に生成されるlockfileを読み取ります。
-              </p>
-              <button
-                className="primary"
-                onClick={async () => {
-                  try {
-                    const r = await window.notebook.selectLeagueFolder()
-                    if (!r.ok) setError(r.error)
-                  } catch {
-                    setError('フォルダーを選択できませんでした。')
-                  }
-                }}
-              >
-                Leagueのフォルダーを選択
-              </button>
-              <hr />
-              <h2>Match History</h2>
-              <p>
-                League
-                Clientへログインすると、最近の試合から対面メモを書けます。保存したメモはオフラインでも読めます。クラウド同期はありません。
-              </p>
-              <p className="muted">
-                RiftNote is not endorsed by Riot Games. League of Legends and its assets are
-                trademarks of Riot Games.
-              </p>
-            </section>
+            <SettingsPage
+              champions={champions}
+              info={info}
+              lcu={lcu}
+              busy={busy}
+              setBusy={setBusy}
+              setError={setError}
+              onRestored={async () => {
+                await initialize()
+                setKey({ ...key })
+                setReload((n) => n + 1)
+              }}
+            />
           ) : page === 'champions' && !championDetailOpen ? (
             <ChampionLibrary
               champions={champions}
@@ -1138,7 +1102,7 @@ export default function App() {
                     <textarea
                       id="counter-body"
                       value={championLoading ? '' : counterBody}
-                      disabled={!ready || busy}
+                      disabled={!ready || busy || !!noteDraft.candidate}
                       maxLength={10000}
                       placeholder="例：主要スキルを使った後に近づく。パッシブが溜まっている間は戦わない。"
                       onChange={(e) => {
@@ -1451,6 +1415,9 @@ export default function App() {
                 className="danger"
                 disabled={bookSaving || loadoutSaving}
                 onClick={() => {
+                  if (page === 'book') discardDraft('book')
+                  noteDraft.clear()
+                  loadoutEditor.current?.discard()
                   const action = pendingNavigation
                   setBookDirty(false)
                   setLoadoutDirty(false)

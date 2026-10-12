@@ -31,7 +31,9 @@ export function parseNote(value: unknown): NoteInput {
   const v = object(value)
   return { key: parseKey(v.key), ...parseNoteContent(v) }
 }
-export function parseNoteContent(value: unknown): Pick<NoteInput, 'category' | 'body'> {
+export function parseNoteContent(
+  value: unknown,
+): Pick<NoteInput, 'category' | 'body' | 'verifiedPatch'> {
   const v = object(value)
   if (!CATEGORIES.includes(v.category as never))
     throw new ValidationError('カテゴリーが正しくありません。')
@@ -40,6 +42,7 @@ export function parseNoteContent(value: unknown): Pick<NoteInput, 'category' | '
   return {
     category: v.category as NoteInput['category'],
     body: v.body.trim(),
+    verifiedPatch: parsePatch(v.verifiedPatch),
   }
 }
 export function parseOverview(value: unknown): Overview {
@@ -52,4 +55,11 @@ export function parseOverview(value: unknown): Overview {
   )
     throw new ValidationError('評価は1〜5で指定してください。')
   return { difficulty: v.difficulty as Overview['difficulty'], rating: v.rating as number | null }
+}
+
+export function parsePatch(value: unknown): string {
+  if (value === undefined || value === '') return ''
+  if (typeof value !== 'string' || !/^\d{1,2}\.\d{1,2}(?:\.\d{1,2})?$/.test(value))
+    throw new ValidationError('確認パッチは16.18、16.18.1の形式で入力してください。')
+  return value
 }

@@ -38,7 +38,7 @@ test('knowledge book persists independently and restores atomically with backups
     assert.deepEqual(repo.getKnowledgeBook(), book)
     assert.equal(repo.getChampionPage(122).notes[0].body, '既存メモ')
     const backup = repo.exportBackup()
-    assert.equal(backup.version, 3)
+    assert.equal(backup.version, 4)
     assert.deepEqual(backup.knowledgeBook, book)
     repo.saveKnowledgeBook({ chapters: [], articles: [] })
     repo.restoreBackup(backup)

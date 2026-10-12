@@ -14,10 +14,17 @@ export function ReviewTag({ note }: { note: Pick<Note, 'category'> }) {
   return note.category === '振り返り' ? <span className="category-badge">振り返り</span> : null
 }
 
-export default function NoteContent({ note }: { note: Pick<Note, 'category' | 'body'> }) {
+export default function NoteContent({
+  note,
+}: {
+  note: Pick<Note, 'category' | 'body' | 'verifiedPatch'>
+}) {
   const { body, review } = splitReviewNote(note)
   return (
     <>
+      {note.verifiedPatch && (
+        <small className="verified-patch">確認パッチ {note.verifiedPatch}</small>
+      )}
       {review && <ReviewDetails review={review} />}
       <p className="note-body">{body}</p>
     </>
