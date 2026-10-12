@@ -61,7 +61,7 @@ test('all-store search opens the correct article, counter and build; delete can 
     await page.getByLabel('メモ横断検索').fill('購入判断')
     await page.getByRole('button', { name: 'ノートを開く →' }).click()
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('購入判断の識別子')
-    await expect(page.locator('.verified-patch')).toContainText('16.18')
+    await expect(page.locator('.verified-patch')).toHaveCount(0)
     await page.getByRole('button', { name: /メモ\d+を削除/ }).click()
     await page.getByRole('button', { name: '削除する', exact: true }).click()
     await expect(page.locator('.note-card')).toHaveCount(0)
@@ -89,7 +89,7 @@ test('templates copy explicitly and unsaved notes and builds survive restarting 
     await page.getByRole('button', { name: '実行する', exact: true }).click()
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('雛形の内容')
     await page.getByLabel('新しいメモ', { exact: true }).fill('再起動後に復元する下書き')
-    await page.getByLabel('確認パッチ', { exact: true }).fill('16.18')
+    await expect(page.getByLabel('確認パッチ', { exact: true })).toHaveCount(0)
     await expect
       .poll(() =>
         page.evaluate(
@@ -110,7 +110,7 @@ test('templates copy explicitly and unsaved notes and builds survive restarting 
     await expect(page.getByLabel('新しいメモ', { exact: true })).toHaveValue(
       '再起動後に復元する下書き',
     )
-    await expect(page.getByLabel('確認パッチ', { exact: true })).toHaveValue('16.18')
+    await expect(page.getByLabel('確認パッチ', { exact: true })).toHaveCount(0)
     await expect(page.getByLabel('ビルドの補足')).toHaveValue('雛形の内容')
     await page.getByRole('button', { name: 'ページの変更を保存', exact: true }).click()
     await expect(page.locator('.note-card')).toContainText('再起動後に復元する下書き')

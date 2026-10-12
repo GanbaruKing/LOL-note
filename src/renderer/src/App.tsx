@@ -568,17 +568,6 @@ export default function App() {
       </div>
       {category === '振り返り' && <span className="category-badge">振り返り</span>}
       {reviewInfo && <ReviewDetails review={reviewInfo} />}
-      <label className="patch-field">
-        確認パッチ（任意）
-        <input
-          aria-label="確認パッチ"
-          placeholder="例：16.18"
-          maxLength={8}
-          value={verifiedPatch}
-          disabled={!ready || busy || !!noteDraft.candidate}
-          onChange={(e) => setVerifiedPatch(e.target.value)}
-        />
-      </label>
       <textarea
         id="note-body"
         ref={editor}
@@ -890,7 +879,7 @@ export default function App() {
           <div>
             Local notebook<small>League Clientなしで利用可能</small>
           </div>
-          <span className="version">v0.2</span>
+          <span className="version">v0.2.1</span>
         </div>
       </aside>
 
